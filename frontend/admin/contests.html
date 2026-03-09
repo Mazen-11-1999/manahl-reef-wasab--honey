@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المسابقات | لوحة تحكم المالك</title>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Common Styles -->
+    <link rel="stylesheet" href="common-styles.css">
+
+    <style>
+        :root {
+            --bg-primary: #120a00;
+            --bg-secondary: #1a0f00;
+            --bg-card: #1d1102;
+            --bg-accent: #2a1804;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #aa8c2c;
+            --text-primary: #e0c097;
+            --text-secondary: #f3cf7a;
+            --text-white: #ffffff;
+            --border-gold: rgba(212, 175, 55, 0.2);
+            --shadow-gold: rgba(212, 175, 55, 0.3);
+            --success: #51cf66;
+            --danger: #ff6b6b;
+            --warning: #ffd43b;
+            --info: #74c0fc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--text-primary);
+            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(145deg, var(--bg-accent), var(--bg-card));
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--gold-primary);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--border-gold);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-primary);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            transform: translateY(-50%) scale(1.08);
+            box-shadow: 0 4px 15px var(--shadow-gold);
+        }
+
+        .header-title {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--shadow-gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-badge {
+            background: var(--danger);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .section-title {
+            color: var(--gold-primary);
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--gold-primary);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1.2rem;
+        }
+
+        /* تحسين الأيقونات */
+        .stat-icon {
+            font-size: 2rem;
+            color: var(--gold-primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon {
+            font-size: 1.3rem;
+            color: var(--gold-primary);
+        }
+
+        .card {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border: 1px solid var(--border-gold);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            color: var(--text-white);
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            color: var(--gold-primary);
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-gold);
+            color: var(--text-white);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px var(--shadow-gold);
+        }
+
+        .form-input::placeholder {
+            color: #666;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .draw-platform {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border: 2px solid var(--gold-primary);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 0 30px var(--shadow-gold);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .draw-platform::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--gold-primary) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.05;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(-10px, -10px) rotate(180deg);
+            }
+        }
+
+        .draw-title {
+            color: var(--gold-primary);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+        }
+
+        .participants-count {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .count-number {
+            color: var(--text-white);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .draw-screen {
+            height: 150px;
+            background: var(--bg-primary);
+            border-radius: 15px;
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px inset var(--gold-primary);
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        .scrolling-names {
+            font-size: 1.8rem;
+            color: var(--gold-primary);
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--shadow-gold);
+            transition: all 0.3s ease;
+        }
+
+        .winner-announcement {
+            font-size: 2rem;
+            color: var(--success);
+            font-weight: bold;
+            animation: winnerGlow 1s ease-in-out infinite;
+            text-shadow: 0 0 20px var(--success);
+        }
+
+        @keyframes winnerGlow {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .draw-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-primary {
+            flex: 2;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            border: none;
+            border-radius: 12px;
+            color: var(--bg-primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-gold);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 15px;
+            background: #444;
+            color: var(--text-white);
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+            transform: translateY(-2px);
+        }
+
+        .winners-log {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--border-gold);
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .log-title {
+            color: var(--gold-primary);
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-small:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .log-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .log-item:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .log-item:last-child {
+            border-bottom: none;
+        }
+
+        .winner-info {
+            flex: 1;
+        }
+
+        .winner-name {
+            color: var(--text-white);
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .winner-details {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .winner-date {
+            color: var(--gold-primary);
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        .empty-log {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 40px 20px;
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border: 1px solid var(--border-gold);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold-primary);
+        }
+
+        .stat-value {
+            color: var(--gold-primary);
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .settings-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .switch-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .switch-label {
+            color: var(--text-white);
+            font-size: 0.9rem;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: #444;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .switch.active {
+            background: var(--gold-primary);
+        }
+
+        .switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .switch.active::after {
+            left: 27px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .draw-controls {
+                flex-direction: column;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+
+            .settings-section {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .scrolling-names {
+                font-size: 1.4rem;
+            }
+
+            .winner-announcement {
+                font-size: 1.6rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="dashboard.html" class="back-button" title="العودة للوحة التحكم"><i class="fas fa-arrow-right"></i></a>
+            <h1 class="header-title">
+                <span>🛠️</span>
+                <span>إدارة المسابقات</span>
+            </h1>
+            <div class="admin-badge">المالك فقط</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="app-card"
+            style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+            <div>
+                <h3 style="color:var(--gold-primary);margin:0">إدارة المسابقات</h3>
+                <p style="opacity:0.9;margin:0">لوحة تحكم بدر العلوي 
+            </div>
+            <div class="flex">
+                <a href="dashboard.html" class="nav-bell" aria-label="إشعارات">
+                    <i class="fa-solid fa-bell" style="font-size:20px;color:var(--gold-primary)"></i>
+                    <span class="badge">2</span>
+                </a>
+                <a class="btn primary" href="#" onclick="startAdminDraw()"><i class="fa-solid fa-ticket-simple"></i> سحب
+                    سريع</a>
+            </div>
+        </div>
+
+        <h2 class="section-title fade-in">
+            <span>🎯</span>
+            <span>نظام التحكم الكامل بالمسابقات</span>
+        </h2>
+
+        <!-- إحصائيات سريعة -->
+        <div class="stats-grid fade-in">
+            <div class="stat-card">
+                <div class="stat-value" id="totalContests">0</div>
+                <div class="stat-label">إجمالي المسابقات</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalWinners">0</div>
+                <div class="stat-label">إجمالي الفائزين</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeContests">0</div>
+                <div class="stat-label">مسابقات نشطة</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="currentParticipants">0</div>
+                <div class="stat-label">المشاركون الحاليون</div>
+            </div>
+        </div>
+
+        <!-- إعداد مسابقة جديدة -->
+        <div class="card fade-in">
+            <h3 class="card-title">
+                <span>🔧</span>
+                <span>إعداد مسابقة جديدة</span>
+            </h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">اسم المسابقة</label>
+                    <input type="text" class="form-input" id="contestName" placeholder="مثال: سحب حصاد السدر 2026">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">نوع المسابقة</label>
+                    <select class="form-select" id="contestType" onchange="handleContestTypeChange()">
+                        <option value="random">سحب عشوائي</option>
+                        <option value="questions">مسابقة أسئلة</option>
+                        <option value="purchase">مسابقة الشراء التلقائي</option>
+                        <option value="multi-requirement">مسابقة متعددة الشروط</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">تحديد فئة المشاركين</label>
+                <select class="form-select" id="participantCategory">
+                    <option>جميع المشترين خلال هذا الشهر</option>
+                    <option>أعضاء الـ VIP فقط</option>
+                    <option>المشاركون في تعليقات الفيسبوك/تيك توك</option>
+                    <option>المشترين من منتج معين</option>
+                    <option>المشاركون في مسابقة سابقة</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">الجائزة المرصودة</label>
+                    <input type="text" class="form-input" id="prize" placeholder="مثال: 3 كيلو عسل سدر فاخر">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">عدد الفائزين</label>
+                    <input type="number" class="form-input" id="winnersCount" value="1" min="1" max="10">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">تاريخ بدء المسابقة</label>
+                    <input type="datetime-local" class="form-input" id="startDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تاريخ انتهاء المسابقة</label>
+                    <input type="datetime-local" class="form-input" id="endDate">
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="createContest()">
+                <span>➕</span>
+                <span>إنشاء المسابقة</span>
+            </button>
+        </div>
+
+        <!-- منصة السحب الإلكتروني -->
+        <div class="draw-platform fade-in">
+            <h3 class="draw-title">🎰 منصة السحب الإلكتروني</h3>
+            <p class="participants-count">
+                عدد المؤهلين للدخول في القرعة الآن:
+                <span class="count-number" id="eligibleCount">0 مشارك</span>
+            </p>
+
+            <div class="draw-screen" id="drawScreen">
+                <div id="scrollingNames" class="scrolling-names">--- جاهز لبدء السحب ---</div>
+            </div>
+
+            <div class="draw-controls">
+                <button class="btn-primary" id="drawBtn" onclick="startAdminDraw()">
+                    <span>🎲</span>
+                    <span>إجراء السحب العشوائي</span>
+                </button>
+                <button class="btn-secondary" onclick="resetDraw()">
+                    <span>🔄</span>
+                    <span>إعادة</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- إضافة مشارك يدوياً -->
+        <div class="card fade-in">
+            <h3 class="card-title">
+                <span>👤</span>
+                <span>إضافة مشارك يدوياً</span>
+            </h3>
+
+            <div class="form-group">
+                <label class="form-label">اختر المسابقة</label>
+                <select class="form-select" id="selectedContestForParticipant">
+                    <option value="">-- اختر مسابقة --</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">اسم المشارك</label>
+                    <input type="text" class="form-input" id="participantName" placeholder="اسم المشارك">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">رقم الهاتف</label>
+                    <input type="text" class="form-input" id="participantPhone" placeholder="773298831">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" id="makeEligible" checked>
+                    <span style="margin-right: 10px;">جعله مؤهلاً للسحب مباشرة</span>
+                </label>
+            </div>
+
+            <button class="btn-primary" onclick="addParticipantManually()">
+                <span>➕</span>
+                <span>إضافة المشارك</span>
+            </button>
+        </div>
+
+        <!-- قائمة المسابقات -->
+        <div class="card fade-in">
+            <h3 class="card-title">
+                <span>📋</span>
+                <span>المسابقات الحالية</span>
+            </h3>
+            <div id="contestsList" style="min-height: 200px;">
+                <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>جارٍ تحميل المسابقات...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- سجل الفائزين -->
+        <div class="winners-log fade-in">
+            <div class="log-header">
+                <h3 class="log-title">
+                    <span>📜</span>
+                    <span>سجل الفائزين الذين تم اختيارهم</span>
+                </h3>
+                <div class="log-actions">
+                    <button class="btn-small" onclick="exportWinners()">تصدير</button>
+                    <button class="btn-small" onclick="clearLog()">مسح السجل</button>
+                </div>
+            </div>
+            <div class="log-list" id="winnersLog">
+                <div class="empty-log">لا يوجد فائزون اليوم بعد..</div>
+            </div>
+        </div>
+
+        <!-- إعدادات متقدمة (تُحفظ وتُطبّق فعلياً عند كل سحب) -->
+        <div class="card fade-in">
+            <h3 class="card-title">
+                <span>⚙️</span>
+                <span>الإعدادات المتقدمة</span>
+            </h3>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 15px;">هذه المفاتيح تُحفظ في النظام: عند تفعيل "إشعارات الفائزين" يُرسل واتساب للفائزين تلقائياً بعد السحب، و"نشر النتائج" يعلن عن الفائزين فوراً.</p>
+            <div class="settings-section">
+                <div>
+                    <div class="switch-group">
+                        <span class="switch-label">السحب التلقائي</span>
+                        <div class="switch" id="autoDraw" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="switch-group">
+                        <span class="switch-label">إشعارات الفائزين</span>
+                        <div class="switch active" id="winnerNotifications" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="switch-group">
+                        <span class="switch-label">نشر النتائج تلقائياً</span>
+                        <div class="switch active" id="autoPublish" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="switch-group">
+                        <span class="switch-label">التحقق من المشاركين</span>
+                        <div class="switch active" id="verifyParticipants" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="switch-group">
+                        <span class="switch-label">سجل الأنشطة الكامل</span>
+                        <div class="switch" id="fullActivityLog" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="switch-group">
+                        <span class="switch-label">وضع الصيانة</span>
+                        <div class="switch" id="maintenanceMode" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- API Integration -->
+    <script src="../js/api.js"></script>
+
+    <script>
+        // متغيرات عامة
+        let allContests = [];
+        let currentContest = null;
+        let eligibleParticipants = [];
+        let winnersLog = [];
+        let contestSettings = {
+            autoDraw: false,
+            winnerNotifications: true,
+            autoPublish: true,
+            verifyParticipants: true,
+            fullActivityLog: false,
+            maintenanceMode: false
+        };
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', async function () {
+            // تحميل API إذا لم يكن متاحاً
+            if (!window.API) {
+                const checkAPI = setInterval(() => {
+                    if (window.API) {
+                        clearInterval(checkAPI);
+                        initializePage();
+                    }
+                }, 100);
+                setTimeout(() => clearInterval(checkAPI), 5000);
+            } else {
+                initializePage();
+            }
+        });
+
+        async function initializePage() {
+            await loadContests();
+            await loadStats();
+            await loadWinnersLog();
+            await loadContestSettings();
+            displayContestsList();
+
+            // تعيين تواريخ افتراضية
+            const now = new Date();
+            const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            if (startDateInput) startDateInput.value = formatDateTimeLocal(tomorrow);
+            if (endDateInput) endDateInput.value = formatDateTimeLocal(nextWeek);
+        }
+
+        function formatDateTimeLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        // تحميل المسابقات
+        async function loadContests() {
+            try {
+                if (!window.API || !window.API.contests) {
+                    console.warn('API not available');
+                    return;
+                }
+
+                const response = await window.API.contests.getAll();
+                if (response.success && response.contests) {
+                    allContests = response.contests;
+                    updateContestsDropdown();
+                } else if (response.contests) {
+                    allContests = response.contests;
+                    updateContestsDropdown();
+                }
+            } catch (error) {
+                console.error('Error loading contests:', error);
+            }
+        }
+
+        // تحديث قائمة المسابقات في القائمة المنسدلة
+        function updateContestsDropdown() {
+            const select = document.getElementById('selectedContestForParticipant');
+            if (!select) return;
+
+            select.innerHTML = '<option value="">-- اختر مسابقة --</option>';
+            allContests.forEach(contest => {
+                const option = document.createElement('option');
+                option.value = contest._id || contest.id;
+                option.textContent = contest.name || 'مسابقة بدون اسم';
+                select.appendChild(option);
+            });
+        }
+
+        // تحميل الإحصائيات من API
+        async function loadStats() {
+            try {
+                if (!window.API || !window.API.contests) {
+                    return;
+                }
+
+                const response = await window.API.contests.getAll();
+                const contests = response.contests || response.data || [];
+
+                const totalContests = contests.length;
+                const activeContests = contests.filter(c => c.status === 'active').length;
+                
+                // حساب إجمالي الفائزين
+                const winnersResponse = await window.API.contests.getWinners();
+                const winners = winnersResponse.winners || winnersResponse.data || [];
+                const totalWinners = winners.length;
+
+                // حساب المشاركين المؤهلين
+                let totalParticipants = 0;
+                for (const contest of contests) {
+                    if (contest.status === 'active' && contest.participants) {
+                        const eligible = contest.participants.filter(p => p.eligible !== false);
+                        totalParticipants += eligible.length;
+                    }
+                }
+
+                // تحديث الواجهة
+                const totalContestsEl = document.getElementById('totalContests');
+                const totalWinnersEl = document.getElementById('totalWinners');
+                const activeContestsEl = document.getElementById('activeContests');
+                const currentParticipantsEl = document.getElementById('currentParticipants');
+                const eligibleCountEl = document.getElementById('eligibleCount');
+
+                if (totalContestsEl) totalContestsEl.textContent = totalContests;
+                if (totalWinnersEl) totalWinnersEl.textContent = totalWinners;
+                if (activeContestsEl) activeContestsEl.textContent = activeContests;
+                if (currentParticipantsEl) currentParticipantsEl.textContent = totalParticipants;
+                if (eligibleCountEl) eligibleCountEl.textContent = totalParticipants + ' مشارك';
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function updateStats() {
+            loadStats();
+        }
+
+        // إدارة أنواع المسابقات
+        function handleContestTypeChange() {
+            const type = document.getElementById('contestType').value;
+            const questionsSection = document.getElementById('questionsSection');
+            const requirementsSection = document.getElementById('requirementsSection');
+
+            // إخفاء جميع الأقسام أولاً
+            if (questionsSection) questionsSection.style.display = 'none';
+            if (requirementsSection) requirementsSection.style.display = 'none';
+
+            // إظهار الأقسام حسب النوع
+            if (type === 'questions' || type === 'multi-requirement') {
+                if (questionsSection) questionsSection.style.display = 'block';
+            }
+            if (type === 'multi-requirement') {
+                if (requirementsSection) requirementsSection.style.display = 'block';
+            }
+        }
+
+        // إضافة سؤال
+        let questionCounter = 0;
+        function addQuestion() {
+            questionCounter++;
+            const questionsList = document.getElementById('questionsList');
+            if (!questionsList) return;
+
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-item';
+            questionDiv.style.cssText = 'background: var(--bg-secondary); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-gold);';
+            questionDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h5 style="color: var(--gold-primary);">سؤال ${questionCounter}</h5>
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" style="background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">حذف</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">السؤال</label>
+                    <input type="text" class="form-input question-text" placeholder="اكتب السؤال هنا">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">نوع السؤال</label>
+                    <select class="form-select question-type" onchange="handleQuestionTypeChange(this)">
+                        <option value="multiple-choice">اختيار من متعدد</option>
+                        <option value="text">سؤال مباشر</option>
+                        <option value="true-false">صح/خطأ</option>
+                    </select>
+                </div>
+                <div class="question-options" style="display: none;">
+                    <label class="form-label">الخيارات</label>
+                    <div class="options-list"></div>
+                    <button type="button" class="btn-small" onclick="addOption(this)" style="margin-top: 10px;">
+                        <span>➕</span>
+                        <span>إضافة خيار</span>
+                    </button>
+                </div>
+                <div class="form-group" style="display: none;" id="correctAnswerText">
+                    <label class="form-label">الإجابة الصحيحة</label>
+                    <input type="text" class="form-input correct-answer" placeholder="الإجابة الصحيحة">
+                </div>
+            `;
+
+            questionsList.appendChild(questionDiv);
+        }
+
+        // تغيير نوع السؤال
+        function handleQuestionTypeChange(select) {
+            const questionItem = select.closest('.question-item');
+            const optionsDiv = questionItem.querySelector('.question-options');
+            const correctAnswerDiv = questionItem.querySelector('#correctAnswerText');
+
+            if (select.value === 'multiple-choice' || select.value === 'true-false') {
+                if (optionsDiv) optionsDiv.style.display = 'block';
+                if (correctAnswerDiv) correctAnswerDiv.style.display = 'none';
+            } else {
+                if (optionsDiv) optionsDiv.style.display = 'none';
+                if (correctAnswerDiv) correctAnswerDiv.style.display = 'block';
+            }
+        }
+
+        // إضافة خيار
+        function addOption(btn) {
+            const optionsList = btn.previousElementSibling;
+            const optionDiv = document.createElement('div');
+            optionDiv.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: center;';
+            optionDiv.innerHTML = `
+                <input type="text" class="form-input option-text" placeholder="نص الخيار" style="flex: 1;">
+                <label style="display: flex; align-items: center; gap: 5px; color: var(--text-primary);">
+                    <input type="checkbox" class="option-correct">
+                    <span>صحيح</span>
+                </label>
+                <button type="button" onclick="this.parentElement.remove()" style="background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">حذف</button>
+            `;
+            optionsList.appendChild(optionDiv);
+        }
+
+        // إدارة روابط الحسابات
+        function toggleSocialLinks() {
+            const checkbox = document.getElementById('requireFollowSocial');
+            const section = document.getElementById('socialLinksSection');
+            if (section) {
+                section.style.display = checkbox.checked ? 'block' : 'none';
+            }
+        }
+
+        function addSocialLink() {
+            const list = document.getElementById('socialLinksList');
+            if (!list) return;
+
+            const linkDiv = document.createElement('div');
+            linkDiv.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: center;';
+            linkDiv.innerHTML = `
+                <select class="form-select" style="flex: 1;">
+                    <option value="facebook">فيسبوك</option>
+                    <option value="tiktok">تيك توك</option>
+                    <option value="instagram">إنستغرام</option>
+                    <option value="twitter">تويتر</option>
+                    <option value="youtube">يوتيوب</option>
+                    <option value="snapchat">سناب شات</option>
+                </select>
+                <input type="url" class="form-input" placeholder="رابط الحساب" style="flex: 2;">
+                <input type="text" class="form-input" placeholder="كود التحقق (اختياري)" style="flex: 1;">
+                <button type="button" onclick="this.parentElement.remove()" style="background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">حذف</button>
+            `;
+            list.appendChild(linkDiv);
+        }
+
+        // تحديث createContest
+        async function createContest() {
+            const name = document.getElementById('contestName').value;
+            const type = document.getElementById('contestType').value;
+            const prizeName = document.getElementById('prizeName')?.value || '';
+            const prizeDescription = document.getElementById('prizeDescription')?.value || '';
+            const prizeValue = document.getElementById('prizeValue')?.value || '';
+            const prizeImage = document.getElementById('prizeImage')?.files[0];
+            const winnersCount = document.getElementById('winnersCount').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!name) {
+                showNotification('يرجى إدخال اسم المسابقة', 'warning');
+                return;
+            }
+
+            if (!startDate || !endDate) {
+                showNotification('يرجى تحديد تاريخ البداية والنهاية', 'warning');
+                return;
+            }
+
+            showNotification('جاري إنشاء المسابقة...', 'info');
+
+            try {
+                // جمع الأسئلة
+                const questions = [];
+                if (type === 'questions' || type === 'multi-requirement') {
+                    const questionItems = document.querySelectorAll('.question-item');
+                    questionItems.forEach(item => {
+                        const questionText = item.querySelector('.question-text')?.value;
+                        const questionType = item.querySelector('.question-type')?.value;
+
+                        if (questionText) {
+                            const question = {
+                                question: questionText,
+                                type: questionType,
+                                options: [],
+                                correctAnswer: '',
+                                points: 1
+                            };
+
+                            if (questionType === 'multiple-choice' || questionType === 'true-false') {
+                                const options = item.querySelectorAll('.option-text');
+                                options.forEach((opt, idx) => {
+                                    const isCorrect = item.querySelectorAll('.option-correct')[idx]?.checked || false;
+                                    question.options.push({
+                                        text: opt.value,
+                                        isCorrect: isCorrect
+                                    });
+                                    if (isCorrect) {
+                                        question.correctAnswer = opt.value;
+                                    }
+                                });
+                            } else {
+                                question.correctAnswer = item.querySelector('.correct-answer')?.value || '';
+                            }
+
+                            questions.push(question);
+                        }
+                    });
+                }
+
+                // جمع الشروط
+                const requirements = {
+                    followSocial: {
+                        enabled: document.getElementById('requireFollowSocial')?.checked || false,
+                        socialLinks: []
+                    },
+                    shareWhatsApp: {
+                        enabled: document.getElementById('requireShareWhatsApp')?.checked || false,
+                        requiredShares: parseInt(document.getElementById('requiredShares')?.value || 3),
+                        shareMessage: document.getElementById('shareMessage')?.value || ''
+                    },
+                    answerQuestions: {
+                        enabled: document.getElementById('requireAnswerQuestions')?.checked || false,
+                        minCorrectAnswers: questions.length
+                    }
+                };
+
+                if (requirements.followSocial.enabled) {
+                    const socialLinks = document.querySelectorAll('#socialLinksList > div');
+                    socialLinks.forEach(link => {
+                        const platform = link.querySelector('select')?.value;
+                        const url = link.querySelector('input[type="url"]')?.value;
+                        const code = link.querySelectorAll('input')[1]?.value;
+                        if (platform && url) {
+                            requirements.followSocial.socialLinks.push({
+                                platform,
+                                url,
+                                verificationCode: code
+                            });
+                        }
+                    });
+                }
+
+                // رفع صورة الجائزة إذا كانت موجودة
+                let prizeImageUrl = '';
+                if (prizeImage) {
+                    const formData = new FormData();
+                    formData.append('image', prizeImage);
+                    formData.append('type', 'prize');
+
+                    const uploadResponse = await fetch('/api/upload/prize', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const uploadData = await uploadResponse.json();
+                    if (uploadData.success) {
+                        prizeImageUrl = uploadData.url;
+                    }
+                }
+
+                const winnersCountNum = parseInt(document.getElementById('winnersCount')?.value, 10) || 1;
+                // إعداد بيانات المسابقة
+                const contestData = {
+                    name,
+                    type,
+                    description: '',
+                    prize: prizeName || document.getElementById('prize')?.value || '',
+                    prizeDetails: {
+                        name: prizeName,
+                        description: prizeDescription,
+                        image: prizeImageUrl,
+                        value: prizeValue
+                    },
+                    questions: questions,
+                    requirements: requirements,
+                    winnersCount: Math.min(Math.max(winnersCountNum, 1), 50),
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate),
+                    status: 'active'
+                };
+
+                // إرسال للـ API
+                if (window.API && window.API.contests) {
+                    const response = await window.API.contests.create(contestData);
+                    if (response.success) {
+                        showNotification(`تم إنشاء مسابقة "${name}" بنجاح!`, 'success');
+
+                        // تحديث الإحصائيات
+                        const totalContests = document.getElementById('totalContests');
+                        if (totalContests) {
+                            totalContests.textContent = parseInt(totalContests.textContent) + 1;
+                        }
+
+                        // تحديث قائمة المسابقات
+                        await loadContests();
+                        await loadStats();
+                        displayContestsList();
+
+                        // مسح الحقول
+                        document.getElementById('contestName').value = '';
+                        if (document.getElementById('prizeName')) document.getElementById('prizeName').value = '';
+                        if (document.getElementById('prizeDescription')) document.getElementById('prizeDescription').value = '';
+                        if (document.getElementById('prizeValue')) document.getElementById('prizeValue').value = '';
+                        if (document.getElementById('prizeImage')) document.getElementById('prizeImage').value = '';
+                        if (document.getElementById('winnersCount')) document.getElementById('winnersCount').value = '1';
+                        if (document.getElementById('questionsList')) document.getElementById('questionsList').innerHTML = '';
+                        questionCounter = 0;
+                    } else {
+                        throw new Error(response.message || 'فشل إنشاء المسابقة');
+                    }
+                } else {
+                    showNotification(`تم إنشاء مسابقة "${name}" بنجاح!`, 'success');
+                }
+            } catch (error) {
+                console.error('Error creating contest:', error);
+                showNotification(error.message || 'حدث خطأ في إنشاء المسابقة', 'error');
+            }
+        }
+
+        // إجراء السحب العشوائي
+        async function startAdminDraw() {
+            const screen = document.getElementById('scrollingNames');
+            const btn = document.getElementById('drawBtn');
+            const eligibleCount = document.getElementById('eligibleCount');
+            const contestSelect = document.getElementById('selectedContestForParticipant');
+
+            // التحقق من اختيار مسابقة
+            const contestId = contestSelect?.value;
+            if (!contestId) {
+                showNotification('يرجى اختيار مسابقة أولاً', 'warning');
+                return;
+            }
+
+            // العثور على المسابقة المحددة
+            currentContest = allContests.find(c => (c._id || c.id) === contestId);
+            if (!currentContest) {
+                showNotification('المسابقة غير موجودة', 'error');
+                return;
+            }
+
+            // جلب المشاركين المؤهلين
+            try {
+                const contestResponse = await window.API.contests.getById(contestId);
+                if (contestResponse.success && contestResponse.contest) {
+                    const contest = contestResponse.contest;
+                    eligibleParticipants = (contest.participants || []).filter(p => p.isEligible !== false);
+                } else {
+                    eligibleParticipants = [];
+                }
+            } catch (error) {
+                console.error('Error loading participants:', error);
+                eligibleParticipants = [];
+            }
+
+            if (eligibleParticipants.length === 0) {
+                showNotification('لا يوجد مشاركون مؤهلون في هذه المسابقة', 'warning');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳</span><span>جاري اختيار الفائز...</span>';
+
+            let count = 0;
+            const participantNames = eligibleParticipants.map(p => 
+                p.customer?.profile?.firstName && p.customer?.profile?.lastName
+                    ? `${p.customer.profile.firstName} ${p.customer.profile.lastName}`
+                    : p.customer?.phone || p.name || 'مشارك'
+            );
+
+            // تأثير دوران الأسماء
+            const interval = setInterval(() => {
+                const randomName = participantNames[Math.floor(Math.random() * participantNames.length)];
+                screen.textContent = randomName;
+                screen.style.color = count % 2 === 0 ? 'var(--gold-light)' : 'var(--gold-primary)';
+                screen.style.transform = count % 2 === 0 ? 'scale(1)' : 'scale(1.05)';
+                count++;
+            }, 100);
+
+            // لحظة إعلان الفائز (بعد 4 ثواني)
+            setTimeout(async () => {
+                clearInterval(interval);
+                
+                try {
+                    const winnersCount = Math.min(parseInt(currentContest.winnersCount, 10) || 1, 50) || 1;
+                    const drawResponse = await window.API.contests.drawWinner(contestId, winnersCount);
+
+                    if (drawResponse.success && drawResponse.winners && drawResponse.winners.length > 0) {
+                        const winnerNames = drawResponse.winners.map(w =>
+                            (w.customer?.profile?.firstName && w.customer?.profile?.lastName)
+                                ? `${w.customer.profile.firstName} ${w.customer.profile.lastName}`
+                                : (w.name || w.customer?.phone || 'فائز')
+                        );
+                        const displayText = winnerNames.length === 1
+                            ? `🎉 ${winnerNames[0]} 🎉`
+                            : `🎉 ${winnerNames.join(' · ')} 🎉`;
+
+                        screen.innerHTML = displayText;
+                        screen.className = 'winner-announcement';
+                        btn.innerHTML = '<span>✅</span><span>تم السحب بنجاح</span>';
+
+                        winnerNames.forEach(name => addWinnerToLog(name, currentContest.name, currentContest.prize || 'جائزة'));
+
+                        await loadStats();
+                        showNotification(`🎉 تم اختيار ${winnerNames.length} فائز/فائزين: ${winnerNames.join('، ')}`, 'success');
+                    } else {
+                        throw new Error(drawResponse.message || 'فشل السحب');
+                    }
+                } catch (error) {
+                    console.error('Error drawing winner:', error);
+                    screen.textContent = 'حدث خطأ في السحب';
+                    screen.className = 'scrolling-names';
+                    btn.innerHTML = '<span>❌</span><span>فشل السحب</span>';
+                    btn.disabled = false;
+                    showNotification('حدث خطأ في إجراء السحب: ' + (error.message || 'خطأ غير معروف'), 'error');
+                }
+            }, 4000);
+        }
+
+        function resetDraw() {
+            const screen = document.getElementById('scrollingNames');
+            const btn = document.getElementById('drawBtn');
+
+            screen.textContent = '--- جاهز لبدء السحب ---';
+            screen.className = 'scrolling-names';
+            screen.style.color = 'var(--gold-primary)';
+            screen.style.transform = 'scale(1)';
+
+            btn.disabled = false;
+            btn.innerHTML = '<span>🎲</span><span>إجراء السحب العشوائي</span>';
+
+            // تحديث عدد المشاركين من API
+            loadStats();
+
+            showNotification('تم إعادة تعيين منصة السحب', 'info');
+        }
+
+        function addWinnerToLog(winnerName, contestName, prizeName) {
+            const winner = {
+                name: winnerName,
+                contest: contestName || document.getElementById('contestName')?.value || 'سحب عشوائي',
+                prize: prizeName || document.getElementById('prize')?.value || 'جائزة غير محددة',
+                date: new Date().toLocaleDateString('ar-YE'),
+                time: new Date().toLocaleTimeString('ar-YE')
+            };
+
+            winnersLog.unshift(winner);
+            updateWinnersLogDisplay();
+            saveWinnersLog();
+        }
+
+        function updateWinnersLogDisplay() {
+            const logContainer = document.getElementById('winnersLog');
+
+            if (winnersLog.length === 0) {
+                logContainer.innerHTML = '<div class="empty-log">لا يوجد فائزون اليوم بعد..</div>';
+                return;
+            }
+
+            logContainer.innerHTML = winnersLog.map((winner, index) => `
+                <div class="log-item" style="animation: fadeIn 0.5s ease-out ${index * 0.1}s both">
+                    <div class="winner-info">
+                        <div class="winner-name">${winner.name}</div>
+                        <div class="winner-details">
+                            ${winner.contest} - ${winner.prize}
+                        </div>
+                    </div>
+                    <div class="winner-date">
+                        ${winner.date}<br>${winner.time}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadWinnersLog() {
+            try {
+                // محاولة تحميل من API أولاً
+                if (window.API && window.API.contests) {
+                    const response = await window.API.contests.getWinners();
+                    if (response.success && response.winners) {
+                        winnersLog = response.winners.map(winner => ({
+                            name: winner.customer?.profile?.firstName && winner.customer?.profile?.lastName
+                                ? `${winner.customer.profile.firstName} ${winner.customer.profile.lastName}`
+                                : winner.customer?.phone || winner.name || 'فائز',
+                            contest: winner.contest?.name || 'مسابقة',
+                            prize: winner.contest?.prize || 'جائزة',
+                            date: new Date(winner.createdAt || winner.wonAt).toLocaleDateString('ar-YE'),
+                            time: new Date(winner.createdAt || winner.wonAt).toLocaleTimeString('ar-YE')
+                        }));
+                        updateWinnersLogDisplay();
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading winners from API:', error);
+            }
+
+            // إذا فشل API، استخدم localStorage
+            const saved = localStorage.getItem('winnersLog');
+            if (saved) {
+                try {
+                    winnersLog = JSON.parse(saved);
+                    updateWinnersLogDisplay();
+                } catch (e) {
+                    console.error('Error parsing winners log:', e);
+                }
+            }
+        }
+
+        function saveWinnersLog() {
+            localStorage.setItem('winnersLog', JSON.stringify(winnersLog));
+        }
+
+        function exportWinners() {
+            if (winnersLog.length === 0) {
+                showNotification('لا يوجد فائزون لتصديرهم', 'warning');
+                return;
+            }
+
+            const csvContent = 'data:text/csv;charset=utf-8,' +
+                'اسم الفائز,المسابقة,الجائزة,التاريخ,الوقت\n' +
+                winnersLog.map(w =>
+                    `"${w.name}","${w.contest}","${w.prize}","${w.date}","${w.time}"`
+                ).join('\n');
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `winners_log_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showNotification('تم تصدير سجل الفائزين بنجاح', 'success');
+        }
+
+        function clearLog() {
+            if (confirm('هل أنت متأكد من مسح سجل الفائزين؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+                winnersLog = [];
+                updateWinnersLogDisplay();
+                saveWinnersLog();
+                showNotification('تم مسح سجل الفائزين', 'info');
+            }
+        }
+
+        async function toggleSwitch(element) {
+            element.classList.toggle('active');
+            const settingName = element.id;
+            const isActive = element.classList.contains('active');
+
+            contestSettings[settingName] = isActive;
+            localStorage.setItem('contestSettings', JSON.stringify(contestSettings));
+
+            const settingLabels = {
+                autoDraw: 'السحب التلقائي',
+                winnerNotifications: 'إشعارات الفائزين',
+                autoPublish: 'نشر النتائج تلقائياً',
+                verifyParticipants: 'التحقق من المشاركين',
+                fullActivityLog: 'سجل الأنشطة الكامل',
+                maintenanceMode: 'وضع الصيانة'
+            };
+
+            try {
+                if (window.API && window.API.contestSettings) {
+                    await window.API.contestSettings.update({ [settingName]: isActive });
+                    showNotification(
+                        `${settingLabels[settingName] || settingName}: ${isActive ? 'مفعل' : 'معطل'}`,
+                        'success'
+                    );
+                    if (settingName === 'autoDraw' && isActive) {
+                        const runRes = await window.API.contests.runAutoDraw();
+                        if (runRes.results && runRes.results.some(r => r.drawn)) {
+                            showNotification('تم تنفيذ السحب التلقائي للمسابقات المنتهية', 'success');
+                            await loadStats();
+                            await loadWinnersLog();
+                            displayContestsList();
+                        }
+                    }
+                } else {
+                    showNotification(
+                        `${settingLabels[settingName] || settingName}: ${isActive ? 'مفعل' : 'معطل'}`,
+                        'success'
+                    );
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                showNotification('تم التحديث محلياً فقط. تأكد من تسجيل الدخول للوحة التحكم.', 'warning');
+            }
+        }
+
+        // تحميل الإعدادات من API أو localStorage
+        async function loadContestSettings() {
+            try {
+                if (window.API && window.API.contestSettings) {
+                    const res = await window.API.contestSettings.get();
+                    if (res.success && res.settings) {
+                        const s = res.settings;
+                        contestSettings = {
+                            autoDraw: !!s.autoDraw,
+                            winnerNotifications: s.winnerNotifications !== false,
+                            autoPublish: s.autoPublish !== false,
+                            verifyParticipants: s.verifyParticipants !== false,
+                            fullActivityLog: !!s.fullActivityLog,
+                            maintenanceMode: !!s.maintenanceMode
+                        };
+                        localStorage.setItem('contestSettings', JSON.stringify(contestSettings));
+                        if (contestSettings.autoDraw) {
+                            const runRes = await window.API.contests.runAutoDraw();
+                            if (runRes.results && runRes.results.some(r => r.drawn)) {
+                                await loadStats();
+                                await loadWinnersLog();
+                                displayContestsList();
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Contest settings from API failed, using localStorage:', e);
+            }
+            const saved = localStorage.getItem('contestSettings');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    contestSettings = { ...contestSettings, ...parsed };
+                } catch (e) {
+                    console.error('Error parsing settings:', e);
+                }
+            }
+            Object.keys(contestSettings).forEach(settingName => {
+                const element = document.getElementById(settingName);
+                if (element) {
+                    if (contestSettings[settingName]) {
+                        element.classList.add('active');
+                    } else {
+                        element.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'success' ? 'var(--success)' :
+                    type === 'warning' ? 'var(--warning)' :
+                        type === 'error' ? 'var(--danger)' : 'var(--info)'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 1000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                animation: slideDown 0.3s ease-out;
+                font-family: 'Tajawal', sans-serif;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // إضافة أنماط الإشعارات
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // إضافة مشارك يدوياً
+        async function addParticipantManually() {
+            const contestId = document.getElementById('selectedContestForParticipant')?.value;
+            const participantName = document.getElementById('participantName')?.value.trim();
+            const participantPhone = document.getElementById('participantPhone')?.value.trim();
+            const makeEligible = document.getElementById('makeEligible')?.checked;
+
+            if (!contestId) {
+                showNotification('يرجى اختيار مسابقة', 'warning');
+                return;
+            }
+
+            if (!participantName || !participantPhone) {
+                showNotification('يرجى إدخال اسم المشارك ورقم الهاتف', 'warning');
+                return;
+            }
+
+            try {
+                const participantData = {
+                    name: participantName,
+                    phone: participantPhone,
+                    isEligible: makeEligible !== false
+                };
+
+                const response = await window.API.contests.participate(contestId, participantData);
+                
+                if (response.success) {
+                    showNotification('تم إضافة المشارك بنجاح', 'success');
+                    
+                    // مسح الحقول
+                    document.getElementById('participantName').value = '';
+                    document.getElementById('participantPhone').value = '';
+                    document.getElementById('makeEligible').checked = true;
+                    
+                    // تحديث الإحصائيات
+                    await loadStats();
+                } else {
+                    throw new Error(response.message || 'فشل إضافة المشارك');
+                }
+            } catch (error) {
+                console.error('Error adding participant:', error);
+                showNotification('حدث خطأ في إضافة المشارك: ' + (error.message || 'خطأ غير معروف'), 'error');
+            }
+        }
+
+        // عرض قائمة المسابقات
+        function displayContestsList() {
+            const container = document.getElementById('contestsList');
+            if (!container) return;
+
+            if (allContests.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-trophy" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>لا توجد مسابقات حالياً</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allContests.map(contest => {
+                const statusClass = contest.status === 'active' ? 'status-active' : 
+                                   contest.status === 'ended' ? 'status-expired' : 'status-scheduled';
+                const statusText = contest.status === 'active' ? 'نشط' : 
+                                  contest.status === 'ended' ? 'منتهي' : 'مجدول';
+                const participantsCount = contest.participants?.length || 0;
+                const winnersCount = contest.winners?.length || 0;
+                const startDate = new Date(contest.startDate).toLocaleDateString('ar-YE');
+                const endDate = new Date(contest.endDate).toLocaleDateString('ar-YE');
+
+                return `
+                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-gold); border-radius: 10px; padding: 15px; margin-bottom: 15px; transition: all 0.3s ease;" onmouseover="this.style.borderColor='var(--gold-primary)'" onmouseout="this.style.borderColor='var(--border-gold)'">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                            <div style="flex: 1;">
+                                <h4 style="color: var(--gold-primary); margin-bottom: 5px;">${contest.name || 'مسابقة بدون اسم'}</h4>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 5px;">${contest.prize || 'جائزة غير محددة'}</p>
+                                <div style="display: flex; gap: 15px; font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">
+                                    <span><i class="fas fa-users"></i> ${participantsCount} مشارك</span>
+                                    <span><i class="fas fa-trophy"></i> ${winnersCount} فائز</span>
+                                    <span><i class="fas fa-calendar"></i> ${startDate} - ${endDate}</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 5px; align-items: start;">
+                                <span style="padding: 5px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; ${statusClass === 'status-active' ? 'background: var(--success); color: white;' : statusClass === 'status-expired' ? 'background: var(--danger); color: white;' : 'background: var(--warning); color: var(--bg-primary);'}">${statusText}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button onclick="selectContestForDraw('${contest._id || contest.id}')" style="padding: 8px 15px; background: var(--gold-primary); color: var(--bg-primary); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem;">
+                                <i class="fas fa-dice"></i> سحب
+                            </button>
+                            <button onclick="editContest('${contest._id || contest.id}')" style="padding: 8px 15px; background: var(--info); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem;">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button onclick="deleteContest('${contest._id || contest.id}')" style="padding: 8px 15px; background: var(--danger); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem;">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // اختيار مسابقة للسحب
+        function selectContestForDraw(contestId) {
+            const select = document.getElementById('selectedContestForParticipant');
+            if (select) {
+                select.value = contestId;
+                showNotification('تم اختيار المسابقة للسحب', 'success');
+            }
+        }
+
+        // تعديل مسابقة
+        async function editContest(contestId) {
+            const contest = allContests.find(c => (c._id || c.id) === contestId);
+            if (!contest) {
+                showNotification('المسابقة غير موجودة', 'error');
+                return;
+            }
+
+            // ملء نموذج الإنشاء ببيانات المسابقة للتعديل
+            const nameInput = document.getElementById('contestName');
+            const typeInput = document.getElementById('contestType');
+            const prizeNameInput = document.getElementById('prizeName');
+            const prizeDescInput = document.getElementById('prizeDescription');
+            const prizeValueInput = document.getElementById('prizeValue');
+            const winnersInput = document.getElementById('winnersCount');
+            const startInput = document.getElementById('startDate');
+            const endInput = document.getElementById('endDate');
+
+            if (nameInput) nameInput.value = contest.name || '';
+            if (typeInput) {
+                typeInput.value = contest.type || 'random';
+                handleContestTypeChange();
+            }
+            if (prizeNameInput) prizeNameInput.value = contest.prizeDetails?.name || contest.prize || '';
+            if (prizeDescInput) prizeDescInput.value = contest.prizeDetails?.description || '';
+            if (prizeValueInput) prizeValueInput.value = contest.prizeDetails?.value || '';
+            if (winnersInput) winnersInput.value = contest.winnersCount || 1;
+            if (startInput && contest.startDate) startInput.value = formatDateTimeLocal(new Date(contest.startDate));
+            if (endInput && contest.endDate) endInput.value = formatDateTimeLocal(new Date(contest.endDate));
+
+            // تغيير زر الإنشاء ليصبح تعديل
+            const createBtn = document.querySelector('.card button[onclick="createContest()"]') || 
+                              document.querySelector('button[onclick="createContest()"]');
+            if (createBtn) {
+                createBtn.setAttribute('data-editing-id', contestId);
+                createBtn.innerHTML = '<i class="fas fa-save"></i> حفظ التعديلات';
+                createBtn.setAttribute('onclick', 'saveEditContest()');
+                createBtn.style.background = 'linear-gradient(45deg, var(--info), #5cc8ff)';
+            }
+
+            // التمرير لأعلى للنموذج
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showNotification('يمكنك تعديل بيانات المسابقة ثم الضغط على حفظ التعديلات', 'info');
+        }
+
+        // حفظ تعديلات المسابقة
+        async function saveEditContest() {
+            const createBtn = document.querySelector('button[onclick="saveEditContest()"]');
+            const contestId = createBtn?.getAttribute('data-editing-id');
+            if (!contestId) {
+                showNotification('لم يتم تحديد المسابقة', 'error');
+                return;
+            }
+
+            const name = document.getElementById('contestName').value;
+            const type = document.getElementById('contestType').value;
+            const prizeName = document.getElementById('prizeName')?.value || '';
+            const prizeDescription = document.getElementById('prizeDescription')?.value || '';
+            const prizeValue = document.getElementById('prizeValue')?.value || '';
+            const winnersCount = document.getElementById('winnersCount').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!name) {
+                showNotification('يرجى إدخال اسم المسابقة', 'warning');
+                return;
+            }
+
+            showNotification('جاري حفظ التعديلات...', 'info');
+
+            try {
+                const contestData = {
+                    name,
+                    type,
+                    prize: prizeName,
+                    prizeDetails: {
+                        name: prizeName,
+                        description: prizeDescription,
+                        value: prizeValue
+                    },
+                    startDate: startDate ? new Date(startDate) : undefined,
+                    endDate: endDate ? new Date(endDate) : undefined
+                };
+
+                const response = await window.API.contests.update(contestId, contestData);
+                if (response.success) {
+                    showNotification('تم تعديل المسابقة بنجاح!', 'success');
+                    
+                    // إعادة زر الإنشاء لحالته الطبيعية
+                    createBtn.removeAttribute('data-editing-id');
+                    createBtn.innerHTML = '<i class="fas fa-plus"></i> إنشاء المسابقة';
+                    createBtn.setAttribute('onclick', 'createContest()');
+                    createBtn.style.background = '';
+                    
+                    // مسح الحقول
+                    document.getElementById('contestName').value = '';
+                    if (document.getElementById('prizeName')) document.getElementById('prizeName').value = '';
+                    if (document.getElementById('prizeDescription')) document.getElementById('prizeDescription').value = '';
+                    if (document.getElementById('prizeValue')) document.getElementById('prizeValue').value = '';
+
+                    // تحديث القائمة
+                    await loadContests();
+                    displayContestsList();
+                    await loadStats();
+                } else {
+                    throw new Error(response.message || 'فشل تعديل المسابقة');
+                }
+            } catch (error) {
+                console.error('Error updating contest:', error);
+                showNotification('حدث خطأ في تعديل المسابقة: ' + (error.message || 'خطأ غير معروف'), 'error');
+            }
+        }
+
+        // حذف مسابقة
+        async function deleteContest(contestId) {
+            if (!confirm('هل أنت متأكد من حذف هذه المسابقة؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+                return;
+            }
+
+            try {
+                const response = await window.API.contests.delete(contestId);
+                if (response.success) {
+                    showNotification('تم حذف المسابقة بنجاح', 'success');
+                    await loadContests();
+                    await loadStats();
+                    displayContestsList();
+                } else {
+                    throw new Error(response.message || 'فشل حذف المسابقة');
+                }
+            } catch (error) {
+                console.error('Error deleting contest:', error);
+                showNotification('حدث خطأ في حذف المسابقة: ' + (error.message || 'خطأ غير معروف'), 'error');
+            }
+        }
+
+        // تحديث الإحصائيات كل 30 ثانية
+        setInterval(updateStats, 30000);
+    </script>
+
+    <style>
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: rgba(45, 38, 18, 0.98); backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)); border-top: 2px solid rgba(212, 175, 55, 0.4); z-index: 1000; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6); }
+        .bottom-nav .nav-item { color: #d4af37; text-align: center; font-size: 0.85rem; opacity: 0.7; cursor: pointer; transition: all 0.3s ease; padding: 8px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'Cairo', 'Tajawal', sans-serif; min-width: 60px; text-decoration: none; }
+        .bottom-nav .nav-item i { font-size: 1.3rem; transition: all 0.3s ease; }
+        .bottom-nav .nav-item span { font-size: 0.75rem; font-weight: 500; }
+        .bottom-nav .nav-item:hover { opacity: 1; background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); transform: translateY(-2px); text-shadow: 0 0 8px rgba(212, 175, 55, 0.5); }
+        .bottom-nav .nav-item.active { opacity: 1; color: #f3cf7a; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.4); text-shadow: 0 0 10px rgba(212, 175, 55, 0.6); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
+        .bottom-nav .nav-item.active i { transform: scale(1.1); }
+    </style>
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="fas fa-crown"></i><span>لوحة التحكم</span></div>
+        <div class="nav-item" onclick="window.location.href='create-order.html'"><i class="fas fa-plus-circle"></i><span>طلب جديد</span></div>
+        <div class="nav-item" onclick="window.location.href='products.html'"><i class="fas fa-box-open"></i><span>المنتجات</span></div>
+        <div class="nav-item" onclick="window.location.href='reports.html'"><i class="fas fa-chart-line"></i><span>التقارير</span></div>
+    </nav>
+
+</body>
+
+</html>

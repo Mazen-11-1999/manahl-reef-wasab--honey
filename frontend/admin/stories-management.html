@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الحالات والإعلانات | مناحل ريف وصاب</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900;1000&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #120a00;
+            --bg-secondary: #1a0f00;
+            --bg-card: #1d1102;
+            --bg-accent: #2a1804;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --text-primary: #e0c097;
+            --text-white: #ffffff;
+            --border-gold: rgba(212, 175, 55, 0.2);
+            --success: #51cf66;
+            --danger: #ff6b6b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--text-primary);
+            font-family: 'Tajawal', sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border-radius: 15px;
+            border: 1px solid var(--border-gold);
+            position: relative;
+        }
+
+        .header h1 {
+            color: var(--gold-primary);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header h1 i {
+            font-size: 1.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-gold);
+            color: var(--text-primary);
+            padding: 12px 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            border-color: var(--gold-primary);
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .story-card {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid var(--border-gold);
+            transition: all 0.3s ease;
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .story-media-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: var(--bg-primary);
+        }
+
+        .story-info {
+            padding: 15px;
+        }
+
+        .story-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .story-type.story {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+        }
+
+        .story-type.ad {
+            background: var(--success);
+            color: var(--bg-primary);
+        }
+
+        .story-caption {
+            color: var(--text-white);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .story-stats {
+            display: flex;
+            gap: 15px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .story-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: var(--text-white);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid var(--gold-primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--gold-primary);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-gold);
+            border-radius: 10px;
+            color: var(--text-white);
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-images"></i> إدارة الحالات والإعلانات</h1>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="dashboard.html" class="back-button" title="العودة للوحة التحكم"
+                    style="position: relative; top: 0; transform: none;">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <button class="btn-primary" onclick="openCreateModal()">
+                    <i class="fas fa-plus"></i> إضافة حالة/إعلان
+                </button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('all')">الكل</button>
+            <button class="tab-btn" onclick="switchTab('stories')">الحالات</button>
+            <button class="tab-btn" onclick="switchTab('ads')">الإعلانات</button>
+        </div>
+
+        <div class="stories-grid" id="storiesGrid">
+            <!-- سيتم تحميل الحالات/الإعلانات هنا -->
+        </div>
+    </div>
+
+    <!-- Modal لإضافة/تعديل -->
+    <div class="modal" id="storyModal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold-primary); margin-bottom: 20px;" id="modalTitle">إضافة حالة/إعلان</h2>
+
+            <form id="storyForm">
+                <div class="form-group">
+                    <label class="form-label">النوع *</label>
+                    <select class="form-select" id="storyType" required>
+                        <option value="story">حالة</option>
+                        <option value="ad">إعلان</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">نوع الوسائط *</label>
+                    <select class="form-select" id="mediaType" required>
+                        <option value="image">صورة</option>
+                        <option value="video">فيديو</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">رفع ملف (صورة أو فيديو) *</label>
+                    <input type="file" class="form-input" id="mediaFile" accept="image/*,video/*" style="padding: 8px;">
+                    <small style="color: var(--text-primary); opacity: 0.7; display: block; margin-top: 5px;">
+                        يمكنك رفع صورة أو فيديو من هاتفك (حد أقصى 50MB)
+                    </small>
+                    <div id="filePreview" style="margin-top: 15px; display: none;">
+                        <img id="previewImage"
+                            style="max-width: 100%; max-height: 200px; border-radius: 10px; border: 2px solid var(--gold-primary);"
+                            alt="معاينة">
+                        <video id="previewVideo" controls
+                            style="max-width: 100%; max-height: 200px; border-radius: 10px; border: 2px solid var(--gold-primary); display: none;"></video>
+                        <button type="button" onclick="clearFile()"
+                            style="margin-top: 10px; padding: 8px 15px; background: var(--danger); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            <i class="fas fa-times"></i> إزالة الملف
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <span style="color: var(--text-primary);">أو</span>
+                    <div style="flex: 1; height: 1px; background: var(--border-gold);"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">رابط الوسائط (URL) - بديل</label>
+                    <input type="url" class="form-input" id="mediaUrl" placeholder="https://example.com/image.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">النص/التعليق</label>
+                    <textarea class="form-textarea" id="caption"
+                        placeholder="اكتب تعليقك على الحالة/الإعلان..."></textarea>
+                </div>
+
+                <div class="form-group" id="adFields" style="display: none;">
+                    <label class="form-label">الموقع</label>
+                    <select class="form-select" id="position">
+                        <option value="story">حالة</option>
+                        <option value="banner">بانر</option>
+                        <option value="popup">منبثق</option>
+                        <option value="sidebar">شريط جانبي</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="adLinkField" style="display: none;">
+                    <label class="form-label">رابط الإعلان (اختياري)</label>
+                    <input type="url" class="form-input" id="adLink" placeholder="https://example.com">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">
+                        <i class="fas fa-save"></i> حفظ
+                    </button>
+                    <button type="button" class="btn-action btn-delete" onclick="closeModal()" style="flex: 1;">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- API Integration -->
+    <script src="../js/api.js"></script>
+
+    <script>
+        let currentTab = 'all';
+        let stories = [];
+        let editingStory = null;
+
+        // تحميل الحالات/الإعلانات
+        async function loadStories() {
+            try {
+                const params = {};
+                if (currentTab === 'stories') params.type = 'story';
+                else if (currentTab === 'ads') params.type = 'ad';
+
+                const response = await window.API.stories.getAll(params);
+                stories = response.stories || [];
+
+                displayStories(stories);
+            } catch (error) {
+                console.error('Error loading stories:', error);
+                document.getElementById('storiesGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-primary);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                        <p>حدث خطأ في تحميل الحالات/الإعلانات</p>
+                    </div>
+                `;
+            }
+        }
+
+        // عرض الحالات/الإعلانات
+        function displayStories(storiesList) {
+            const grid = document.getElementById('storiesGrid');
+
+            if (storiesList.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-primary);">
+                        <i class="fas fa-images" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>لا توجد حالات/إعلانات</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = storiesList.map(story => `
+                <div class="story-card">
+                    <img src="${story.media.url}" alt="${story.caption || ''}" class="story-media-preview" onerror="this.src='https://via.placeholder.com/300x200/1d1102/d4af37?text=صورة'">
+                    <div class="story-info">
+                        <span class="story-type ${story.type}">${story.type === 'story' ? 'حالة' : 'إعلان'}</span>
+                        ${story.caption ? `<div class="story-caption">${story.caption.substring(0, 100)}${story.caption.length > 100 ? '...' : ''}</div>` : ''}
+                        <div class="story-stats">
+                            <span><i class="fas fa-heart"></i> ${story.likesCount || 0}</span>
+                            <span><i class="fas fa-comment"></i> ${story.commentsCount || 0}</span>
+                            <span><i class="fas fa-eye"></i> ${story.views || 0}</span>
+                        </div>
+                        <div class="story-actions">
+                            <button class="btn-action btn-edit" onclick="editStory('${story._id}')">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button class="btn-action btn-delete" onclick="deleteStory('${story._id}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // تبديل التبويبات
+        function switchTab(tab) {
+            currentTab = tab;
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            loadStories();
+        }
+
+        // فتح modal الإضافة
+        function openCreateModal() {
+            editingStory = null;
+            document.getElementById('modalTitle').textContent = 'إضافة حالة/إعلان';
+            document.getElementById('storyForm').reset();
+            document.getElementById('adFields').style.display = 'none';
+            document.getElementById('adLinkField').style.display = 'none';
+            clearFile();
+            document.getElementById('storyModal').classList.add('active');
+        }
+
+        // إغلاق modal
+        function closeModal() {
+            document.getElementById('storyModal').classList.remove('active');
+            editingStory = null;
+        }
+
+        // تعديل حالة/إعلان
+        async function editStory(id) {
+            const story = stories.find(s => s._id === id);
+            if (!story) return;
+
+            editingStory = story;
+            document.getElementById('modalTitle').textContent = 'تعديل حالة/إعلان';
+            document.getElementById('storyType').value = story.type;
+            document.getElementById('mediaType').value = story.media.type;
+            document.getElementById('mediaUrl').value = story.media.url;
+            document.getElementById('caption').value = story.caption || '';
+
+            if (story.type === 'ad') {
+                document.getElementById('adFields').style.display = 'block';
+                document.getElementById('adLinkField').style.display = 'block';
+                document.getElementById('position').value = story.position || 'story';
+                document.getElementById('adLink').value = story.link || '';
+            } else {
+                document.getElementById('adFields').style.display = 'none';
+                document.getElementById('adLinkField').style.display = 'none';
+            }
+
+            document.getElementById('storyModal').classList.add('active');
+        }
+
+        // حذف حالة/إعلان
+        async function deleteStory(id) {
+            if (!confirm('هل أنت متأكد من حذف هذه الحالة/الإعلان؟')) return;
+
+            try {
+                await window.API.stories.delete(id);
+                loadStories();
+            } catch (error) {
+                console.error('Error deleting story:', error);
+                alert('حدث خطأ في حذف الحالة/الإعلان');
+            }
+        }
+
+        // معاينة الملف عند الاختيار (من المعرض أو الكاميرا على الموبايل)
+        document.getElementById('mediaFile').addEventListener('change', function () {
+            const file = this.files[0];
+            const preview = document.getElementById('filePreview');
+            const previewImage = document.getElementById('previewImage');
+            const previewVideo = document.getElementById('previewVideo');
+            if (!file) {
+                preview.style.display = 'none';
+                return;
+            }
+            preview.style.display = 'block';
+            if (file.type.startsWith('image/')) {
+                previewImage.style.display = 'block';
+                previewVideo.style.display = 'none';
+                const reader = new FileReader();
+                reader.onload = function (e) { previewImage.src = e.target.result; };
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith('video/')) {
+                previewImage.style.display = 'none';
+                previewVideo.style.display = 'block';
+                previewVideo.src = URL.createObjectURL(file);
+            }
+        });
+
+        function clearFile() {
+            document.getElementById('mediaFile').value = '';
+            document.getElementById('filePreview').style.display = 'none';
+            document.getElementById('previewImage').src = '';
+            document.getElementById('previewImage').style.display = 'block';
+            const pv = document.getElementById('previewVideo');
+            if (pv.src) URL.revokeObjectURL(pv.src);
+            pv.src = '';
+            pv.style.display = 'none';
+        }
+
+        // معالجة النموذج — رفع الملف فعلياً من الهاتف ثم إنشاء الحالة/الإعلان
+        document.getElementById('storyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const type = document.getElementById('storyType').value;
+            const mediaTypeSelect = document.getElementById('mediaType').value;
+            const mediaUrlInput = document.getElementById('mediaUrl').value.trim();
+            const mediaFileInput = document.getElementById('mediaFile');
+            const file = mediaFileInput && mediaFileInput.files[0];
+
+            let mediaUrl = mediaUrlInput;
+            let mediaType = mediaTypeSelect;
+
+            if (!editingStory && !file && !mediaUrl) {
+                alert('اختر صورة أو فيديو من المعرض، أو أدخل رابط الوسائط.');
+                return;
+            }
+
+            if (file && !editingStory) {
+                try {
+                    const uploadRes = await window.API.stories.uploadMedia(file);
+                    mediaUrl = uploadRes.url;
+                    mediaType = uploadRes.mediaType || (file.type.startsWith('video/') ? 'video' : 'image');
+                } catch (err) {
+                    alert(err.message || 'فشل رفع الملف. تحقق من الاتصال وحجم الملف (حد أقصى 50 م.ب).');
+                    return;
+                }
+            } else if (editingStory && !file && mediaUrlInput) {
+                mediaUrl = mediaUrlInput;
+                mediaType = document.getElementById('mediaType').value;
+            } else if (editingStory && !file && !mediaUrlInput && editingStory.media) {
+                mediaUrl = editingStory.media.url;
+                mediaType = editingStory.media.type;
+            }
+
+            const storyData = {
+                type: type,
+                media: { type: mediaType, url: mediaUrl },
+                caption: document.getElementById('caption').value
+            };
+            if (type === 'ad') {
+                storyData.position = document.getElementById('position').value;
+                storyData.link = document.getElementById('adLink').value || null;
+            }
+
+            try {
+                if (editingStory) {
+                    await window.API.stories.update(editingStory._id, storyData);
+                } else {
+                    await window.API.stories.create(storyData);
+                }
+                closeModal();
+                clearFile();
+                loadStories();
+            } catch (error) {
+                console.error('Error saving story:', error);
+                alert(error.message || 'حدث خطأ في حفظ الحالة/الإعلان');
+            }
+        });
+
+        // إظهار/إخفاء حقول الإعلان
+        document.getElementById('storyType').addEventListener('change', function () {
+            if (this.value === 'ad') {
+                document.getElementById('adFields').style.display = 'block';
+                document.getElementById('adLinkField').style.display = 'block';
+            } else {
+                document.getElementById('adFields').style.display = 'none';
+                document.getElementById('adLinkField').style.display = 'none';
+            }
+        });
+
+        // إغلاق modal عند النقر خارجها
+        document.getElementById('storyModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.API) {
+                loadStories();
+            } else {
+                const checkAPI = setInterval(() => {
+                    if (window.API) {
+                        clearInterval(checkAPI);
+                        loadStories();
+                    }
+                }, 100);
+            }
+        });
+    </script>
+
+    <style>
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: rgba(45, 38, 18, 0.98);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+            border-top: 2px solid rgba(212, 175, 55, 0.4);
+            z-index: 1000;
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .bottom-nav .nav-item {
+            color: #d4af37;
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            min-width: 60px;
+            text-decoration: none;
+        }
+
+        .bottom-nav .nav-item i {
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-nav .nav-item span {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .bottom-nav .nav-item:hover {
+            opacity: 1;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+        }
+
+        .bottom-nav .nav-item.active {
+            opacity: 1;
+            color: #f3cf7a;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .bottom-nav .nav-item.active i {
+            transform: scale(1.1);
+        }
+    </style>
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="fas fa-crown"></i><span>لوحة
+                التحكم</span></div>
+        <div class="nav-item" onclick="window.location.href='create-order.html'"><i
+                class="fas fa-plus-circle"></i><span>طلب جديد</span></div>
+        <div class="nav-item" onclick="window.location.href='products.html'"><i
+                class="fas fa-box-open"></i><span>المنتجات</span></div>
+        <div class="nav-item" onclick="window.location.href='reports.html'"><i
+                class="fas fa-chart-line"></i><span>التقارير</span></div>
+    </nav>
+
+</body>
+
+</html>

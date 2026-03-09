@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رحلة العسل | من صنعاء إلى وصاب السافل — مناحل ريف وصاب</title>
+    
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #000;
+            overflow: hidden;
+            color: white;
+        }
+
+        .cinema-screen {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .cinematic-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.9), inset 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        .cinematic-bars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 11;
+        }
+
+        .cinematic-bars::before,
+        .cinematic-bars::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 15%;
+            background: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+            z-index: 12;
+        }
+
+        .cinematic-bars::before {
+            top: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.8), transparent);
+        }
+
+        .cinematic-bars::after {
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0.8), transparent);
+        }
+
+        .back-to-story {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 25;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.75);
+            color: #FFD700;
+            text-decoration: none;
+            border-radius: 50px;
+            border: 2px solid #FFD700;
+            font-weight: bold;
+            transition: all 0.3s;
+            pointer-events: auto;
+        }
+
+        .back-to-story:hover {
+            background: #FFD700;
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        .cinematic-title {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .cinematic-title h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px rgba(255,215,0,0.5);
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        .cinematic-title p {
+            color: rgba(255,255,255,0.8);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 30px rgba(255,215,0,0.5); }
+            50% { text-shadow: 0 0 60px rgba(255,215,0,0.8); }
+        }
+
+        .cinematic-info {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .info-left {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            border-left: 4px solid #FFD700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            pointer-events: auto;
+        }
+
+        .info-left h3 {
+            color: #FFD700;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .info-left p {
+            color: white;
+            font-size: 1.1rem;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-left i {
+            color: #FFD700;
+            width: 25px;
+        }
+
+        .info-right {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            border-right: 4px solid #FFD700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            pointer-events: auto;
+            text-align: right;
+        }
+
+        .distance-badge {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #FFD700;
+            line-height: 1;
+        }
+
+        .distance-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .progress-container {
+            width: 300px;
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 100%;
+            background: white;
+            filter: blur(10px);
+            animation: progressGlow 2s linear infinite;
+        }
+
+        @keyframes progressGlow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(500%); }
+        }
+
+        .control-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            color: black;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 15px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.5);
+            transition: all 0.3s;
+            border: 2px solid white;
+            pointer-events: auto;
+        }
+
+        .control-btn:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 20px 40px rgba(255,215,0,0.8);
+        }
+
+        .control-btn.running {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 1s;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(255,215,0,0.3);
+            border-top-color: #FFD700;
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #FFD700;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .location-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loading">
+        <div class="loader"></div>
+        <div class="loading-text">جاري تحميل المشهد السينمائي...</div>
+    </div>
+
+    <div class="cinema-screen">
+        <a href="our-story.html" class="back-to-story">
+            <i class="fas fa-arrow-right"></i> العودة إلى قصتنا
+        </a>
+        <div id="map"></div>
+        <div class="cinematic-overlay"></div>
+        <div class="cinematic-bars"></div>
+
+        <div class="cinematic-title">
+            <h1>رحلة مناحل ريف وصاب  </h1>
+            <p>من صنعاء إلى وصاب السافل - بني علي</p>
+        </div>
+
+        <div class="cinematic-info">
+            <div class="info-left">
+                <h3><i class="fas fa-route" style="color: #FFD700;"></i> الرحلة الحالية</h3>
+                <p><i class="fas fa-map-pin"></i> <span id="current-location">صنعاء - المناحل</span></p>
+                <p><i class="fas fa-flag-checkered"></i> <span id="destination">بني علي - وصاب السافل</span></p>
+                <p><i class="fas fa-clock"></i> <span id="time-elapsed">00:00</span> / <span id="time-total">03:45</span></p>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="route-progress" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-right">
+                <div class="distance-badge" id="distance-remaining">210.5</div>
+                <div class="distance-label">كم متبقية</div>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                    <span class="location-indicator"></span> تتبع حي للمسار
+                </div>
+            </div>
+        </div>
+
+        <button class="control-btn" id="start-btn">
+            <i class="fas fa-play"></i> بدء الرحلة السينمائية
+        </button>
+    </div>
+
+    <script>
+        (function() {
+            if (typeof gsap !== 'undefined' && gsap.registerPlugin) gsap.registerPlugin(MotionPathPlugin);
+
+            var COORDS = {
+                start: [15.351838, 44.208250],
+                end: [14.180000, 43.440000]
+            };
+
+            var routePoints = [
+                [15.351838, 44.208250],
+                [15.345000, 44.200000],
+                [15.338000, 44.192000],
+                [15.331000, 44.184000],
+                [15.324000, 44.176000],
+                [15.317000, 44.168000],
+                [15.310000, 44.160000],
+                [15.302000, 44.152000],
+                [15.294000, 44.144000],
+                [15.286000, 44.136000],
+                [15.278000, 44.128000],
+                [15.270000, 44.120000],
+                [15.262000, 44.112000],
+                [15.254000, 44.104000],
+                [15.246000, 44.096000],
+                [15.238000, 44.088000],
+                [15.230000, 44.080000],
+                [15.222000, 44.072000],
+                [15.214000, 44.064000],
+                [15.206000, 44.056000],
+                [15.198000, 44.048000],
+                [15.190000, 44.040000],
+                [15.182000, 44.032000],
+                [15.174000, 44.024000],
+                [15.166000, 44.016000],
+                [15.158000, 44.008000],
+                [15.150000, 44.000000],
+                [15.142000, 43.992000],
+                [15.134000, 43.984000],
+                [15.126000, 43.976000],
+                [15.118000, 43.968000],
+                [15.110000, 43.960000],
+                [15.102000, 43.952000],
+                [15.094000, 43.944000],
+                [15.086000, 43.936000],
+                [15.078000, 43.928000],
+                [15.070000, 43.920000],
+                [15.062000, 43.912000],
+                [15.054000, 43.904000],
+                [15.046000, 43.896000],
+                [15.038000, 43.888000],
+                [15.030000, 43.880000],
+                [15.022000, 43.872000],
+                [15.014000, 43.864000],
+                [15.006000, 43.856000],
+                [14.998000, 43.848000],
+                [14.990000, 43.840000],
+                [14.982000, 43.832000],
+                [14.974000, 43.824000],
+                [14.966000, 43.816000],
+                [14.958000, 43.808000],
+                [14.950000, 43.800000],
+                [14.942000, 43.792000],
+                [14.934000, 43.784000],
+                [14.926000, 43.776000],
+                [14.918000, 43.768000],
+                [14.910000, 43.760000],
+                [14.902000, 43.752000],
+                [14.894000, 43.744000],
+                [14.886000, 43.736000],
+                [14.878000, 43.728000],
+                [14.870000, 43.720000],
+                [14.862000, 43.712000],
+                [14.854000, 43.704000],
+                [14.846000, 43.696000],
+                [14.838000, 43.688000],
+                [14.830000, 43.680000],
+                [14.822000, 43.672000],
+                [14.814000, 43.664000],
+                [14.806000, 43.656000],
+                [14.798000, 43.648000],
+                [14.790000, 43.640000],
+                [14.782000, 43.632000],
+                [14.774000, 43.624000],
+                [14.766000, 43.616000],
+                [14.758000, 43.608000],
+                [14.750000, 43.600000],
+                [14.742000, 43.592000],
+                [14.734000, 43.584000],
+                [14.726000, 43.576000],
+                [14.718000, 43.568000],
+                [14.710000, 43.560000],
+                [14.702000, 43.552000],
+                [14.694000, 43.544000],
+                [14.686000, 43.536000],
+                [14.678000, 43.528000],
+                [14.670000, 43.520000],
+                [14.662000, 43.512000],
+                [14.654000, 43.504000],
+                [14.646000, 43.496000],
+                [14.638000, 43.488000],
+                [14.630000, 43.480000],
+                [14.622000, 43.472000],
+                [14.614000, 43.464000],
+                [14.606000, 43.456000],
+                [14.598000, 43.448000],
+                [14.590000, 43.444000],
+                [14.582000, 43.442000],
+                [14.574000, 43.441000],
+                [14.566000, 43.440000],
+                [14.558000, 43.439000],
+                [14.550000, 43.438000],
+                [14.542000, 43.437000],
+                [14.534000, 43.436000],
+                [14.526000, 43.435000],
+                [14.518000, 43.434000],
+                [14.510000, 43.433000],
+                [14.502000, 43.432000],
+                [14.494000, 43.431000],
+                [14.486000, 43.430000],
+                [14.478000, 43.429000],
+                [14.470000, 43.428000],
+                [14.462000, 43.427000],
+                [14.454000, 43.426000],
+                [14.446000, 43.425000],
+                [14.438000, 43.424000],
+                [14.430000, 43.423000],
+                [14.422000, 43.422000],
+                [14.414000, 43.421000],
+                [14.406000, 43.420000],
+                [14.398000, 43.419000],
+                [14.390000, 43.418000],
+                [14.382000, 43.417000],
+                [14.374000, 43.416000],
+                [14.366000, 43.415000],
+                [14.358000, 43.414000],
+                [14.350000, 43.413000],
+                [14.342000, 43.412000],
+                [14.334000, 43.411000],
+                [14.326000, 43.410000],
+                [14.318000, 43.409000],
+                [14.310000, 43.408000],
+                [14.302000, 43.407000],
+                [14.294000, 43.406000],
+                [14.286000, 43.405000],
+                [14.278000, 43.404000],
+                [14.270000, 43.403000],
+                [14.262000, 43.402000],
+                [14.254000, 43.401000],
+                [14.246000, 43.400000],
+                [14.238000, 43.399000],
+                [14.230000, 43.398000],
+                [14.222000, 43.397000],
+                [14.214000, 43.396000],
+                [14.206000, 43.395000],
+                [14.198000, 43.394000],
+                [14.190000, 43.393000],
+                [14.182000, 43.392000],
+                [14.180000, 43.440000]
+            ];
+
+            function calculateDistance(lat1, lon1, lat2, lon2) {
+                var R = 6371;
+                var dLat = (lat2 - lat1) * Math.PI / 180;
+                var dLon = (lon2 - lon1) * Math.PI / 180;
+                var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                         Math.sin(dLon/2) * Math.sin(dLon/2);
+                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            }
+
+            var totalDistance = calculateDistance(
+                COORDS.start[0], COORDS.start[1],
+                COORDS.end[0], COORDS.end[1]
+            );
+
+            var map = new maplibregl.Map({
+                container: 'map',
+                style: {
+                    version: 8,
+                    sources: {
+                        'raster-tiles': {
+                            type: 'raster',
+                            tiles: [
+                                'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                            ],
+                            tileSize: 256,
+                            attribution: '© OpenStreetMap'
+                        },
+                        'satellite-tiles': {
+                            type: 'raster',
+                            tiles: [
+                                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+                            ],
+                            tileSize: 256,
+                            attribution: '© Esri'
+                        }
+                    },
+                    layers: [
+                        {
+                            id: 'satellite',
+                            type: 'raster',
+                            source: 'satellite-tiles',
+                            minzoom: 0,
+                            maxzoom: 19
+                        },
+                        {
+                            id: 'roads',
+                            type: 'raster',
+                            source: 'raster-tiles',
+                            minzoom: 0,
+                            maxzoom: 19,
+                            layout: { visibility: 'none' }
+                        }
+                    ]
+                },
+                center: [43.82, 14.77],
+                zoom: 7,
+                pitch: 45,
+                bearing: 0,
+                antialias: true
+            });
+
+            map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+            map.addControl(new maplibregl.FullscreenControl(), 'bottom-right');
+
+            var startEl = document.createElement('div');
+            startEl.innerHTML = '<div style="position: relative;"><div style="width: 50px; height: 50px; background: linear-gradient(135deg, #4CAF50, #2E7D32); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 0 30px #4CAF50;"><i class="fas fa-store" style="color: white; font-size: 24px;"></i></div><div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); background: black; color: #4CAF50; padding: 5px 15px; border-radius: 20px; font-weight: bold; white-space: nowrap; border: 2px solid #4CAF50;">منطلق الرحلة</div></div>';
+
+            var endEl = document.createElement('div');
+            endEl.innerHTML = '<div style="position: relative;"><div style="width: 60px; height: 60px; background: linear-gradient(135deg, #FFD700, #FF8C00); border-radius: 30% 70% 50% 50%; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 0 40px #FFD700;"><i class="fas fa-honey-pot" style="color: white; font-size: 28px;"></i></div><div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); background: black; color: #FFD700; padding: 5px 15px; border-radius: 20px; font-weight: bold; white-space: nowrap; border: 2px solid #FFD700;">مناحل ريف وصاب</div></div></div>';
+
+            var carEl = document.createElement('div');
+            carEl.innerHTML = '<div style="position: relative;"><div style="width: 45px; height: 45px; background: linear-gradient(135deg, #FF4444, #CC0000); border-radius: 30% 60% 40% 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 0 30px #FF4444;"><i class="fas fa-car" style="color: white; font-size: 24px;"></i></div></div>';
+
+            var startMarker = new maplibregl.Marker({ element: startEl }).setLngLat([COORDS.start[1], COORDS.start[0]]).addTo(map);
+            var endMarker = new maplibregl.Marker({ element: endEl }).setLngLat([COORDS.end[1], COORDS.end[0]]).addTo(map);
+            var carMarker = new maplibregl.Marker({ element: carEl }).setLngLat([COORDS.start[1], COORDS.start[0]]).addTo(map);
+
+            map.on('load', function() {
+                map.addSource('route', {
+                    type: 'geojson',
+                    data: {
+                        type: 'Feature',
+                        properties: {},
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: routePoints.map(function(p) { return [p[1], p[0]]; })
+                        }
+                    }
+                });
+
+                map.addLayer({
+                    id: 'route-glow',
+                    type: 'line',
+                    source: 'route',
+                    layout: { 'line-join': 'round', 'line-cap': 'round' },
+                    paint: { 'line-color': '#FFD700', 'line-width': 12, 'line-opacity': 0.2, 'line-blur': 8 }
+                });
+
+                map.addLayer({
+                    id: 'route-main',
+                    type: 'line',
+                    source: 'route',
+                    layout: { 'line-join': 'round', 'line-cap': 'round' },
+                    paint: { 'line-color': '#FFD700', 'line-width': 4, 'line-opacity': 0.8, 'line-dasharray': [0, 4, 3] }
+                });
+
+                map.addSource('animated-route', {
+                    type: 'geojson',
+                    data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }
+                });
+
+                map.addLayer({
+                    id: 'route-animated',
+                    type: 'line',
+                    source: 'animated-route',
+                    layout: { 'line-join': 'round', 'line-cap': 'round' },
+                    paint: { 'line-color': '#FFD700', 'line-width': 6, 'line-opacity': 0.95 }
+                });
+
+                setTimeout(function() {
+                    document.getElementById('loading').classList.add('hidden');
+                }, 1500);
+            });
+
+            var isAnimating = false;
+            var animationTimeline;
+
+            function getPointAtProgress(progress) {
+                if (progress <= 0) return routePoints[0];
+                if (progress >= 1) return routePoints[routePoints.length - 1];
+                var index = Math.floor(progress * (routePoints.length - 1));
+                var segmentProgress = (progress * (routePoints.length - 1)) - index;
+                if (index >= routePoints.length - 1) return routePoints[routePoints.length - 1];
+                var p1 = routePoints[index], p2 = routePoints[index + 1];
+                return [p1[0] + (p2[0] - p1[0]) * segmentProgress, p1[1] + (p2[1] - p1[1]) * segmentProgress];
+            }
+
+            var locationNames = [
+                'صنعاء - المناحل', 'شارع تعز', 'جولة عصر', 'شارع الستين', 'جولة المصباحي',
+                'بداية طريق تعز', 'منطقة خولان', 'جبال عيبان', 'وادي ظهر', 'مدخل الحيمة',
+                'الحيمة الداخلية', 'منعطف جبلي', 'طريق جبلي', 'ممر ضيق', 'قمة جبلية',
+                'منحدرات', 'وادي عميق', 'غابات كثيفة', 'منطقة حراز', 'مدخل ريمة',
+                'جبال ريمة', 'قمم ريمة', 'وادي الرمة', 'سوق ريمة', 'منعطف وصاب',
+                'بداية جبال وصاب', 'طريق متعرج', 'مرتفعات وصاب العالي', 'غابات السدر', 'وادي وصاب',
+                'منعطف النحل', 'منطقة أثرية', 'قمم وصاب', 'مناحل تقليدية', 'وادي الذهب',
+                'ممر النحالين', 'غابات السمر', 'مدخل وصاب السافل', 'أولى قرى وصاب', 'سوق وصاب',
+                'مدرسة بني علي', 'مناحل ريف وصاب (فرع)', 'ممر بني علي', 'مرتفعات بني علي',
+                'غابات السدر الكثيفة', 'وادي النحل', 'قرى بني علي', 'مدخل بني علي', 'مناحل ريف وصاب',
+                'وادي العسل', 'سفوح الجبال', 'بساتين السدر', 'مرتفعات الجبل', 'مسجد بني علي',
+                'مناحل ريف وصاب (مركز رئيسي)', 'بني علي - الوجهة النهائية'
+            ];
+
+            function updateAnimation(progress) {
+                var currentPoint = getPointAtProgress(progress);
+                carMarker.setLngLat([currentPoint[1], currentPoint[0]]);
+                var pointsToShow = routePoints.slice(0, Math.floor(progress * routePoints.length) + 1);
+                var coordinates = pointsToShow.map(function(p) { return [p[1], p[0]]; });
+                var source = map.getSource('animated-route');
+                if (source) {
+                    source.setData({
+                        type: 'Feature',
+                        properties: {},
+                        geometry: { type: 'LineString', coordinates: coordinates }
+                    });
+                }
+                document.getElementById('distance-remaining').textContent = (totalDistance * (1 - progress)).toFixed(1);
+                document.getElementById('route-progress').style.width = (progress * 100) + '%';
+                var totalSeconds = 3 * 3600 + 45 * 60;
+                var elapsedSeconds = Math.floor(totalSeconds * progress);
+                var hours = Math.floor(elapsedSeconds / 3600);
+                var minutes = Math.floor((elapsedSeconds % 3600) / 60);
+                var seconds = elapsedSeconds % 60;
+                document.getElementById('time-elapsed').textContent =
+                    (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                var nameIndex = Math.min(Math.floor(progress * locationNames.length), locationNames.length - 1);
+                document.getElementById('current-location').textContent = locationNames[nameIndex] || 'بني علي';
+                if (progress > 0.05 && progress < 0.95) {
+                    map.flyTo({ center: [currentPoint[1], currentPoint[0]], zoom: 11, pitch: 55, duration: 1000 });
+                }
+            }
+
+            function startJourney() {
+                if (isAnimating) {
+                    if (animationTimeline && animationTimeline.paused()) {
+                        animationTimeline.resume();
+                        document.getElementById('start-btn').innerHTML = '<i class="fas fa-pause"></i> إيقاف الرحلة';
+                        document.getElementById('start-btn').classList.add('running');
+                    } else if (animationTimeline) {
+                        animationTimeline.pause();
+                        document.getElementById('start-btn').innerHTML = '<i class="fas fa-play"></i> متابعة الرحلة';
+                        document.getElementById('start-btn').classList.remove('running');
+                    }
+                    return;
+                }
+
+                isAnimating = true;
+                map.flyTo({ center: [COORDS.start[1], COORDS.start[0]], zoom: 13, pitch: 60, duration: 3000 });
+
+                animationTimeline = gsap ? gsap.timeline({
+                    onUpdate: function() { updateAnimation(this.progress()); },
+                    onComplete: function() {
+                        map.flyTo({ center: [COORDS.end[1], COORDS.end[0]], zoom: 16, pitch: 65, duration: 3000 });
+                        document.getElementById('start-btn').innerHTML = '<i class="fas fa-play"></i> بدء الرحلة';
+                        document.getElementById('start-btn').classList.remove('running');
+                        isAnimating = false;
+                        if (typeof alert !== 'undefined') alert('🎉 وصلتم إلى مناحل ريف وصاب في بني علي! أهلاً بكم في مملكة العسل اليمني الأصيل! 🎉');
+                    }
+                }) : { to: function() {}, pause: function() {}, resume: function() {} };
+
+                if (animationTimeline.to) {
+                    animationTimeline.to({}, { duration: 25, ease: 'power1.inOut' });
+                }
+
+                document.getElementById('start-btn').innerHTML = '<i class="fas fa-pause"></i> إيقاف الرحلة';
+                document.getElementById('start-btn').classList.add('running');
+            }
+
+            document.getElementById('start-btn').addEventListener('click', startJourney);
+        })();
+    </script>
+</body>
+</html>

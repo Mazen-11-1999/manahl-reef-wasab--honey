@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الفئات - مناحل ريف وصاب</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0500;
+            --bg-secondary: #1a0f00;
+            --bg-card: #1e1200;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #b8960c;
+            --text-primary: #f5e6c8;
+            --text-secondary: #c4a265;
+            --text-muted: #8a7a5a;
+            --border-gold: rgba(212, 175, 55, 0.2);
+            --success: #4CAF50;
+            --danger: #f44336;
+            --info: #2196F3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+            padding: 20px;
+            border-bottom: 1px solid var(--border-gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border-gold);
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--bg-primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Container */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        /* Stats */
+        .stats-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .stat-badge {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border-gold);
+            border-radius: 15px;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+
+        .stat-badge i { color: var(--gold-primary); }
+        .stat-badge strong { color: var(--gold-light); }
+
+        /* Categories Grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+            border: 1px solid var(--border-gold);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .category-card:hover {
+            border-color: var(--gold-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+        }
+
+        .category-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            background: rgba(212, 175, 55, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .category-image .placeholder-icon {
+            font-size: 3rem;
+            opacity: 0.5;
+        }
+
+        .category-info {
+            padding: 15px;
+        }
+
+        .category-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            line-height: 1.5;
+            max-height: 40px;
+            overflow: hidden;
+        }
+
+        .category-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .products-count {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .category-status {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .status-inactive {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-gold);
+        }
+
+        .cat-action-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-gold);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .cat-action-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+            border-color: var(--gold-primary);
+        }
+
+        .cat-action-btn.delete-btn:hover {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .order-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--gold-light);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 50px;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-gold);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--gold-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            width: 100%;
+            height: 150px;
+            border: 2px dashed var(--border-gold);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .image-upload-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-upload-area .upload-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .image-upload-area .upload-placeholder i {
+            font-size: 2rem;
+            color: var(--gold-primary);
+            margin-bottom: 10px;
+        }
+
+        .image-upload-area .upload-placeholder p {
+            font-size: 0.85rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gold-primary);
+            opacity: 0.3;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--gold-primary);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #d4af37, #f3cf7a);
+            color: #120a00;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 700;
+            z-index: 10000;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            animation: notifIn 0.3s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        @keyframes notifIn {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(10, 5, 0, 0.98), rgba(26, 15, 0, 0.95));
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-gold);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 12px;
+            z-index: 999;
+            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover { color: var(--gold-light); }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .nav-item.active i {
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- API Integration -->
+    <script src="../js/api.js"></script>
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <a href="dashboard.html" class="back-btn" title="العودة">
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <h1 class="header-title">
+                <i class="fas fa-layer-group"></i>
+                <span>إدارة الفئات</span>
+            </h1>
+            <button class="add-btn" onclick="openAddModal()">
+                <i class="fas fa-plus"></i>
+                <span>إضافة فئة</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-badge">
+                <i class="fas fa-layer-group"></i>
+                <span>الفئات: <strong id="totalCategories">0</strong></span>
+            </div>
+            <div class="stat-badge">
+                <i class="fas fa-check-circle"></i>
+                <span>نشطة: <strong id="activeCategories">0</strong></span>
+            </div>
+            <div class="stat-badge">
+                <i class="fas fa-box"></i>
+                <span>المنتجات: <strong id="totalProducts">0</strong></span>
+            </div>
+        </div>
+
+        <!-- Categories Grid -->
+        <div class="categories-grid" id="categoriesGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; color: var(--text-muted);">جاري تحميل الفئات...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-plus-circle"></i>
+                    <span id="modalTitle">إضافة فئة جديدة</span>
+                </h2>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="categoryForm" onsubmit="handleSubmit(event)">
+                <input type="hidden" id="categoryId" value="">
+
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-image"></i> صورة الفئة
+                    </label>
+                    <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('categoryImage').click()">
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>اضغط لاختيار صورة من جهازك</p>
+                            <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 5px;">JPG, PNG, WEBP</p>
+                        </div>
+                    </div>
+                    <input type="file" id="categoryImage" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                </div>
+
+                <!-- Category Name -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-tag"></i> اسم الفئة *
+                    </label>
+                    <input type="text" class="form-input" id="categoryName" placeholder="مثال: زيوت طبيعية، خلطات عسل..." required>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-align-right"></i> وصف الفئة
+                    </label>
+                    <textarea class="form-textarea" id="categoryDesc" placeholder="وصف مختصر للفئة يظهر للمستخدمين..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <!-- Icon -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-icons"></i> الأيقونة
+                        </label>
+                        <input type="text" class="form-input" id="categoryIcon" placeholder="🍯" value="📦" style="text-align: center; font-size: 1.5rem;">
+                    </div>
+
+                    <!-- Order -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-sort-numeric-up"></i> ترتيب العرض
+                        </label>
+                        <input type="number" class="form-input" id="categoryOrder" value="0" min="0">
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-toggle-on"></i> حالة الفئة
+                    </label>
+                    <select class="form-select" id="categoryStatus">
+                        <option value="active">نشطة (ظاهرة للمستخدمين)</option>
+                        <option value="inactive">غير نشطة (مخفية)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-save"></i>
+                    <span>حفظ الفئة</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </a>
+        <a href="create-order.html" class="nav-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>طلب جديد</span>
+        </a>
+        <a href="products.html" class="nav-item">
+            <i class="fas fa-box-open"></i>
+            <span>المنتجات</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+            <i class="fas fa-chart-pie"></i>
+            <span>التقارير</span>
+        </a>
+    </nav>
+
+    <script>
+        // === State ===
+        let categories = [];
+        let editingId = null;
+
+        // === Initialize ===
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCategories();
+        });
+
+        // === Load Categories ===
+        async function loadCategories() {
+            try {
+                if (!window.API) {
+                    await new Promise(resolve => {
+                        const check = setInterval(() => {
+                            if (window.API) { clearInterval(check); resolve(); }
+                        }, 100);
+                        setTimeout(() => { clearInterval(check); resolve(); }, 3000);
+                    });
+                }
+
+                const data = await window.API.categories.getAll();
+                categories = data.data || data.categories || [];
+                renderCategories();
+                updateStats();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                document.getElementById('categoriesGrid').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>تعذر تحميل الفئات</h3>
+                        <p>تأكد من تشغيل السيرفر ثم أعد تحميل الصفحة</p>
+                    </div>
+                `;
+            }
+        }
+
+        // === Render Categories ===
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+
+            if (categories.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-layer-group"></i>
+                        <h3>لا توجد فئات بعد</h3>
+                        <p>اضغط "إضافة فئة" لإنشاء أول فئة لمنتجاتك</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = categories.map(cat => `
+                <div class="category-card">
+                    ${cat.order > 0 ? `<div class="order-badge"><i class="fas fa-sort"></i> ${cat.order}</div>` : ''}
+                    <div class="category-image">
+                        ${cat.image 
+                            ? `<img src="${cat.image}" alt="${cat.name}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder-icon\\'>${cat.icon || '📦'}</div>'">`
+                            : `<div class="placeholder-icon">${cat.icon || '📦'}</div>`
+                        }
+                    </div>
+                    <div class="category-info">
+                        <div class="category-name">
+                            <span>${cat.icon || '📦'}</span>
+                            <span>${cat.name}</span>
+                        </div>
+                        ${cat.description ? `<div class="category-desc">${cat.description}</div>` : ''}
+                        <div class="category-meta">
+                            <div class="products-count">
+                                <i class="fas fa-box"></i>
+                                <span>${cat.productsCount || 0} منتج</span>
+                            </div>
+                            <span class="category-status ${cat.status === 'active' ? 'status-active' : 'status-inactive'}">
+                                ${cat.status === 'active' ? 'نشطة' : 'غير نشطة'}
+                            </span>
+                        </div>
+                        <div class="category-actions">
+                            <button class="cat-action-btn" onclick="editCategory('${cat._id}')">
+                                <i class="fas fa-edit"></i>
+                                <span>تعديل</span>
+                            </button>
+                            <button class="cat-action-btn delete-btn" onclick="deleteCategory('${cat._id}', '${cat.name}')">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>حذف</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // === Update Stats ===
+        function updateStats() {
+            document.getElementById('totalCategories').textContent = categories.length;
+            document.getElementById('activeCategories').textContent = categories.filter(c => c.status === 'active').length;
+            document.getElementById('totalProducts').textContent = categories.reduce((sum, c) => sum + (c.productsCount || 0), 0);
+        }
+
+        // === Open Add Modal ===
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = 'إضافة فئة جديدة';
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryId').value = '';
+            document.getElementById('categoryIcon').value = '📦';
+            document.getElementById('categoryOrder').value = categories.length;
+            resetImagePreview();
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        // === Edit Category ===
+        function editCategory(id) {
+            const cat = categories.find(c => c._id === id);
+            if (!cat) return;
+
+            editingId = id;
+            document.getElementById('modalTitle').textContent = 'تعديل الفئة';
+            document.getElementById('categoryId').value = id;
+            document.getElementById('categoryName').value = cat.name || '';
+            document.getElementById('categoryDesc').value = cat.description || '';
+            document.getElementById('categoryIcon').value = cat.icon || '📦';
+            document.getElementById('categoryOrder').value = cat.order || 0;
+            document.getElementById('categoryStatus').value = cat.status || 'active';
+
+            // Show existing image
+            if (cat.image) {
+                const area = document.getElementById('imageUploadArea');
+                area.innerHTML = `<img src="${cat.image}" alt="${cat.name}">`;
+            } else {
+                resetImagePreview();
+            }
+
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        // === Close Modal ===
+        function closeModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+            editingId = null;
+        }
+
+        // === Image Preview ===
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const area = document.getElementById('imageUploadArea');
+                    area.innerHTML = `<img src="${e.target.result}" alt="صورة الفئة">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function resetImagePreview() {
+            document.getElementById('imageUploadArea').innerHTML = `
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>اضغط لاختيار صورة من جهازك</p>
+                    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 5px;">JPG, PNG, WEBP</p>
+                </div>
+            `;
+        }
+
+        // === Submit Form ===
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner"></div> <span>جاري الحفظ...</span>';
+
+            try {
+                const formData = new FormData();
+                formData.append('name', document.getElementById('categoryName').value.trim());
+                formData.append('description', document.getElementById('categoryDesc').value.trim());
+                formData.append('icon', document.getElementById('categoryIcon').value.trim());
+                formData.append('order', document.getElementById('categoryOrder').value);
+                formData.append('status', document.getElementById('categoryStatus').value);
+
+                const imageFile = document.getElementById('categoryImage').files[0];
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
+
+                let result;
+                if (editingId) {
+                    result = await window.API.categories.update(editingId, formData);
+                } else {
+                    result = await window.API.categories.create(formData);
+                }
+
+                if (result.success) {
+                    showNotification(editingId ? '✅ تم تعديل الفئة بنجاح' : '✅ تم إضافة الفئة بنجاح');
+                    closeModal();
+                    loadCategories();
+                } else {
+                    showNotification('❌ ' + (result.message || 'حدث خطأ'), 'error');
+                }
+            } catch (error) {
+                console.error('Error saving category:', error);
+                showNotification('❌ ' + (error.message || 'حدث خطأ أثناء الحفظ'), 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> <span>حفظ الفئة</span>';
+            }
+        }
+
+        // === Delete Category ===
+        async function deleteCategory(id, name) {
+            if (!confirm(`هل أنت متأكد من حذف الفئة "${name}"؟\nسيتم حذف الفئة ولن تظهر للمستخدمين.`)) return;
+
+            try {
+                const result = await window.API.categories.delete(id);
+                if (result.success) {
+                    showNotification('✅ تم حذف الفئة بنجاح');
+                    loadCategories();
+                } else {
+                    showNotification('❌ ' + (result.message || 'حدث خطأ'));
+                }
+            } catch (error) {
+                showNotification('❌ ' + (error.message || 'حدث خطأ أثناء الحذف'));
+            }
+        }
+
+        // === Notification ===
+        function showNotification(message) {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = message;
+            document.body.appendChild(notif);
+
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                notif.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+
+        // Close modal on overlay click
+        document.getElementById('categoryModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+

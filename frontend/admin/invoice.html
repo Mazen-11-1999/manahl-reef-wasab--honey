@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فاتورة الشراء | مناحل ريف وصاب</title>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@200;300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== المتغيرات العامة ===== */
+        :root {
+            --bg-primary: #1a0f00;
+            --bg-secondary: #231504;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #aa8c2c;
+            --text-primary: #1a0f00;
+            --text-secondary: #333;
+            --text-light: #555;
+            --border-gold: #d4af37;
+            --white: #ffffff;
+            --success: #28a745;
+            --warning: #ff9800;
+            --danger: #dc3545;
+            --info: #17a2b8;
+        }
+
+        /* ===== الأنماط الأساسية ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+            font-family: 'Tajawal', 'Cairo', serif;
+            min-height: 100vh;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== زر الرجوع ===== */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--gold-primary);
+            border: 2px solid var(--gold-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .back-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+        }
+
+        /* ===== حالة التحميل ===== */
+        .loading-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-light);
+        }
+
+        .loading-state .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(212, 175, 55, 0.2);
+            border-top: 4px solid var(--gold-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loading-state p {
+            font-size: 1.1rem;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* ===== حالة الخطأ ===== */
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--danger);
+        }
+
+        .error-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .error-state p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .error-state a {
+            color: var(--gold-primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* ===== حاوية الفاتورة ===== */
+        .invoice-container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--white);
+            padding: 0;
+            border: 15px solid var(--bg-primary);
+            position: relative;
+            margin: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== زوايا decorative ===== */
+        .invoice-container::before,
+        .invoice-container::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--gold-primary);
+        }
+
+        .invoice-container::before {
+            top: -8px;
+            left: -8px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .invoice-container::after {
+            bottom: -8px;
+            right: -8px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* ===== المحتوى الداخلي ===== */
+        .invoice-content {
+            border: 2px solid var(--gold-primary);
+            padding: 40px;
+            margin: 5px;
+            background: var(--white);
+            position: relative;
+        }
+
+        /* ===== الهيدر ===== */
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logo-area {
+            width: 100px;
+            height: 100px;
+            border: 3px solid var(--gold-primary);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-primary);
+            position: relative;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .logo-area:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .logo-text {
+            color: var(--gold-primary);
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .invoice-title {
+            color: var(--text-primary);
+            margin: 15px 0 5px 0;
+            font-size: 28px;
+            letter-spacing: 3px;
+            font-weight: bold;
+            font-family: 'Cairo', sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-number {
+            color: var(--gold-dark);
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .divider {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .divider::after {
+            content: '🍯';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            background: var(--white);
+            padding: 0 10px;
+        }
+
+        /* ===== معلومات الفاتورة ===== */
+        .invoice-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .info-block {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .info-block h4 {
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-block h4 i {
+            color: var(--gold-primary);
+        }
+
+        .info-block p {
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-block strong {
+            color: var(--text-primary);
+        }
+
+        /* ===== شارات الحالة ===== */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.15);
+            color: #e68a00;
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+
+        .status-partial {
+            background: rgba(33, 150, 243, 0.15);
+            color: #1976d2;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .status-paid {
+            background: rgba(40, 167, 69, 0.15);
+            color: #1b7a34;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(40, 167, 69, 0.15);
+            color: #1b7a34;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        /* ===== جدول المنتجات ===== */
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .invoice-table thead {
+            background: linear-gradient(145deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--gold-primary);
+        }
+
+        .invoice-table th {
+            padding: 15px 10px;
+            border: 1px solid var(--gold-primary);
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .invoice-table td {
+            padding: 12px 10px;
+            border: 1px solid var(--gold-primary);
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .invoice-table tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        .invoice-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .product-name {
+            text-align: right !important;
+            font-weight: 500;
+        }
+
+        .quantity {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .price {
+            font-weight: bold;
+            color: var(--text-primary);
+            font-size: 15px;
+        }
+
+        /* ===== الإجماليات ===== */
+        .invoice-totals {
+            margin-bottom: 30px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .total-row.grand-total {
+            border-bottom: none;
+            background: rgba(212, 175, 55, 0.08);
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--text-primary);
+            border-radius: 5px;
+            margin-top: 10px;
+            border: 2px solid var(--gold-primary);
+        }
+
+        .total-label {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .total-label i {
+            color: var(--gold-primary);
+        }
+
+        .total-value {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        /* ===== قسم الدفع ===== */
+        .payment-section {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .payment-section h4 {
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .payment-section h4 i {
+            color: var(--gold-primary);
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .payment-row:last-child {
+            border-bottom: none;
+        }
+
+        .payment-row .paid {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .payment-row .remaining {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        /* ===== التوقيع والشكر ===== */
+        .invoice-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 50px;
+            gap: 30px;
+        }
+
+        .thank-you {
+            font-size: 12px;
+            color: var(--text-light);
+            max-width: 300px;
+            line-height: 1.6;
+        }
+
+        .thank-you strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .signature-area {
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .signature-label {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        .signature {
+            font-family: 'Amiri', 'Brush Script MT', cursive;
+            font-size: 22px;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--gold-primary);
+            padding-bottom: 8px;
+            margin-bottom: 5px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, rgba(212, 175, 55, 0.05), transparent);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .signature-date {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        /* ===== الختم الرسمي ===== */
+        .official-stamp {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--gold-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.3;
+            transform: rotate(-15deg);
+        }
+
+        .stamp-inner {
+            width: 70px;
+            height: 70px;
+            border: 1px solid var(--gold-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: var(--gold-primary);
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* ===== أزرار الإجراء ===== */
+        .invoice-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .btn-print {
+            background: linear-gradient(45deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--gold-primary);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-download {
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-share {
+            background: transparent;
+            border: 2px solid var(--gold-primary);
+            color: var(--gold-primary);
+        }
+
+        .btn-share:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(45deg, #25d366, #128c7e);
+            color: white;
+            box-shadow: 0 3px 10px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        /* ===== العلامة المائية ===== */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 120px;
+            color: rgba(212, 175, 55, 0.05);
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* ===== الإشعارات ===== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #d4af37, #f3cf7a);
+            color: #1a0f00;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-family: 'Tajawal', sans-serif;
+            display: none;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        /* ===== تصميم متجاوب ===== */
+        @media (max-width: 768px) {
+            .invoice-container { border-width: 10px; }
+            .invoice-content { padding: 25px 20px; }
+            .invoice-title { font-size: 22px; letter-spacing: 2px; }
+            .invoice-info { flex-direction: column; gap: 15px; }
+            .invoice-table { font-size: 12px; }
+            .invoice-table th, .invoice-table td { padding: 10px 5px; }
+            .invoice-footer { flex-direction: column; align-items: center; gap: 30px; }
+            .thank-you { max-width: 100%; text-align: center; }
+            .signature-area { width: 100%; }
+            .official-stamp { width: 60px; height: 60px; }
+            .stamp-inner { width: 50px; height: 50px; font-size: 6px; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .invoice-container { border-width: 5px; }
+            .invoice-content { padding: 20px 15px; }
+            .invoice-title { font-size: 18px; }
+            .logo-area { width: 80px; height: 80px; }
+            .invoice-actions { flex-direction: column; }
+            .action-btn { width: 100%; justify-content: center; }
+            .total-row.grand-total { font-size: 16px; }
+        }
+
+        /* ===== تأثيرات الطباعة ===== */
+        @media print {
+            body { background: white; padding: 0; }
+            .invoice-container { box-shadow: none; border: 15px solid var(--bg-primary); max-width: 100%; }
+            .invoice-actions, .back-btn, .watermark, .notification { display: none !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- زر الرجوع (لوحة التحكم أو إدارة الطلبات) -->
+    <a href="javascript:history.back()" class="back-btn" title="العودة للوحة التحكم أو الطلبات">
+        <i class="fas fa-arrow-right"></i>
+    </a>
+
+    <!-- حالة التحميل -->
+    <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>جارٍ تحميل بيانات الفاتورة...</p>
+    </div>
+
+    <!-- حالة الخطأ -->
+    <div class="error-state" id="errorState" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p id="errorMessage">لم يتم العثور على الطلب</p>
+        <a href="orders.html"><i class="fas fa-arrow-right"></i> العودة لإدارة الطلبات</a>
+    </div>
+
+    <!-- حاوية الفاتورة -->
+    <div class="invoice-container" id="invoiceContainer" style="display: none;">
+        <!-- العلامة المائية -->
+        <div class="watermark">ريف وصاب</div>
+
+        <div class="invoice-content">
+
+            <!-- الهيدر -->
+            <header class="invoice-header">
+                <div class="logo-area">
+                    <img src="../assets/manahel.jpg" alt="شعار مناحل ريف وصاب"
+                        onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'logo-text\'>مناحل<br>ريف وصاب</div>';">
+                </div>
+                <h1 class="invoice-title">فاتورة شراء</h1>
+                <p class="invoice-number" id="invoiceNumber">#---</p>
+                <div class="divider"></div>
+            </header>
+
+            <!-- معلومات الفاتورة -->
+            <section class="invoice-info">
+                <div class="info-block">
+                    <h4><i class="fas fa-file-invoice"></i> معلومات الفاتورة</h4>
+                    <p><strong>رقم الطلب:</strong> <span id="orderId">---</span></p>
+                    <p><strong>التاريخ:</strong> <span id="orderDate">---</span></p>
+                    <p><strong>طريقة الدفع:</strong> <span id="paymentMethodDisplay">---</span></p>
+                    <p><strong>حالة الدفع:</strong> <span id="paymentStatusDisplay">---</span></p>
+                    <p><strong>حالة الطلب:</strong> <span id="orderStatusDisplay">---</span></p>
+                </div>
+
+                <div class="info-block">
+                    <h4><i class="fas fa-user"></i> معلومات العميل</h4>
+                    <p><strong>الاسم:</strong> <span id="customerName">---</span></p>
+                    <p><strong>الهاتف:</strong> <span id="customerPhone">---</span></p>
+                    <p><strong>المنطقة:</strong> <span id="customerRegion">---</span></p>
+                    <p><strong>العنوان:</strong> <span id="customerAddress">---</span></p>
+                </div>
+            </section>
+
+            <!-- جدول المنتجات -->
+            <section class="invoice-table-section">
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>المنتج</th>
+                            <th>الكمية</th>
+                            <th>السعر الواحد</th>
+                            <th>الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsBody">
+                        <!-- سيتم ملؤه ديناميكياً -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- الإجماليات -->
+            <section class="invoice-totals" id="totalsSection">
+                <!-- سيتم ملؤه ديناميكياً -->
+            </section>
+
+            <!-- قسم الدفع -->
+            <section class="payment-section" id="paymentSection">
+                <h4><i class="fas fa-money-check-alt"></i> تفاصيل الدفع</h4>
+                <div id="paymentDetails">
+                    <!-- سيتم ملؤه ديناميكياً -->
+                </div>
+            </section>
+
+            <!-- التوقيع والشكر -->
+            <footer class="invoice-footer">
+                <div class="thank-you">
+                    <strong>شكراً لثقتكم في مناحل ريف وصاب</strong>
+                    <p>هذا العسل طبيعي ومضمون بنسبة ١٠٠٪، تم استخراجه بعناية فائقة من ريف وصاب الأصيل. نتمنى لكم تجربة
+                        صحية ولذيذة مع منتجاتنا.</p>
+                    <p style="margin-top: 10px; font-size: 11px;">
+                        <strong>ضمان الجودة:</strong> ١٠٠٪ طبيعي | خالٍ من المواد الحافظة
+                    </p>
+                </div>
+
+                <div class="signature-area">
+                    <div class="signature-label">ختم وتوقيع المالك</div>
+                    <div class="signature">مناحل ريف وصاب</div>
+                    <div class="signature-date" id="signatureDate">---</div>
+                </div>
+            </footer>
+
+            <!-- الختم الرسمي -->
+            <div class="official-stamp">
+                <div class="stamp-inner">
+                    مناحل<br>ريف وصاب<br>الأصلية
+                </div>
+            </div>
+
+        </div>
+
+        <!-- أزرار الإجراء -->
+        <div class="invoice-actions">
+            <button class="action-btn btn-print" onclick="printInvoice()">
+                <i class="fas fa-print"></i>
+                <span>طباعة الفاتورة</span>
+            </button>
+            <button class="action-btn btn-whatsapp" onclick="sendWhatsApp()">
+                <i class="fab fa-whatsapp"></i>
+                <span>إرسال للعميل</span>
+            </button>
+            <button class="action-btn btn-share" onclick="shareInvoice()">
+                <i class="fas fa-share-alt"></i>
+                <span>مشاركة</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- الإشعارات -->
+    <div class="notification" id="notification"></div>
+
+    <!-- API Script -->
+    <script src="../js/api.js"></script>
+
+    <script>
+        let currentOrder = null;
+
+        // ===== الحصول على معرف الطلب من URL =====
+        function getOrderIdFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('orderId') || params.get('id');
+        }
+
+        // ===== تحميل بيانات الطلب =====
+        async function loadOrderData() {
+            const orderParam = getOrderIdFromURL();
+
+            if (!orderParam) {
+                showError('لم يتم تحديد رقم الطلب. يرجى الوصول من صفحة إدارة الطلبات.');
+                return;
+            }
+
+            try {
+                if (!window.API || !window.API.orders) {
+                    showError('API غير متاح. يرجى التأكد من تشغيل السيرفر.');
+                    return;
+                }
+
+                // محاولة البحث بالـ orderId أولاً ثم بالـ _id
+                let response;
+                try {
+                    response = await window.API.orders.getByOrderId(orderParam);
+                } catch (e) {
+                    try {
+                        response = await window.API.orders.getById(orderParam);
+                    } catch (e2) {
+                        throw new Error('الطلب غير موجود');
+                    }
+                }
+
+                if (response && response.success && response.order) {
+                    currentOrder = response.order;
+                    renderInvoice();
+                } else {
+                    throw new Error('لم يتم العثور على بيانات الطلب');
+                }
+            } catch (error) {
+                console.error('Error loading order:', error);
+                showError(error.message || 'حدث خطأ في تحميل بيانات الطلب');
+            }
+        }
+
+        // ===== عرض حالة الخطأ =====
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // ===== عرض الفاتورة =====
+        function renderInvoice() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('invoiceContainer').style.display = 'block';
+
+            const order = currentOrder;
+
+            // رقم الفاتورة
+            document.getElementById('invoiceNumber').textContent = `#${order.orderId || order._id}`;
+            document.getElementById('orderId').textContent = order.orderId || order._id;
+
+            // التاريخ
+            const orderDate = new Date(order.createdAt);
+            const dateFormatted = orderDate.toLocaleDateString('ar-YE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('orderDate').textContent = dateFormatted;
+            document.getElementById('signatureDate').textContent = dateFormatted;
+
+            // طريقة الدفع
+            const paymentMethodText = getPaymentMethodText(order.paymentMethod);
+            document.getElementById('paymentMethodDisplay').textContent = paymentMethodText;
+
+            // حالة الدفع
+            const paymentStatus = order.payment?.paymentStatus || 'pending';
+            const paymentStatusEl = document.getElementById('paymentStatusDisplay');
+            paymentStatusEl.innerHTML = getPaymentStatusBadge(paymentStatus);
+
+            // حالة الطلب
+            const orderStatusEl = document.getElementById('orderStatusDisplay');
+            orderStatusEl.innerHTML = getOrderStatusBadge(order.status);
+
+            // معلومات العميل
+            document.getElementById('customerName').textContent = order.customer?.name || 'غير محدد';
+            document.getElementById('customerPhone').textContent = order.customer?.phone || 'غير محدد';
+            document.getElementById('customerRegion').textContent = order.customer?.region || order.customer?.country || 'غير محدد';
+            document.getElementById('customerAddress').textContent = order.customer?.address || 'غير محدد';
+
+            // المنتجات
+            renderProducts(order.items);
+
+            // الإجماليات
+            renderTotals(order);
+
+            // تفاصيل الدفع
+            renderPaymentDetails(order);
+        }
+
+        // ===== عرض المنتجات =====
+        function renderProducts(items) {
+            const tbody = document.getElementById('productsBody');
+            const sym = getCurrencySymbol(currentOrder);
+            if (!items || items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">لا توجد منتجات</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = items.map((item, index) => {
+                const itemTotal = (item.price || 0) * (item.quantity || 1);
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td class="product-name">${item.name || 'منتج غير محدد'}</td>
+                        <td class="quantity">${item.quantity || 1}</td>
+                        <td class="price">${formatNumber(item.price || 0)} ${sym}</td>
+                        <td class="price">${formatNumber(itemTotal)} ${sym}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ===== عرض الإجماليات =====
+        function renderTotals(order) {
+            const section = document.getElementById('totalsSection');
+            const sym = getCurrencySymbol(order);
+            const subtotal = order.total || 0;
+            const shipping = order.shipping || 0;
+            const grandTotal = subtotal + shipping;
+
+            let shippingText = '';
+            if (shipping === 0) {
+                const region = (order.customer?.region || '').toLowerCase();
+                if (region.includes('صنعاء') || region.includes('sanaa')) {
+                    shippingText = 'مجاني (صنعاء)';
+                } else if (order.shippingAgreed) {
+                    shippingText = 'مجاني';
+                } else {
+                    shippingText = 'سيتم التواصل للاتفاق';
+                }
+            } else {
+                shippingText = `${formatNumber(shipping)} ${sym}`;
+            }
+
+            section.innerHTML = `
+                <div class="total-row">
+                    <span class="total-label"><i class="fas fa-boxes"></i> إجمالي المنتجات:</span>
+                    <span class="total-value">${formatNumber(subtotal)} ${sym}</span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label"><i class="fas fa-truck"></i> رسوم الشحن:</span>
+                    <span class="total-value">${shippingText}</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span class="total-label"><i class="fas fa-calculator"></i> المجموع الكلي:</span>
+                    <span class="total-value">${formatNumber(grandTotal)} ${sym}</span>
+                </div>
+            `;
+        }
+
+        // ===== عرض تفاصيل الدفع =====
+        function renderPaymentDetails(order) {
+            const section = document.getElementById('paymentDetails');
+            const sym = getCurrencySymbol(order);
+            const payment = order.payment || {};
+            const paidAmount = payment.paidAmount || 0;
+            const remainingAmount = payment.remainingAmount || 0;
+            const grandTotal = (order.total || 0) + (order.shipping || 0);
+
+            let html = `
+                <div class="payment-row">
+                    <span>المبلغ الإجمالي:</span>
+                    <span style="font-weight: bold;">${formatNumber(grandTotal)} ${sym}</span>
+                </div>
+                <div class="payment-row">
+                    <span>المبلغ المدفوع:</span>
+                    <span class="paid">${formatNumber(paidAmount)} ${sym}</span>
+                </div>
+                <div class="payment-row">
+                    <span>المبلغ المتبقي:</span>
+                    <span class="${remainingAmount > 0 ? 'remaining' : 'paid'}">${formatNumber(remainingAmount)} ${sym}</span>
+                </div>
+            `;
+
+            // عرض سجل الدفعات
+            if (payment.payments && payment.payments.length > 0) {
+                html += '<hr style="border: none; border-top: 1px dashed #ccc; margin: 10px 0;">';
+                html += '<p style="font-weight: bold; margin-bottom: 8px; font-size: 13px;"><i class="fas fa-history" style="color: var(--gold-primary);"></i> سجل الدفعات:</p>';
+                
+                payment.payments.forEach((p, i) => {
+                    const payDate = new Date(p.paidAt).toLocaleDateString('ar-YE', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const methodText = getPaymentTypeText(p.method);
+                    html += `
+                        <div class="payment-row" style="font-size: 13px;">
+                            <span>${i + 1}. ${payDate} - ${methodText}${p.notes ? ' (' + p.notes + ')' : ''}</span>
+                            <span class="paid">${formatNumber(p.amount)} ${sym}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            section.innerHTML = html;
+        }
+
+        // ===== تنسيق الأرقام =====
+        function formatNumber(num) {
+            return Number(num).toLocaleString('en-US');
+        }
+
+        // ===== رمز العملة من الطلب =====
+        function getCurrencySymbol(order) {
+            const currency = order?.currency || 'YER';
+            return currency === 'SAR' ? 'ر.س' : 'ر.ي';
+        }
+
+        // ===== نص طريقة الدفع =====
+        function getPaymentMethodText(method) {
+            const methods = {
+                'delivery': 'دفع عند الاستلام',
+                'half': 'دفع نصفي (عربون)',
+                'full': 'دفع كامل',
+                'cash': 'نقداً',
+                'cash_on_delivery': 'دفع عند الاستلام',
+                'bank_transfer': 'تحويل بنكي',
+                'card': 'بطاقة',
+                'other': 'أخرى'
+            };
+            return methods[method] || method || 'غير محدد';
+        }
+
+        // ===== نص نوع الدفعة =====
+        function getPaymentTypeText(method) {
+            const methods = {
+                'cash': 'نقداً',
+                'bank_transfer': 'تحويل بنكي',
+                'card': 'بطاقة',
+                'other': 'أخرى'
+            };
+            return methods[method] || method || 'نقداً';
+        }
+
+        // ===== شارة حالة الدفع =====
+        function getPaymentStatusBadge(status) {
+            const statuses = {
+                'pending': { text: 'معلق', class: 'status-pending', icon: 'fa-clock' },
+                'partial': { text: 'مدفوع جزئياً', class: 'status-partial', icon: 'fa-adjust' },
+                'paid': { text: 'مدفوع بالكامل', class: 'status-paid', icon: 'fa-check-circle' },
+                'completed': { text: 'مكتمل', class: 'status-completed', icon: 'fa-check-double' }
+            };
+            const s = statuses[status] || statuses['pending'];
+            return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
+        }
+
+        // ===== شارة حالة الطلب =====
+        function getOrderStatusBadge(status) {
+            const statuses = {
+                'pending': { text: 'قيد الانتظار', class: 'status-pending', icon: 'fa-hourglass-half' },
+                'processing': { text: 'قيد التجهيز', class: 'status-partial', icon: 'fa-cog' },
+                'paid': { text: 'تم الدفع', class: 'status-paid', icon: 'fa-check' },
+                'ready_to_ship': { text: 'جاهز للشحن', class: 'status-partial', icon: 'fa-box' },
+                'shipped': { text: 'تم الشحن', class: 'status-partial', icon: 'fa-truck' },
+                'delivered': { text: 'تم التسليم', class: 'status-paid', icon: 'fa-check-double' },
+                'completed': { text: 'مكتمل', class: 'status-completed', icon: 'fa-flag-checkered' },
+                'cancelled': { text: 'ملغي', class: 'status-pending', icon: 'fa-times-circle' }
+            };
+            const s = statuses[status] || statuses['pending'];
+            return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
+        }
+
+        // ===== طباعة الفاتورة =====
+        function printInvoice() {
+            showNotification('جاري تجهيز الفاتورة للطباعة...');
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        }
+
+        // ===== إرسال عبر واتساب =====
+        function sendWhatsApp() {
+            if (!currentOrder) return;
+
+            const order = currentOrder;
+            const sym = getCurrencySymbol(order);
+            const phone = (order.customer?.phone || '').replace(/[^\d]/g, '');
+            const grandTotal = (order.total || 0) + (order.shipping || 0);
+
+            let message = `*🍯 فاتورة من مناحل ريف وصاب*\n`;
+            message += `━━━━━━━━━━━━━━━━━━\n`;
+            message += `📋 رقم الطلب: ${order.orderId || order._id}\n`;
+            message += `📅 التاريخ: ${new Date(order.createdAt).toLocaleDateString('ar-YE')}\n`;
+            message += `━━━━━━━━━━━━━━━━━━\n`;
+            message += `*المنتجات:*\n`;
+
+            if (order.items) {
+                order.items.forEach((item, i) => {
+                    const itemTotal = (item.price || 0) * (item.quantity || 1);
+                    message += `${i + 1}. ${item.name} × ${item.quantity} = ${formatNumber(itemTotal)} ${sym}\n`;
+                });
+            }
+
+            message += `━━━━━━━━━━━━━━━━━━\n`;
+            message += `📦 الشحن: ${order.shipping > 0 ? formatNumber(order.shipping) + ' ' + sym : 'مجاني'}\n`;
+            message += `💰 *المجموع الكلي: ${formatNumber(grandTotal)} ${sym}*\n`;
+            message += `💳 طريقة الدفع: ${getPaymentMethodText(order.paymentMethod)}\n`;
+
+            const paidAmount = order.payment?.paidAmount || 0;
+            const remaining = order.payment?.remainingAmount || 0;
+            if (paidAmount > 0) {
+                message += `✅ المدفوع: ${formatNumber(paidAmount)} ${sym}\n`;
+            }
+            if (remaining > 0) {
+                message += `⏳ المتبقي: ${formatNumber(remaining)} ${sym}\n`;
+            }
+
+            message += `━━━━━━━━━━━━━━━━━━\n`;
+            message += `شكراً لثقتكم في مناحل ريف وصاب 🍯✨`;
+
+            const encodedMessage = encodeURIComponent(message);
+            let waPhone = phone;
+            if (waPhone.startsWith('0')) {
+                waPhone = '967' + waPhone.substring(1);
+            } else if (!waPhone.startsWith('967')) {
+                waPhone = '967' + waPhone;
+            }
+
+            window.open(`https://wa.me/${waPhone}?text=${encodedMessage}`, '_blank');
+            showNotification('✅ جاري فتح واتساب...');
+        }
+
+        // ===== مشاركة الفاتورة =====
+        async function shareInvoice() {
+            if (!currentOrder) return;
+
+            const shareText = `فاتورة رقم ${currentOrder.orderId || currentOrder._id} - مناحل ريف وصاب`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'فاتورة من مناحل ريف وصاب',
+                        text: shareText,
+                        url: window.location.href
+                    });
+                    showNotification('✅ تمت المشاركة بنجاح');
+                } catch (err) {
+                    copyToClipboard();
+                }
+            } else {
+                copyToClipboard();
+            }
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showNotification('📋 تم نسخ رابط الفاتورة');
+            }).catch(() => {
+                showNotification('يرجى نسخ الرابط يدوياً', 'error');
+            });
+        }
+
+        // ===== نظام الإشعارات =====
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification show';
+
+            setTimeout(() => {
+                notification.className = 'notification';
+            }, 3000);
+        }
+
+        // ===== تهيئة الصفحة =====
+        document.addEventListener('DOMContentLoaded', async function () {
+            // انتظار تحميل API
+            let attempts = 0;
+            while (!window.API && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 200));
+                attempts++;
+            }
+
+            await loadOrderData();
+        });
+    </script>
+
+</body>
+
+</html>

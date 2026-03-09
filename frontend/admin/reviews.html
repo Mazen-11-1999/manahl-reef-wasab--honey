@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقييمات العملاء | مناحل ريف وصاب</title>
+    <style>
+        :root {
+            --bg-primary: #120a00;
+            --bg-secondary: #1a0f00;
+            --bg-card: #1d1102;
+            --bg-accent: #2a1804;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #aa8c2c;
+            --text-primary: #e0c097;
+            --text-secondary: #f3cf7a;
+            --text-white: #ffffff;
+            --border-gold: rgba(212, 175, 55, 0.2);
+            --shadow-gold: rgba(212, 175, 55, 0.3);
+            --success: #51cf66;
+            --danger: #ff6b6b;
+            --warning: #ffd43b;
+            --info: #74c0fc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--text-primary);
+            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: linear-gradient(145deg, var(--bg-accent), var(--bg-card));
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--gold-primary);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--shadow-gold);
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .reviews-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .reviews-title {
+            color: var(--gold-primary);
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px var(--shadow-gold);
+        }
+
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stars-display {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+        }
+
+        .rating-score {
+            color: var(--text-white);
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .rating-count {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .add-review-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px dashed var(--gold-primary);
+            color: var(--gold-primary);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .add-review-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-style: solid;
+            transform: translateY(-2px);
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border-gold);
+            color: var(--gold-primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .filter-btn.active {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            border-color: var(--gold-primary);
+        }
+
+        .reviews-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .review-card {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border-radius: 15px;
+            padding: 25px;
+            border-right: 5px solid var(--gold-primary);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .review-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border-right-width: 8px;
+        }
+
+        .review-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .review-card:hover::before {
+            left: 100%;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+
+        .reviewer-info {
+            flex: 1;
+        }
+
+        .reviewer-name {
+            color: var(--text-white);
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vip-badge {
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .verified-badge {
+            background: var(--success);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .review-rating {
+            color: var(--gold-primary);
+            font-size: 1.1rem;
+        }
+
+        .review-content {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .review-images {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .review-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            border: 1px solid var(--border-gold);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+
+        .review-image:hover {
+            transform: scale(1.05);
+            border-color: var(--gold-primary);
+        }
+
+        .review-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-gold);
+        }
+
+        .review-date {
+            color: #888;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .review-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            color: var(--gold-primary);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.liked {
+            color: var(--danger);
+        }
+        .action-btn-helpful.active {
+            color: var(--success);
+        }
+        .action-btn-not-helpful.active {
+            color: var(--danger);
+        }
+
+        .stats-section {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--gold-primary);
+            margin-bottom: 30px;
+        }
+
+        .stats-title {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .rating-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .rating-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .rating-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            min-width: 60px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 8px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold-primary), var(--gold-light));
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+
+        .bar-percentage {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            min-width: 40px;
+            text-align: left;
+        }
+
+        .load-more-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            border: none;
+            border-radius: 15px;
+            color: var(--bg-primary);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .load-more-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+
+        /* شريط التنقل السفلي الموحد - إدارة */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: rgba(45, 38, 18, 0.98); backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)); border-top: 2px solid rgba(212, 175, 55, 0.4); z-index: 1000; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6); }
+        .bottom-nav .nav-item { color: #d4af37; text-align: center; font-size: 0.85rem; opacity: 0.7; cursor: pointer; transition: all 0.3s ease; padding: 8px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'Cairo', 'Tajawal', sans-serif; min-width: 60px; text-decoration: none; }
+        .bottom-nav .nav-item i { font-size: 1.3rem; transition: all 0.3s ease; }
+        .bottom-nav .nav-item span { font-size: 0.75rem; font-weight: 500; }
+        .bottom-nav .nav-item:hover { opacity: 1; background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); transform: translateY(-2px); text-shadow: 0 0 8px rgba(212, 175, 55, 0.5); }
+        .bottom-nav .nav-item.active { opacity: 1; color: #f3cf7a; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.4); text-shadow: 0 0 10px rgba(212, 175, 55, 0.6); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
+        .bottom-nav .nav-item.active i { transform: scale(1.1); }
+
+        @media (max-width: 768px) {
+            .review-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .review-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .filter-section {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .reviews-title {
+                font-size: 1.5rem;
+            }
+
+            .review-card {
+                padding: 20px;
+            }
+
+            .review-image {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1 class="header-title">⭐ تقييمات العملاء</h1>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="reviews-header fade-in">
+            <h2 class="reviews-title">
+                <i class="fas fa-star" style="color: var(--gold-primary); margin-left: 10px;"></i>
+                ماذا قالوا عن عسلنا؟
+                <i class="fas fa-heart" style="color: var(--danger); margin-right: 10px;"></i>
+            </h2>
+            <div class="rating-summary">
+                <span class="stars-display">⭐⭐⭐⭐⭐</span>
+                <span class="rating-score">0.0/5</span>
+                <span class="rating-count">(بناءً على 0+ تقييم)</span>
+            </div>
+        </div>
+
+        <button class="add-review-btn" onclick="addReview()">
+            <i class="fas fa-edit"></i>
+            <span>أضف تجربتك الخاصة مع ريف وصاب</span>
+        </button>
+
+        <!-- قسم الإحصائيات -->
+        <div class="stats-section slide-in">
+            <h3 class="stats-title">
+                <i class="fas fa-chart-bar"></i>
+                <span>توزيع التقييمات</span>
+            </h3>
+            <div class="rating-bars">
+                <div class="rating-bar-item">
+                    <span class="rating-label">⭐⭐⭐⭐⭐</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" data-rating-bar="5" style="width: 0%;"></div>
+                    </div>
+                    <span class="bar-percentage">0%</span>
+                </div>
+                <div class="rating-bar-item">
+                    <span class="rating-label">⭐⭐⭐⭐</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" data-rating-bar="4" style="width: 0%;"></div>
+                    </div>
+                    <span class="bar-percentage">0%</span>
+                </div>
+                <div class="rating-bar-item">
+                    <span class="rating-label">⭐⭐⭐</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" data-rating-bar="3" style="width: 0%;"></div>
+                    </div>
+                    <span class="bar-percentage">0%</span>
+                </div>
+                <div class="rating-bar-item">
+                    <span class="rating-label">⭐⭐</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" data-rating-bar="2" style="width: 0%;"></div>
+                    </div>
+                    <span class="bar-percentage">0%</span>
+                </div>
+                <div class="rating-bar-item">
+                    <span class="rating-label">⭐</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" data-rating-bar="1" style="width: 0%;"></div>
+                    </div>
+                    <span class="bar-percentage">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- فلترة التقييمات -->
+        <div class="filter-section">
+            <button class="filter-btn active" onclick="filterReviews('all')">الكل</button>
+            <button class="filter-btn" onclick="filterReviews('5')">⭐⭐⭐⭐⭐</button>
+            <button class="filter-btn" onclick="filterReviews('4')">⭐⭐⭐⭐</button>
+            <button class="filter-btn" onclick="filterReviews('vip')">VIP فقط</button>
+            <button class="filter-btn" onclick="filterReviews('images')">مع صور</button>
+        </div>
+
+        <!-- التقييمات — تُعرض من API فقط (لا بيانات وهمية) -->
+        <div class="reviews-container" id="reviewsContainer">
+            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                <p>جارٍ تحميل التقييمات...</p>
+            </div>
+        </div>
+
+        <button class="load-more-btn" onclick="loadMoreReviews()">
+            <i class="fas fa-chevron-down"></i>
+            <span>عرض المزيد من التقييمات</span>
+        </button>
+
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'">
+            <i class="fas fa-crown"></i>
+            <span>لوحة التحكم</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='create-order.html'">
+            <i class="fas fa-plus-circle"></i>
+            <span>طلب جديد</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='products.html'">
+            <i class="fas fa-box-open"></i>
+            <span>المنتجات</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='reports.html'">
+            <i class="fas fa-chart-line"></i>
+            <span>التقارير</span>
+        </div>
+    </nav>
+
+    <script>
+        function filterReviews(filter) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            const reviews = document.querySelectorAll('.review-card');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            reviews.forEach(review => {
+                const rating = review.dataset.rating;
+                const isVip = review.dataset.vip === 'true';
+                const hasImages = review.dataset.images === 'true';
+
+                let show = false;
+
+                switch (filter) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case '5':
+                        show = rating === '5';
+                        break;
+                    case '4':
+                        show = rating === '4';
+                        break;
+                    case 'vip':
+                        show = isVip;
+                        break;
+                    case 'images':
+                        show = hasImages;
+                        break;
+                }
+
+                if (show) {
+                    review.style.display = 'block';
+                    review.style.animation = 'fadeIn 0.5s ease-out';
+                } else {
+                    review.style.display = 'none';
+                }
+            });
+
+            showNotification(`تم فلترة التقييمات: ${getFilterName(filter)}`);
+        }
+
+        function getFilterName(filter) {
+            const names = {
+                'all': 'الكل',
+                '5': 'تقييمات 5 نجوم',
+                '4': 'تقييمات 4 نجوم',
+                'vip': 'عملاء VIP فقط',
+                'images': 'مع صور'
+            };
+            return names[filter] || 'الكل';
+        }
+
+        function addReview() {
+            showNotification('جاري فتح نموذج إضافة التقييم...', 'info');
+            // يمكن فتح modal أو الانتقال لصفحة إضافة التقييم
+            // window.location.href = '../pages/add-review.html';
+        }
+
+        // تم نقل toggleLike إلى الكود الجديد أعلاه
+
+        function shareReview(button) {
+            const reviewCard = button.closest('.review-card');
+            const reviewerName = reviewCard.querySelector('.reviewer-name').textContent.trim();
+            const reviewContent = reviewCard.querySelector('.review-content').textContent.trim();
+
+            const shareText = `تقييم العميل ${reviewerName} في مناحل ريف وصاب:\n"${reviewContent}"`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'تقييم العميل',
+                    text: shareText,
+                    url: window.location.href
+                }).then(() => {
+                    showNotification('تمت مشاركة التقييم بنجاح', 'success');
+                }).catch(() => {
+                    copyReview(shareText);
+                });
+            } else {
+                copyReview(shareText);
+            }
+        }
+
+        function copyReview(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('تم نسخ التقييم إلى الحافظة', 'success');
+            }).catch(() => {
+                showNotification('حدث خطأ في النسخ', 'error');
+            });
+        }
+
+        function viewImage(image) {
+            // يمكن فتح modal لعرض الصورة بشكل كامل
+            const imageUrl = image.src;
+            window.open(imageUrl, '_blank');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                success: 'linear-gradient(45deg, #51cf66, #69db7c)',
+                error: 'linear-gradient(45deg, #ff6b6b, #ff8787)',
+                warning: 'linear-gradient(45deg, #ffd43b, #ffe066)',
+                info: 'linear-gradient(45deg, #d4af37, #f3cf7a)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${colors[type] || colors.info};
+                color: ${type === 'warning' ? '#120a00' : '#ffffff'};
+                padding: 12px 25px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 1000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                animation: slideDown 0.3s ease-out;
+                font-family: 'Tajawal', sans-serif;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' :
+                        type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' :
+                        type === 'warning' ? '<i class="fas fa-exclamation-triangle"></i>' :
+                        '<i class="fas fa-info-circle"></i>';
+            
+            notification.innerHTML = icon + '<span>' + message + '</span>';
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeIn 0.6s ease-out';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.review-card').forEach(card => {
+                observer.observe(card);
+            });
+
+            // تحريك أشرطة التقييمات
+            setTimeout(() => {
+                document.querySelectorAll('.bar-fill').forEach(bar => {
+                    const width = bar.style.width;
+                    bar.style.width = '0';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                });
+            }, 500);
+
+            // تحميل الصور البديلة
+            document.querySelectorAll('.review-image').forEach(img => {
+                img.addEventListener('error', function () {
+                    this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%232a1804" width="80" height="80"/%3E%3Ctext fill="%23d4af37" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-size="12"%3Eصورة%3C/text%3E%3C/svg%3E';
+                });
+            });
+        });
+    </script>
+
+    <!-- API Integration -->
+    <script src="../js/api.js"></script>
+
+    <script>
+        // متغيرات عامة
+        let allReviews = [];
+        let currentPage = 1;
+        let currentFilter = 'all';
+        let ratingStats = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        let totalReviews = 0;
+        let averageRating = 0;
+
+        // تحميل التقييمات من API
+        async function loadReviews(productId = null, page = 1, filter = {}) {
+            try {
+                if (!window.API || !window.API.reviews) {
+                    console.warn('API not available');
+                    return;
+                }
+
+                let response;
+                if (productId) {
+                    response = await window.API.reviews.getProductReviews(productId, { page, limit: 10, ...filter });
+                } else {
+                    // جلب جميع التقييمات (للمشرفين)
+                    response = await window.API.reviews.getAll({ page, limit: 10, status: 'approved', ...filter });
+                }
+
+                if (response.success && response.reviews) {
+                    allReviews = response.reviews;
+                    totalReviews = response.total || response.reviews.length;
+                    averageRating = response.averageRating || 0;
+                    
+                    if (response.distribution) {
+                        ratingStats = response.distribution;
+                    }
+                    
+                    displayReviews();
+                    updateStats();
+                } else {
+                    console.warn('No reviews found');
+                    allReviews = [];
+                    displayReviews();
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+                allReviews = [];
+                displayReviews();
+            }
+        }
+
+        // عرض التقييمات
+        function displayReviews() {
+            const container = document.getElementById('reviewsContainer');
+            if (!container) return;
+
+            if (allReviews.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                        <i class="fas fa-star" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.3;"></i>
+                        <h3 style="color: var(--text-secondary); margin-bottom: 10px;">لا توجد تقييمات بعد</h3>
+                        <p>كن أول من يقيّم منتجاتنا!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allReviews.map(review => {
+                const customer = review.customer || {};
+                const profile = customer.profile || {};
+                const reviewerName = profile.firstName && profile.lastName 
+                    ? `${profile.firstName} ${profile.lastName}`
+                    : customer.email?.split('@')[0] || 'عميل';
+                
+                const isVip = customer.isVip || false;
+                const isVerified = review.status === 'approved';
+                const rating = review.rating || 5;
+                const stars = '⭐'.repeat(rating);
+                const images = review.images || [];
+                const helpfulCount = review.helpful || 0;
+                const notHelpfulCount = review.notHelpful || 0;
+                const reviewDate = new Date(review.createdAt).toLocaleDateString('ar-YE', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const timeAgo = getTimeAgo(review.createdAt);
+
+                return `
+                    <div class="review-card fade-in" data-rating="${rating}" data-vip="${isVip}" data-images="${images.length > 0}">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-name">
+                                    ${reviewerName}
+                                    ${isVip ? '<span class="vip-badge">عميل VIP</span>' : ''}
+                                    ${isVerified ? '<span class="verified-badge">تم التحقق ✅</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="review-rating">${stars}</div>
+                        </div>
+
+                        ${review.title ? `<h4 style="color: var(--gold-primary); margin-bottom: 10px; font-size: 1.1rem;">${review.title}</h4>` : ''}
+
+                        <p class="review-content">
+                            ${review.comment || 'لا يوجد تعليق'}
+                        </p>
+
+                        ${images.length > 0 ? `
+                            <div class="review-images">
+                                ${images.map(img => `
+                                    <img src="${img}" alt="صورة التقييم" class="review-image" onclick="viewImage(this)">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        <div class="review-footer">
+                            <div class="review-date">
+                                <i class="fas fa-calendar-alt" style="margin-left: 5px;"></i>
+                                <span>${timeAgo}</span>
+                            </div>
+                            <div class="review-actions">
+                                <button class="action-btn action-btn-helpful" data-review-id="${review._id || review.id}" onclick="toggleLike(this, '${review._id || review.id}')">
+                                    <i class="fas fa-thumbs-up"></i>
+                                    <span class="helpful-count">${helpfulCount}</span>
+                                </button>
+                                <button class="action-btn action-btn-not-helpful" data-review-id="${review._id || review.id}" onclick="toggleNotHelpful(this, '${review._id || review.id}')">
+                                    <i class="fas fa-thumbs-down"></i>
+                                    <span class="not-helpful-count">${notHelpfulCount}</span>
+                                </button>
+                                <button class="action-btn" onclick="shareReview(this)">
+                                    <i class="fas fa-share-alt"></i>
+                                    <span>مشاركة</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // إعادة تطبيق IntersectionObserver
+            document.querySelectorAll('.review-card').forEach(card => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.animation = 'fadeIn 0.6s ease-out';
+                        }
+                    });
+                }, { threshold: 0.1 });
+                observer.observe(card);
+            });
+        }
+
+        // حساب الوقت المنقضي
+        function getTimeAgo(date) {
+            const now = new Date();
+            const reviewDate = new Date(date);
+            const diffInSeconds = Math.floor((now - reviewDate) / 1000);
+            
+            if (diffInSeconds < 60) return 'الآن';
+            if (diffInSeconds < 3600) return `منذ ${Math.floor(diffInSeconds / 60)} دقيقة`;
+            if (diffInSeconds < 86400) return `منذ ${Math.floor(diffInSeconds / 3600)} ساعة`;
+            if (diffInSeconds < 2592000) return `منذ ${Math.floor(diffInSeconds / 86400)} يوم`;
+            if (diffInSeconds < 31536000) return `منذ ${Math.floor(diffInSeconds / 2592000)} شهر`;
+            return `منذ ${Math.floor(diffInSeconds / 31536000)} سنة`;
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            // تحديث متوسط التقييم
+            const ratingScore = document.querySelector('.rating-score');
+            const ratingCount = document.querySelector('.rating-count');
+            if (ratingScore) {
+                ratingScore.textContent = `${averageRating.toFixed(1)}/5`;
+            }
+            if (ratingCount) {
+                ratingCount.textContent = `(بناءً على ${totalReviews}+ تقييم)`;
+            }
+
+            // تحديث أشرطة التوزيع
+            const total = Object.values(ratingStats).reduce((a, b) => a + b, 0);
+            if (total > 0) {
+                [5, 4, 3, 2, 1].forEach(rating => {
+                    const percentage = (ratingStats[rating] / total) * 100;
+                    const bar = document.querySelector(`[data-rating-bar="${rating}"]`);
+                    if (bar) {
+                        bar.style.width = `${percentage}%`;
+                        const percentageEl = bar.parentElement.nextElementSibling;
+                        if (percentageEl) {
+                            percentageEl.textContent = `${percentage.toFixed(0)}%`;
+                        }
+                    }
+                });
+            }
+        }
+
+        // فلترة التقييمات
+        function filterReviews(filter) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            currentFilter = filter;
+            loadReviews(null, 1, { rating: filter === 'all' ? null : parseInt(filter) });
+        }
+
+        // تحميل المزيد
+        async function loadMoreReviews() {
+            currentPage++;
+            try {
+                const response = await window.API.reviews.getAll({ 
+                    page: currentPage, 
+                    limit: 10, 
+                    status: 'approved' 
+                });
+                
+                if (response.success && response.reviews && response.reviews.length > 0) {
+                    allReviews = [...allReviews, ...response.reviews];
+                    displayReviews();
+                    showNotification('✅ تم تحميل المزيد من التقييمات', 'success');
+                } else {
+                    showNotification('لا توجد تقييمات إضافية', 'info');
+                }
+            } catch (error) {
+                console.error('Error loading more reviews:', error);
+                showNotification('حدث خطأ في تحميل التقييمات', 'error');
+            }
+        }
+
+        // مفيد
+        async function toggleLike(button, reviewId) {
+            try {
+                const response = await window.API.reviews.markHelpful(reviewId);
+                if (response.success) {
+                    updateReviewCounts(button, response.helpful, response.notHelpful);
+                    button.classList.add('active');
+                    const notBtn = button.closest('.review-actions')?.querySelector('.action-btn-not-helpful');
+                    if (notBtn) notBtn.classList.remove('active');
+                    showNotification('👍 تم تسجيل التقييم كمفيد', 'success');
+                }
+            } catch (error) {
+                console.error('Error marking helpful:', error);
+                showNotification(error?.message || 'حدث خطأ في التقييم', 'error');
+            }
+        }
+
+        // غير مفيد
+        async function toggleNotHelpful(button, reviewId) {
+            try {
+                const response = await window.API.reviews.markNotHelpful(reviewId);
+                if (response.success) {
+                    updateReviewCounts(button, response.helpful, response.notHelpful);
+                    button.classList.add('active');
+                    const helpfulBtn = button.closest('.review-actions')?.querySelector('.action-btn-helpful');
+                    if (helpfulBtn) helpfulBtn.classList.remove('active');
+                    showNotification('تم تسجيل التقييم كغير مفيد', 'success');
+                }
+            } catch (error) {
+                console.error('Error marking not helpful:', error);
+                showNotification(error?.message || 'حدث خطأ في التقييم', 'error');
+            }
+        }
+
+        function updateReviewCounts(clickedButton, helpful, notHelpful) {
+            const actions = clickedButton.closest('.review-actions');
+            if (!actions) return;
+            const helpfulSpan = actions.querySelector('.helpful-count');
+            const notHelpfulSpan = actions.querySelector('.not-helpful-count');
+            if (helpfulSpan) helpfulSpan.textContent = helpful ?? 0;
+            if (notHelpfulSpan) notHelpfulSpan.textContent = notHelpful ?? 0;
+        }
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', async function() {
+            // انتظار تحميل API
+            if (!window.API) {
+                const checkAPI = setInterval(() => {
+                    if (window.API) {
+                        clearInterval(checkAPI);
+                        initializePage();
+                    }
+                }, 100);
+                setTimeout(() => clearInterval(checkAPI), 5000);
+            } else {
+                initializePage();
+            }
+        });
+
+        async function initializePage() {
+            await loadReviews();
+        }
+    </script>
+
+</body>
+
+</html>

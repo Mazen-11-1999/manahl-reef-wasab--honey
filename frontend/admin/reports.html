@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير المالية | مناحل ريف وصاب</title>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Enhanced Arabic Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700;800;900;1000&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #120a00;
+            --bg-secondary: #1a0f00;
+            --bg-card: #1d1102;
+            --bg-accent: #2a1804;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #aa8c2c;
+            --text-primary: #e0c097;
+            --text-secondary: #f3cf7a;
+            --success: #51cf66;
+            --danger: #ff6b6b;
+            --warning: #ffd43b;
+            --info: #74c0fc;
+            --border-gold: rgba(212, 175, 55, 0.2);
+            --shadow-gold: rgba(212, 175, 55, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: linear-gradient(145deg, var(--bg-accent), var(--bg-card));
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--gold-primary);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border-gold);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--gold-primary);
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .back-button:hover {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+
+        .header-title {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--shadow-gold);
+            margin: 0 auto;
+        }
+
+        .period-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .period-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border-gold);
+            color: var(--gold-primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .period-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .period-btn.active {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            border-color: var(--gold-primary);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .section-title {
+            color: var(--gold-primary);
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--gold-primary);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, var(--bg-accent), var(--bg-card));
+            padding: 25px 20px;
+            border-radius: 15px;
+            border: 1px solid var(--gold-primary);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--gold-primary) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.05;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(-10px, -10px) rotate(180deg);
+            }
+        }
+
+        .stat-label {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            color: var(--gold-primary);
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--shadow-gold);
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: rgba(81, 207, 102, 0.2);
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--danger);
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--border-gold);
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-wrapper {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 20px 10px 10px;
+            position: relative;
+        }
+
+        .chart-bar {
+            width: 40px;
+            background: linear-gradient(to top, var(--gold-primary), var(--gold-light));
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+
+        .chart-bar.highest {
+            background: linear-gradient(to top, var(--gold-primary), #fff);
+            box-shadow: 0 0 20px var(--shadow-gold);
+        }
+
+        .chart-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--gold-primary);
+            font-size: 0.8rem;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .chart-bar:hover .chart-value {
+            opacity: 1;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-around;
+            color: #888;
+            font-size: 0.8rem;
+            padding: 10px;
+        }
+
+        .products-table {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--border-gold);
+            margin-bottom: 30px;
+        }
+
+        .table-title {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+            padding: 12px;
+            text-align: right;
+            font-weight: bold;
+            border-bottom: 2px solid var(--gold-primary);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-gold);
+            color: var(--text-primary);
+        }
+
+        tr:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .rank {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .product-name {
+            font-weight: 500;
+        }
+
+        .sales-count {
+            color: var(--gold-primary);
+            font-weight: bold;
+        }
+
+        .revenue {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-gold);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--gold-primary);
+            color: var(--gold-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* شريط التنقل السفلي الموحد - إدارة */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: rgba(45, 38, 18, 0.98);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+            border-top: 2px solid rgba(212, 175, 55, 0.4);
+            z-index: 1000;
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .nav-item {
+            color: #d4af37;
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            min-width: 60px;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            opacity: 1;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            color: #f3cf7a;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-item.active i {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-wrapper {
+                height: 150px;
+            }
+
+            .chart-bar {
+                width: 30px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-wrapper {
+                height: 120px;
+            }
+
+            .chart-bar {
+                width: 25px;
+            }
+
+            .table-wrapper {
+                font-size: 0.9rem;
+            }
+
+            th,
+            td {
+                padding: 8px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="dashboard.html" class="back-button" title="العودة للوحة التحكم">
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <h1 class="header-title">
+                <i class="fas fa-chart-line"></i>
+                <span>التقارير المالية</span>
+            </h1>
+            <div class="period-selector">
+                <button class="period-btn" onclick="changePeriod('daily')">يومي</button>
+                <button class="period-btn" onclick="changePeriod('weekly')">أسبوعي</button>
+                <button class="period-btn active" onclick="changePeriod('monthly')">شهري</button>
+                <button class="period-btn" onclick="changePeriod('yearly')">سنوي</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <h2 class="section-title fade-in">📈 ملخص الأداء المالي</h2>
+
+        <div class="stats-grid fade-in">
+            <div class="stat-card">
+                <div class="stat-label">إجمالي الأرباح</div>
+                <div class="stat-value" id="statTotalRevenueValue">٠</div>
+                <div class="stat-value" style="font-size: 1rem;">ر.س</div>
+                <div class="stat-change" id="statTotalRevenueChange">لا توجد بيانات مقارنة بعد</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">عدد الطلبات</div>
+                <div class="stat-value" id="statOrdersValue">٠</div>
+                <div class="stat-change" id="statOrdersChange">تم توصيل ٠ طلب</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">متوسط قيمة الطلب</div>
+                <div class="stat-value" id="statAvgOrderValue">٠</div>
+                <div class="stat-value" style="font-size: 1rem;">ر.س</div>
+                <div class="stat-change" id="statAvgOrderChange">لا توجد بيانات مقارنة بعد</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">معدل التحويل</div>
+                <div class="stat-value" id="statConversionValue">٠٪</div>
+                <div class="stat-change" id="statConversionChange">لا توجد بيانات مقارنة بعد</div>
+            </div>
+        </div>
+
+        <div class="chart-container slide-in">
+            <h3 class="chart-title">📊 منحنى المبيعات الأسبوعي</h3>
+            <div class="chart-wrapper">
+                <div class="chart-bar" style="height: 40%;" onclick="showDayDetails('السبت', '٢,٣٠٠ ر.س')">
+                    <div class="chart-value">٢,٣٠٠</div>
+                </div>
+                <div class="chart-bar" style="height: 65%;" onclick="showDayDetails('الأحد', '٣,٧٥٠ ر.س')">
+                    <div class="chart-value">٣,٧٥٠</div>
+                </div>
+                <div class="chart-bar" style="height: 50%;" onclick="showDayDetails('الاثنين', '٢,٨٥٠ ر.س')">
+                    <div class="chart-value">٢,٨٥٠</div>
+                </div>
+                <div class="chart-bar highest" style="height: 90%;" onclick="showDayDetails('الثلاثاء', '٥,٢٠٠ ر.س')">
+                    <div class="chart-value">٥,٢٠٠</div>
+                </div>
+                <div class="chart-bar" style="height: 75%;" onclick="showDayDetails('الأربعاء', '٤,٣٥٠ ر.س')">
+                    <div class="chart-value">٤,٣٥٠</div>
+                </div>
+                <div class="chart-bar" style="height: 60%;" onclick="showDayDetails('الخميس', '٣,٤٠٠ ر.س')">
+                    <div class="chart-value">٣,٤٠٠</div>
+                </div>
+                <div class="chart-bar" style="height: 45%;" onclick="showDayDetails('الجمعة', '٢,٦٠٠ ر.س')">
+                    <div class="chart-value">٢,٦٠٠</div>
+                </div>
+            </div>
+            <div class="chart-labels">
+                <span>سبت</span>
+                <span>أحد</span>
+                <span>اثنين</span>
+                <span>ثلاثاء</span>
+                <span>أربعاء</span>
+                <span>خميس</span>
+                <span>جمعة</span>
+            </div>
+        </div>
+
+        <div class="products-table slide-in">
+            <h3 class="table-title">🍯 المنتجات الأكثر طلباً</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الترتيب</th>
+                            <th>المنتج</th>
+                            <th>عدد المبيعات</th>
+                            <th>الإيرادات</th>
+                            <th>نسبة النمو</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="rank">١</div>
+                            </td>
+                            <td class="product-name">عسل سدر ملكي</td>
+                            <td class="sales-count">٨٥ قطعة</td>
+                            <td class="revenue">٢١,٢٥٠ ر.س</td>
+                            <td><span class="stat-change positive">↑ ١٥٪</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank">٢</div>
+                            </td>
+                            <td class="product-name">عسل سمرة وصابي</td>
+                            <td class="sales-count">٤٢ قطعة</td>
+                            <td class="revenue">٧,٥٦٠ ر.س</td>
+                            <td><span class="stat-change positive">↑ ٨٪</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank">٣</div>
+                            </td>
+                            <td class="product-name">خلطة المناعة</td>
+                            <td class="sales-count">٢٩ قطعة</td>
+                            <td class="revenue">٣,٤٨٠ ر.س</td>
+                            <td><span class="stat-change negative">↓ ٣٪</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank">٤</div>
+                            </td>
+                            <td class="product-name">عسل المراعي</td>
+                            <td class="sales-count">١٨ قطعة</td>
+                            <td class="revenue">٢,١٦٠ ر.س</td>
+                            <td><span class="stat-change positive">↑ ٥٪</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="rank">٥</div>
+                            </td>
+                            <td class="product-name">غذاء الملكات</td>
+                            <td class="sales-count">١٥ قطعة</td>
+                            <td class="revenue">١,٨٠٠ ر.س</td>
+                            <td><span class="stat-change positive">↑ ١٢٪</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="downloadPDF()">
+                <span>📄</span>
+                <span>تحميل تقرير PDF مفصل</span>
+            </button>
+            <button class="btn btn-secondary" onclick="exportExcel()">
+                <span>📊</span>
+                <span>تصدير إلى Excel</span>
+            </button>
+            <button class="btn btn-secondary" onclick="shareReport()">
+                <span>📤</span>
+                <span>مشاركة التقرير</span>
+            </button>
+        </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'">
+            <i class="fas fa-crown"></i>
+            <span>لوحة التحكم</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='create-order.html'">
+            <i class="fas fa-plus-circle"></i>
+            <span>طلب جديد</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='products.html'">
+            <i class="fas fa-box-open"></i>
+            <span>المنتجات</span>
+        </div>
+        <div class="nav-item active">
+            <i class="fas fa-chart-line"></i>
+            <span>التقارير</span>
+        </div>
+    </nav>
+
+    <!-- API Integration -->
+    <script src="../js/api.js"></script>
+
+    <script>
+        // === تقارير مالية حقيقية من قاعدة البيانات ===
+        let currentPeriod = 'monthly';
+
+        function changePeriod(period) {
+            currentPeriod = period;
+            const buttons = document.querySelectorAll('.period-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            showNotification(`تم التغيير إلى العرض ${getPeriodName(period)}`);
+            loadRealReportData();
+        }
+
+        function getPeriodName(period) {
+            const names = {
+                'daily': 'اليومي',
+                'weekly': 'الأسبوعي',
+                'monthly': 'الشهري',
+                'yearly': 'السنوي'
+            };
+            return names[period] || period;
+        }
+
+        // تحميل البيانات الحقيقية من API
+        async function loadRealReportData() {
+            try {
+                // انتظار تحميل API
+                if (!window.API) {
+                    await new Promise(resolve => {
+                        const check = setInterval(() => {
+                            if (window.API) { clearInterval(check); resolve(); }
+                        }, 100);
+                        setTimeout(() => { clearInterval(check); resolve(); }, 3000);
+                    });
+                }
+
+                // تحميل الطلبات والإحصائيات
+                let orders = [];
+                let stats = {};
+
+                try {
+                    const ordersRes = await window.API.orders.getAll({ limit: 1000 });
+                    orders = ordersRes.data || ordersRes.orders || (Array.isArray(ordersRes) ? ordersRes : []);
+                } catch (e) {
+                    console.warn('Error loading orders:', e);
+                }
+
+                try {
+                    stats = await window.API.stats.getStats();
+                } catch (e) {
+                    console.warn('Error loading stats:', e);
+                }
+
+                // حساب الإحصائيات الحقيقية + مقارنة بالفترة السابقة (شهر مقابل شهر، أسبوع مقابل أسبوع، ...إلخ)
+                const now = new Date();
+                let filteredOrders = orders;
+                let previousOrders = [];
+
+                if (currentPeriod === 'daily') {
+                    const today = now.toDateString();
+                    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000).toDateString();
+                    filteredOrders = orders.filter(o => new Date(o.createdAt).toDateString() === today);
+                    previousOrders = orders.filter(o => new Date(o.createdAt).toDateString() === yesterday);
+                } else if (currentPeriod === 'weekly') {
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+                    filteredOrders = orders.filter(o => new Date(o.createdAt) >= weekAgo);
+                    previousOrders = orders.filter(o => {
+                        const d = new Date(o.createdAt);
+                        return d >= twoWeeksAgo && d < weekAgo;
+                    });
+                } else if (currentPeriod === 'monthly') {
+                    const thisMonth = now.getMonth();
+                    const thisYear = now.getFullYear();
+                    const prevMonthDate = new Date(thisYear, thisMonth - 1, 1);
+                    const prevMonth = prevMonthDate.getMonth();
+                    const prevYear = prevMonthDate.getFullYear();
+                    filteredOrders = orders.filter(o => {
+                        const d = new Date(o.createdAt);
+                        return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+                    });
+                    previousOrders = orders.filter(o => {
+                        const d = new Date(o.createdAt);
+                        return d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+                    });
+                } else if (currentPeriod === 'yearly') {
+                    const thisYear = now.getFullYear();
+                    const prevYear = thisYear - 1;
+                    filteredOrders = orders.filter(o => {
+                        const d = new Date(o.createdAt);
+                        return d.getFullYear() === thisYear;
+                    });
+                    previousOrders = orders.filter(o => {
+                        const d = new Date(o.createdAt);
+                        return d.getFullYear() === prevYear;
+                    });
+                }
+
+                const totalRevenue = filteredOrders.reduce((sum, o) => sum + (o.totalAmount || o.total || 0), 0);
+                const totalOrders = filteredOrders.length;
+                const deliveredOrders = filteredOrders.filter(o => o.status === 'delivered' || o.status === 'completed').length;
+                const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+                const conversionRate = totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
+
+                const prevRevenue = previousOrders.reduce((sum, o) => sum + (o.totalAmount || o.total || 0), 0);
+                const prevOrders = previousOrders.length;
+                const prevAvg = prevOrders > 0 ? Math.round(prevRevenue / prevOrders) : 0;
+                const prevDelivered = previousOrders.filter(o => o.status === 'delivered' || o.status === 'completed').length;
+                const prevConversion = prevOrders > 0 ? (prevDelivered / prevOrders) * 100 : 0;
+
+                function calcChange(current, previous) {
+                    if (!previous || previous <= 0) return null;
+                    return ((current - previous) / previous) * 100;
+                }
+
+                const revenueChange = calcChange(totalRevenue, prevRevenue);
+                const avgChange = calcChange(avgOrderValue, prevAvg);
+                const convChange = calcChange(conversionRate, prevConversion);
+
+                // تخزين البيانات الحالية لاستخدامها في PDF و Excel
+                window.currentReportData = {
+                    period: currentPeriod,
+                    filteredOrders,
+                    allOrders: orders,
+                    totalRevenue,
+                    totalOrders,
+                    deliveredOrders,
+                    avgOrderValue,
+                    conversionRate
+                };
+
+                // تحديث الإحصائيات في الصفحة (باستخدام عناصر ذات معرّفات واضحة)
+                const elTotalRevenue = document.getElementById('statTotalRevenueValue');
+                const elTotalRevenueChange = document.getElementById('statTotalRevenueChange');
+                const elOrders = document.getElementById('statOrdersValue');
+                const elOrdersChange = document.getElementById('statOrdersChange');
+                const elAvgOrder = document.getElementById('statAvgOrderValue');
+                const elAvgOrderChange = document.getElementById('statAvgOrderChange');
+                const elConversion = document.getElementById('statConversionValue');
+                const elConversionChange = document.getElementById('statConversionChange');
+
+                if (elTotalRevenue) elTotalRevenue.textContent = totalRevenue.toLocaleString('ar-SA');
+                if (elOrders) elOrders.textContent = totalOrders.toLocaleString('ar-SA');
+                if (elAvgOrder) elAvgOrder.textContent = avgOrderValue.toLocaleString('ar-SA');
+                if (elConversion) elConversion.textContent = conversionRate.toLocaleString('ar-SA', { maximumFractionDigits: 1 }) + '٪';
+
+                // تغيير نصوص النمو بناءً على المقارنة الحقيقية
+                if (elTotalRevenueChange) {
+                    elTotalRevenueChange.classList.remove('positive', 'negative');
+                    if (revenueChange === null) {
+                        elTotalRevenueChange.textContent = 'لا توجد بيانات مقارنة بعد';
+                    } else {
+                        const abs = Math.abs(revenueChange).toLocaleString('ar-SA', { maximumFractionDigits: 1 });
+                        if (revenueChange > 0) {
+                            elTotalRevenueChange.classList.add('positive');
+                            elTotalRevenueChange.textContent = `↑ ${abs}٪ عن الفترة السابقة`;
+                        } else if (revenueChange < 0) {
+                            elTotalRevenueChange.classList.add('negative');
+                            elTotalRevenueChange.textContent = `↓ ${abs}٪ عن الفترة السابقة`;
+                        } else {
+                            elTotalRevenueChange.textContent = 'لا يوجد تغيير عن الفترة السابقة';
+                        }
+                    }
+                }
+
+                if (elOrdersChange) {
+                    elOrdersChange.classList.remove('positive', 'negative');
+                    elOrdersChange.textContent = `تم توصيل ${deliveredOrders} طلب`;
+                }
+
+                if (elAvgOrderChange) {
+                    elAvgOrderChange.classList.remove('positive', 'negative');
+                    if (avgChange === null) {
+                        elAvgOrderChange.textContent = 'لا توجد بيانات مقارنة بعد';
+                    } else {
+                        const abs = Math.abs(avgChange).toLocaleString('ar-SA', { maximumFractionDigits: 1 });
+                        if (avgChange > 0) {
+                            elAvgOrderChange.classList.add('positive');
+                            elAvgOrderChange.textContent = `↑ ${abs}٪ عن الفترة السابقة`;
+                        } else if (avgChange < 0) {
+                            elAvgOrderChange.classList.add('negative');
+                            elAvgOrderChange.textContent = `↓ ${abs}٪ عن الفترة السابقة`;
+                        } else {
+                            elAvgOrderChange.textContent = 'لا يوجد تغيير عن الفترة السابقة';
+                        }
+                    }
+                }
+
+                if (elConversionChange) {
+                    elConversionChange.classList.remove('positive', 'negative');
+                    if (convChange === null) {
+                        elConversionChange.textContent = 'لا توجد بيانات مقارنة بعد';
+                    } else {
+                        const abs = Math.abs(convChange).toLocaleString('ar-SA', { maximumFractionDigits: 1 });
+                        if (convChange > 0) {
+                            elConversionChange.classList.add('positive');
+                            elConversionChange.textContent = `↑ ${abs}٪ عن الفترة السابقة`;
+                        } else if (convChange < 0) {
+                            elConversionChange.classList.add('negative');
+                            elConversionChange.textContent = `↓ ${abs}٪ عن الفترة السابقة`;
+                        } else {
+                            elConversionChange.textContent = 'لا يوجد تغيير عن الفترة السابقة';
+                        }
+                    }
+                }
+
+                // تحديث جدول المنتجات الأكثر طلباً
+                updateTopProducts(filteredOrders);
+
+                // تحديث المنحنى البياني
+                updateChart(orders);
+
+            } catch (error) {
+                console.error('Error loading report data:', error);
+                showNotification('⚠️ تعذر تحميل البيانات. تأكد من تشغيل السيرفر', 'warning');
+            }
+        }
+
+        // تحديث المنتجات الأكثر طلباً
+        function updateTopProducts(orders) {
+            const productSales = {};
+            orders.forEach(order => {
+                const items = order.items || order.products || [];
+                items.forEach(item => {
+                    const name = item.name || item.productName || 'منتج';
+                    if (!productSales[name]) {
+                        productSales[name] = { count: 0, revenue: 0 };
+                    }
+                    productSales[name].count += item.quantity || 1;
+                    productSales[name].revenue += (item.price || 0) * (item.quantity || 1);
+                });
+            });
+
+            const sorted = Object.entries(productSales).sort((a, b) => b[1].revenue - a[1].revenue);
+            const tbody = document.querySelector('.products-table tbody');
+            if (tbody && sorted.length > 0) {
+                tbody.innerHTML = sorted.slice(0, 5).map((entry, i) => `
+                    <tr>
+                        <td><div class="rank">${['١','٢','٣','٤','٥'][i]}</div></td>
+                        <td class="product-name">${entry[0]}</td>
+                        <td class="sales-count">${entry[1].count} قطعة</td>
+                        <td class="revenue">${entry[1].revenue.toLocaleString('ar-SA')} ر.س</td>
+                        <td><span class="stat-change positive">-</span></td>
+                    </tr>
+                `).join('');
+            } else if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-primary);">لا توجد بيانات مبيعات بعد</td></tr>';
+            }
+        }
+
+        // تحديث المنحنى البياني
+        function updateChart(orders) {
+            const bars = document.querySelectorAll('.chart-bar');
+            const days = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+            const now = new Date();
+            const dailyTotals = new Array(7).fill(0);
+
+            orders.forEach(order => {
+                const d = new Date(order.createdAt);
+                const daysAgo = Math.floor((now - d) / (24 * 60 * 60 * 1000));
+                if (daysAgo >= 0 && daysAgo < 7) {
+                    dailyTotals[6 - daysAgo] += order.totalAmount || order.total || 0;
+                }
+            });
+
+            const maxVal = Math.max(...dailyTotals, 1);
+            bars.forEach((bar, i) => {
+                if (i < 7) {
+                    const pct = Math.max(5, (dailyTotals[i] / maxVal) * 100);
+                    bar.style.height = pct + '%';
+                    const valueEl = bar.querySelector('.chart-value');
+                    if (valueEl) valueEl.textContent = dailyTotals[i].toLocaleString('ar-SA');
+                    bar.className = 'chart-bar' + (dailyTotals[i] === maxVal && maxVal > 0 ? ' highest' : '');
+                    bar.onclick = () => showDayDetails(days[i] || '', dailyTotals[i].toLocaleString('ar-SA') + ' ر.س');
+                }
+            });
+        }
+
+        function showDayDetails(day, revenue) {
+            showNotification(`${day}: إجمالي المبيعات ${revenue}`);
+        }
+
+        function downloadPDF() {
+            if (!window.currentReportData || !window.currentReportData.filteredOrders) {
+                showNotification('لا توجد بيانات كافية لإنشاء تقرير PDF بعد');
+                return;
+            }
+
+            const d = window.currentReportData;
+            const win = window.open('', '_blank');
+            if (!win) {
+                showNotification('المتصفح منع فتح نافذة جديدة. الرجاء السماح بالنوافذ المنبثقة.');
+                return;
+            }
+
+            const summaryRows = `
+                <tr><th>الفترة</th><td>${getPeriodName(d.period)}</td></tr>
+                <tr><th>إجمالي الأرباح</th><td>${d.totalRevenue.toLocaleString('ar-SA')} ر.س</td></tr>
+                <tr><th>عدد الطلبات</th><td>${d.totalOrders.toLocaleString('ar-SA')}</td></tr>
+                <tr><th>الطلبات الموصّلة</th><td>${d.deliveredOrders.toLocaleString('ar-SA')}</td></tr>
+                <tr><th>متوسط قيمة الطلب</th><td>${d.avgOrderValue.toLocaleString('ar-SA')} ر.س</td></tr>
+                <tr><th>معدل التحويل</th><td>${d.conversionRate.toLocaleString('ar-SA', { maximumFractionDigits: 1 })}٪</td></tr>
+            `;
+
+            const ordersRows = d.filteredOrders.map(o => {
+                const date = o.createdAt ? new Date(o.createdAt).toLocaleString('ar-YE') : '';
+                const name = (o.customer && o.customer.name) || 'عميل';
+                const total = (o.totalAmount || o.total || 0).toLocaleString('ar-SA');
+                const status = o.status || '';
+                return `<tr><td>${o.orderId || ''}</td><td>${date}</td><td>${name}</td><td>${total}</td><td>${status}</td></tr>`;
+            }).join('');
+
+            win.document.open();
+            win.document.write(`
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>تقرير مالي - مناحل ريف وصاب</title>
+                    <style>
+                        body { font-family: 'Tajawal', sans-serif; padding: 20px; direction: rtl; }
+                        h1, h2 { text-align: center; margin-bottom: 10px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        th, td { border: 1px solid #ccc; padding: 8px; font-size: 12px; }
+                        th { background: #f4c025; }
+                    </style>
+                </head>
+                <body>
+                    <h1>تقرير مالي - مناحل ريف وصاب</h1>
+                    <h2>ملخص الأداء</h2>
+                    <table>${summaryRows}</table>
+                    <h2>تفاصيل الطلبات في الفترة الحالية</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>التاريخ</th>
+                                <th>العميل</th>
+                                <th>الإجمالي (ر.س)</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${ordersRows || '<tr><td colspan="5">لا توجد طلبات في هذه الفترة</td></tr>'}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `);
+            win.document.close();
+            // إعطاء المتصفح لحظات لتحميل المحتوى قبل الطباعة / الحفظ كـ PDF
+            setTimeout(() => {
+                win.focus();
+                win.print();
+            }, 500);
+        }
+
+        function exportExcel() {
+            if (!window.currentReportData || !window.currentReportData.filteredOrders) {
+                showNotification('لا توجد بيانات للتصدير بعد');
+                return;
+            }
+
+            const d = window.currentReportData;
+            const rows = [];
+
+            rows.push(['تقرير مالي مناحل ريف وصاب']);
+            rows.push(['الفترة', getPeriodName(d.period)]);
+            rows.push(['إجمالي الأرباح', `${d.totalRevenue}`]);
+            rows.push(['عدد الطلبات', `${d.totalOrders}`]);
+            rows.push(['الطلبات الموصّلة', `${d.deliveredOrders}`]);
+            rows.push(['متوسط قيمة الطلب', `${d.avgOrderValue}`]);
+            rows.push(['معدل التحويل', `${d.conversionRate.toFixed(1)}%`]);
+            rows.push([]);
+            rows.push(['تفاصيل الطلبات في الفترة الحالية']);
+            rows.push(['رقم الطلب', 'التاريخ', 'العميل', 'الإجمالي', 'الحالة']);
+
+            d.filteredOrders.forEach(o => {
+                const date = o.createdAt ? new Date(o.createdAt).toLocaleString('ar-YE') : '';
+                const name = (o.customer && o.customer.name) || 'عميل';
+                const total = (o.totalAmount || o.total || 0);
+                const status = o.status || '';
+                rows.push([o.orderId || '', date, name, total, status]);
+            });
+
+            const csvContent = rows.map(r => r.map(field => {
+                const v = field === null || field === undefined ? '' : String(field);
+                if (v.includes('"') || v.includes(',') || v.includes(';')) {
+                    return `"${v.replace(/"/g, '""')}"`;
+                }
+                return v;
+            }).join(',')).
+            join('\r\n');
+
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `financial-report-${d.period || 'current'}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showNotification('✅ تم تصدير البيانات إلى ملف CSV (Excel)');
+        }
+
+        function shareReport() {
+            const statValues = document.querySelectorAll('.stat-value');
+            const revenue = statValues[0]?.textContent || '0';
+            const ordersCount = statValues[2]?.textContent || '0';
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'تقرير مالي مناحل ريف وصاب',
+                    text: `إجمالي الأرباح: ${revenue} ر.س - عدد الطلبات: ${ordersCount}`,
+                    url: window.location.href
+                }).catch(() => copyToClipboard());
+            } else {
+                copyToClipboard();
+            }
+        }
+
+        function copyToClipboard() {
+            const statValues = document.querySelectorAll('.stat-value');
+            const revenue = statValues[0]?.textContent || '0';
+            const ordersCount = statValues[2]?.textContent || '0';
+            const reportData = `تقرير مالي مناحل ريف وصاب\nإجمالي الأرباح: ${revenue} ر.س\nعدد الطلبات: ${ordersCount}`;
+
+            navigator.clipboard.writeText(reportData).then(() => {
+                showNotification('📋 تم نسخ التقرير إلى الحافظة');
+            });
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(45deg, #d4af37, #f3cf7a);
+                color: #120a00;
+                padding: 12px 20px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                animation: slideDown 0.3s ease-out;
+                font-family: 'Tajawal', sans-serif;
+                max-width: 90%;
+                text-align: center;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) notification.parentNode.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // تحميل البيانات الحقيقية
+            loadRealReportData();
+
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeIn 0.6s ease-out';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.stat-card, .chart-container, .products-table').forEach(element => {
+                observer.observe(element);
+            });
+
+            // تحديث البيانات كل 60 ثانية من API
+            setInterval(() => loadRealReportData(), 60000);
+        });
+    </script>
+
+</body>
+
+</html>

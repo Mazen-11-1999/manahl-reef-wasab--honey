@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طرق الدفع | لوحة التحكم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --royal-gold: #f4c025;
+            --cream-gold: #fff4d1;
+            --velvet-brown: #1a1608;
+            --deep-brown: #2d2612;
+            --gold-20: rgba(244, 192, 37, 0.20);
+            --success: #51cf66;
+            --danger: #ff6b6b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, var(--velvet-brown), #221e10);
+            color: var(--cream-gold);
+            font-family: 'Tajawal', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+        header {
+            background: linear-gradient(145deg, var(--deep-brown), var(--velvet-brown));
+            padding: 20px 15px;
+            border-bottom: 2px solid var(--royal-gold);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        .header-content {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .back-button {
+            background: rgba(212,175,55,0.1);
+            border: 1px solid var(--gold-20);
+            color: var(--royal-gold);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        .back-button:hover { background: var(--royal-gold); color: var(--velvet-brown); transform: scale(1.05); }
+        .header-title {
+            color: var(--royal-gold);
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .container { max-width: 700px; margin: 0 auto; padding: 24px 15px; }
+        .card {
+            background: linear-gradient(145deg, var(--deep-brown), var(--velvet-brown));
+            border: 1px solid var(--gold-20);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            color: var(--royal-gold);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card p {
+            color: var(--cream-gold);
+            opacity: 0.9;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        .method-card {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--gold-20);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .method-card .method-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .method-card select {
+            padding: 8px 12px;
+            background: var(--velvet-brown);
+            border: 1px solid var(--gold-20);
+            border-radius: 8px;
+            color: var(--cream-gold);
+            font-size: 0.95rem;
+            min-width: 140px;
+        }
+        .method-card input {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 12px;
+            background: var(--velvet-brown);
+            border: 1px solid var(--gold-20);
+            border-radius: 8px;
+            color: var(--cream-gold);
+            font-size: 1rem;
+        }
+        .method-card input::placeholder { color: rgba(255,244,209,0.5); }
+        .method-card .row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .method-card .row label {
+            min-width: 100px;
+            color: var(--cream-gold);
+            font-size: 0.9rem;
+        }
+        .method-card .row input { flex: 1; }
+        .method-card .btn-remove {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: rgba(255,107,107,0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .method-card .btn-remove:hover { background: var(--danger); color: #fff; }
+        .btn-add {
+            width: 100%;
+            padding: 14px;
+            background: rgba(244,192,37,0.15);
+            border: 2px dashed var(--royal-gold);
+            border-radius: 12px;
+            color: var(--royal-gold);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+        .btn-add:hover { background: rgba(244,192,37,0.25); }
+        .btn-save {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--royal-gold), var(--cream-gold));
+            border: none;
+            border-radius: 14px;
+            color: var(--velvet-brown);
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,192,37,0.4); }
+        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 9999;
+            animation: fadeIn 0.3s;
+        }
+        .toast.success { background: var(--success); color: #fff; }
+        .toast.error { background: var(--danger); color: #fff; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .type-fields { display: none; }
+        .type-fields.active { display: block; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(45,38,18,0.98);
+            border-top: 2px solid rgba(212,175,55,0.4);
+            padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+        .bottom-nav .nav-item {
+            color: #d4af37;
+            text-align: center;
+            font-size: 0.8rem;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .bottom-nav .nav-item i { font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="dashboard.html" class="back-button" title="العودة"><i class="fas fa-arrow-right"></i></a>
+            <h1 class="header-title"><i class="fas fa-credit-card"></i> طرق الدفع</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-info-circle"></i> بيانات التحويل للزبون</h2>
+            <p>أضف طرق الدفع التي تريد أن تظهر للزبون عند اختيار «تحويل» (بنكي، رقم هاتف، بطاقة، إلخ). يمكنك تعديلها في أي وقت.</p>
+            <div id="methodsList"></div>
+            <button type="button" class="btn-add" id="btnAdd">
+                <i class="fas fa-plus"></i> إضافة طريقة دفع
+            </button>
+            <button type="button" class="btn-save" id="btnSave">
+                <i class="fas fa-save"></i> حفظ طرق الدفع
+            </button>
+        </div>
+    </div>
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-crown"></i><span>لوحة التحكم</span></a>
+        <a href="products.html" class="nav-item"><i class="fas fa-box-open"></i><span>المنتجات</span></a>
+        <a href="payment-methods.html" class="nav-item" style="color:#f3cf7a;"><i class="fas fa-credit-card"></i><span>طرق الدفع</span></a>
+    </nav>
+    <script src="../js/api.js"></script>
+    <script>
+        (function() {
+            const methodsList = document.getElementById('methodsList');
+            const btnAdd = document.getElementById('btnAdd');
+            const btnSave = document.getElementById('btnSave');
+
+            let paymentMethods = [];
+
+            function showToast(msg, type) {
+                var el = document.createElement('div');
+                el.className = 'toast ' + type;
+                el.textContent = msg;
+                document.body.appendChild(el);
+                setTimeout(function() { el.remove(); }, 3000);
+            }
+
+            function getTypeLabel(t) {
+                return { bank: 'تحويل بنكي', hawala: 'حوالة مالية', phone: 'رقم هاتف / محفظة', card: 'بطاقة شخصية / رقم هوية', other: 'أخرى' }[t] || t;
+            }
+
+            function renderMethodFields(container, type, data) {
+                data = data || {};
+                container.innerHTML = '';
+                var r = function(lbl, name, val, ph) {
+                    var row = document.createElement('div');
+                    row.className = 'row';
+                    row.innerHTML = '<label>' + lbl + '</label><input type="text" name="' + name + '" placeholder="' + (ph || '') + '" value="' + (val || '').replace(/"/g, '&quot;') + '">';
+                    container.appendChild(row);
+                };
+                if (type === 'bank') {
+                    r('اسم البنك', 'bankName', data.bankName, 'مثال: البنك الوطني');
+                    r('اسم صاحب الحساب', 'accountHolder', data.accountHolder, 'الاسم كما في البطاقة');
+                    r('رقم الحساب', 'accountNumber', data.accountNumber, 'رقم الحساب البنكي');
+                    r('الآيبان (اختياري)', 'iban', data.iban, 'IBAN');
+                    r('ملاحظة', 'note', data.note, 'أي تعليمات إضافية');
+                } else if (type === 'phone') {
+                    r('رقم الهاتف / المحفظة', 'phoneNumber', data.phoneNumber, 'مثال: 7773298831');
+                    r('ملاحظة', 'note', data.note, 'مثال: تحويل على يمن موبايل');
+                } else if (type === 'card') {
+                    r('رقم البطاقة / الهوية', 'cardNumber', data.cardNumber, 'رقم البطاقة الشخصية أو الهوية');
+                    r('الاسم على البطاقة', 'holderName', data.holderName, 'اسم صاحب البطاقة');
+                    r('ملاحظة', 'note', data.note, 'أي تعليمات');
+                } else if (type === 'hawala') {
+                    r('اسم مكتب الحوالة', 'hawalaOfficeName', data.hawalaOfficeName, 'مثال: الحوثي، السبئي، ميكروتيك');
+                    r('اسم المستلم', 'recipientName', data.recipientName, 'الاسم الذي يستلم به الحوالة');
+                    r('رقم هاتف المستلم', 'recipientPhone', data.recipientPhone, 'رقم الجوال للمستلم');
+                    r('الفرع / الوكيل', 'branchOrAgent', data.branchOrAgent, 'الفرع أو المدينة (اختياري)');
+                    r('ملاحظة', 'note', data.note, 'أي تعليمات للعميل');
+                } else {
+                    r('العنوان / الوصف', 'label', data.label, 'مثال: تحويل على حساب آخر');
+                    r('ملاحظة أو التفاصيل', 'note', data.note, 'اكتب التفاصيل التي تظهر للزبون');
+                }
+            }
+
+            function collectMethodData(cardEl) {
+                var type = cardEl.querySelector('select.method-type').value;
+                var labelEl = cardEl.querySelector('input.method-label');
+                var label = labelEl ? labelEl.value.trim() : '';
+                var data = { type: type, label: label };
+                var inputs = cardEl.querySelectorAll('.type-fields input');
+                for (var i = 0; i < inputs.length; i++) {
+                    var n = inputs[i].getAttribute('name');
+                    if (n) data[n] = inputs[i].value.trim();
+                }
+                return data;
+            }
+
+            function buildMethodCard(item, index) {
+                var card = document.createElement('div');
+                card.className = 'method-card';
+                card.dataset.index = index;
+                var type = item.type || 'bank';
+                var label = item.label || getTypeLabel(type);
+                card.innerHTML =
+                    '<button type="button" class="btn-remove" title="حذف"><i class="fas fa-trash"></i></button>' +
+                    '<div class="method-header">' +
+                    '<select class="method-type" title="نوع الطريقة">' +
+                    '<option value="bank"' + (type === 'bank' ? ' selected' : '') + '>تحويل بنكي</option>' +
+                    '<option value="hawala"' + (type === 'hawala' ? ' selected' : '') + '>حوالة مالية</option>' +
+                    '<option value="phone"' + (type === 'phone' ? ' selected' : '') + '>رقم هاتف / محفظة</option>' +
+                    '<option value="card"' + (type === 'card' ? ' selected' : '') + '>بطاقة / هوية</option>' +
+                    '<option value="other"' + (type === 'other' ? ' selected' : '') + '>أخرى</option>' +
+                    '</select>' +
+                    '<input type="text" class="method-label" placeholder="عنوان يظهر للزبون" value="' + (label || '').replace(/"/g, '&quot;') + '">' +
+                    '</div>' +
+                    '<div class="type-fields type-' + type + '"></div>';
+                var typeFields = card.querySelector('.type-fields');
+                var typeSelect = card.querySelector('select.method-type');
+                renderMethodFields(typeFields, type, item);
+                typeSelect.addEventListener('change', function() {
+                    card.querySelector('.type-fields').className = 'type-fields type-' + this.value + ' active';
+                    renderMethodFields(typeFields, this.value, {});
+                });
+                card.querySelector('.btn-remove').addEventListener('click', function() {
+                    paymentMethods.splice(index, 1);
+                    renderAll();
+                });
+                methodsList.appendChild(card);
+                card.querySelector('.type-fields').classList.add('active');
+            }
+
+            function renderAll() {
+                methodsList.innerHTML = '';
+                for (var i = 0; i < paymentMethods.length; i++) buildMethodCard(paymentMethods[i], i);
+            }
+
+            btnAdd.addEventListener('click', function() {
+                paymentMethods.push({ type: 'bank', label: 'تحويل بنكي', bankName: '', accountHolder: '', accountNumber: '', iban: '', note: '' });
+                renderAll();
+            });
+
+            btnSave.addEventListener('click', async function() {
+                var cards = methodsList.querySelectorAll('.method-card');
+                var list = [];
+                for (var i = 0; i < cards.length; i++) {
+                    list.push(collectMethodData(cards[i]));
+                }
+                btnSave.disabled = true;
+                btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+                try {
+                    await window.API.siteSettings.update({ paymentMethods: list });
+                    showToast('تم حفظ طرق الدفع بنجاح', 'success');
+                    paymentMethods = list;
+                } catch (e) {
+                    showToast(e.message || 'فشل الحفظ', 'error');
+                }
+                btnSave.disabled = false;
+                btnSave.innerHTML = '<i class="fas fa-save"></i> حفظ طرق الدفع';
+            });
+
+            async function load() {
+                try {
+                    var data = await window.API.siteSettings.get();
+                    paymentMethods = (data.settings && data.settings.paymentMethods) ? JSON.parse(JSON.stringify(data.settings.paymentMethods)) : [];
+                } catch (e) {
+                    paymentMethods = [];
+                }
+                renderAll();
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var wait = setInterval(function() {
+                    if (window.API) {
+                        clearInterval(wait);
+                        load();
+                    }
+                }, 100);
+                setTimeout(clearInterval, 5000, wait);
+            });
+        })();
+    </script>
+</body>
+</html>

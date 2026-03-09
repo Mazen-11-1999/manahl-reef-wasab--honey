@@ -1,0 +1,28 @@
+# Environment — لا ترفع أبداً (يحتوي أسرار وقاعدة البيانات)
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+*.env
+
+# Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Uploads (صور المستخدمين والمنتجات)
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: manahl-badr-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: manahl-badr
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+    networks:
+      - manahl-badr-network
+
+  # Node.js Backend API
+  backend:
+    build: .
+    container_name: manahl-badr-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/manahl-badr?authSource=admin
+      JWT_SECRET: your-production-jwt-secret-key-change-this
+      JWT_EXPIRE: 24h
+      MAX_FILE_SIZE: 5242880
+      UPLOAD_PATH: uploads
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./.env:/app/.env
+    depends_on:
+      - mongodb
+    networks:
+      - manahl-badr-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/products"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy (Optional)
+  nginx:
+    image: nginx:alpine
+    container_name: manahl-badr-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - manahl-badr-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  manahl-badr-network:
+    driver: bridge

@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفوائد الصحية | مناحل ريف وصاب</title>
+    <style>
+        /* ===== المتغيرات العامة ===== */
+        :root {
+            --bg-primary: #120a00;
+            --bg-secondary: #1a0f00;
+            --bg-card: #2a1804;
+            --bg-accent: #3d2508;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #aa8c2c;
+            --text-primary: #e0c097;
+            --text-secondary: #f3cf7a;
+            --border-gold: rgba(212, 175, 55, 0.3);
+            --shadow-gold: rgba(212, 175, 55, 0.4);
+            --success: #51cf66;
+            --info: #74c0fc;
+        }
+
+        /* ===== الأنماط الأساسية ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px 15px;
+            line-height: 1.6;
+        }
+
+        /* ===== الهيدر ===== */
+        header {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--gold-primary);
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            color: var(--gold-primary);
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 15px var(--shadow-gold);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 400;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== الحاوية الرئيسية ===== */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ===== قسم الفوائد الصحية ===== */
+        .health-section {
+            padding: 20px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-title {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: inline-block;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--gold-primary);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold-primary), var(--gold-light), var(--gold-primary));
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* ===== بطاقات الفوائد ===== */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .benefit-card {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .benefit-card:hover {
+            border-color: var(--gold-primary);
+            transform: translateY(-8px);
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.4),
+                0 0 30px var(--shadow-gold);
+        }
+
+        .benefit-card.premium {
+            background: linear-gradient(145deg, var(--bg-accent), var(--bg-card));
+            border: 2px solid var(--gold-primary);
+        }
+
+        .benefit-card.premium:hover {
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.5),
+                0 0 40px var(--shadow-gold),
+                inset 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+
+        /* ===== زخرفة خلفية البطاقة ===== */
+        .benefit-card::before {
+            content: '🍯';
+            position: absolute;
+            font-size: 8rem;
+            bottom: -30px;
+            left: -20px;
+            opacity: 0.03;
+            transform: rotate(-20deg);
+            transition: all 0.4s ease;
+        }
+
+        .benefit-card:hover::before {
+            opacity: 0.08;
+            transform: rotate(-15deg) scale(1.1);
+        }
+
+        .benefit-card.premium::before {
+            content: '👑';
+            font-size: 10rem;
+        }
+
+        /* ===== شارة المميزات ===== */
+        .premium-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            box-shadow: 0 3px 10px var(--shadow-gold);
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* ===== عنوان البطاقة ===== */
+        .benefit-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .benefit-title {
+            color: var(--gold-primary);
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .benefit-icon {
+            font-size: 1.5rem;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .benefit-rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: var(--gold-primary);
+            font-size: 0.9rem;
+        }
+
+        /* ===== وصف البطاقة ===== */
+        .benefit-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
+            font-style: italic;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== قائمة الفوائد ===== */
+        .benefit-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .benefit-list li {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-list li:hover {
+            background: rgba(212, 175, 55, 0.05);
+            transform: translateX(-5px);
+        }
+
+        .benefit-list li::before {
+            content: '✓';
+            color: var(--gold-primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .benefit-list li strong {
+            color: var(--gold-light);
+            font-weight: 600;
+        }
+
+        /* ===== أزرار الإجراء ===== */
+        .benefit-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+            box-shadow: 0 3px 10px var(--shadow-gold);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ===== قسم الإحصائيات ===== */
+        .stats-section {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-gold);
+            text-align: center;
+        }
+
+        .stats-title {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 15px;
+            border: 1px solid var(--border-gold);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--gold-primary);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        /* ===== قسم البحث ===== */
+        .search-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-gold);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-gold);
+            border-radius: 25px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 15px var(--shadow-gold);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .search-box::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        /* ===== قسم الفئات ===== */
+        .categories-section {
+            margin-bottom: 30px;
+        }
+
+        .categories-title {
+            color: var(--gold-primary);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .category-tag {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border-gold);
+            color: var(--gold-primary);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-tag:hover,
+        .category-tag.active {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            border-color: var(--gold-primary);
+            transform: translateY(-2px);
+        }
+
+        /* ===== تصميم متجاوب ===== */
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 1.5rem;
+            }
+
+            .benefit-card {
+                padding: 20px;
+            }
+
+            .benefit-title {
+                font-size: 1.1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .benefit-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .benefit-card {
+                padding: 15px;
+            }
+
+            .benefit-title {
+                font-size: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-tags {
+                justify-content: center;
+            }
+        }
+
+        /* ===== تأثيرات إضافية ===== */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===== شريط التنقل السفلي الموحد ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: rgba(45, 38, 18, 0.98);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+            border-top: 2px solid rgba(212, 175, 55, 0.4);
+            z-index: 1000;
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .nav-item {
+            color: #d4af37;
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            min-width: 60px;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            opacity: 1;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            color: #f3cf7a;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-item.active i {
+            transform: scale(1.1);
+        }
+        .nav-more-wrap { position: relative; }
+        .nav-more-dropdown {
+            display: none; position: absolute; bottom: 100%; right: 50%; transform: translateX(50%);
+            margin-bottom: 8px; min-width: 180px; background: rgba(45, 38, 18, 0.98);
+            backdrop-filter: blur(20px); border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6); z-index: 1001;
+            padding: 8px 0; list-style: none; margin: 0 0 8px 0;
+        }
+        .nav-more-dropdown.open { display: block; }
+        .nav-more-dropdown a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 18px;
+            color: #d4af37; text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+            width: 100%; text-align: right; box-sizing: border-box; font-family: 'Cairo', sans-serif;
+        }
+        .nav-more-dropdown a:hover { background: rgba(212, 175, 55, 0.15); }
+        .nav-more-dropdown a i { font-size: 1.1rem; width: 22px; }
+    </style>
+    <script>
+        function toggleNavMore(e) {
+            if (e) e.stopPropagation();
+            var dd = document.getElementById('navMoreDropdown'); var btn = document.getElementById('navMoreBtn');
+            if (!dd || !btn) return;
+            var isOpen = dd.classList.contains('open');
+            dd.classList.toggle('open', !isOpen);
+            btn.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+            dd.setAttribute('aria-hidden', !isOpen ? 'false' : 'true');
+        }
+        document.addEventListener('click', function () {
+            var dd = document.getElementById('navMoreDropdown'); var btn = document.getElementById('navMoreBtn');
+            if (dd) { dd.classList.remove('open'); dd.setAttribute('aria-hidden', 'true'); }
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+    </script>
+</head>
+
+<body>
+
+    <!-- زر الرجوع -->
+    <a href="../index.html" class="back-button" style="position: fixed; top: 20px; right: 20px; z-index: 1000; width: 50px; height: 50px; background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--bg-primary); text-decoration: none; box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4); transition: all 0.3s ease; font-size: 1.2rem;"
+       onmouseover="this.style.transform='translateX(-5px) scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(212, 175, 55, 0.6)';"
+       onmouseout="this.style.transform='translateX(0) scale(1)'; this.style.boxShadow='0 5px 20px rgba(212, 175, 55, 0.4)';"
+       title="العودة للصفحة الرئيسية">
+        <i class="fas fa-arrow-right"></i>
+    </a>
+
+    <header>
+        <div class="header-content">
+            <h1 class="header-title">
+                <i class="fas fa-pills" style="font-size: 2.5rem; color: var(--gold-primary); animation: pulse 2s infinite;"></i>
+                <span style="font-family: 'Cairo', sans-serif; font-weight: 700;">صيدلية مناحل ريف وصاب</span>
+                <i class="fas fa-leaf" style="font-size: 2.5rem; color: var(--success); animation: pulse 2s infinite; animation-delay: 0.5s;"></i>
+            </h1>
+            <p class="header-subtitle" style="font-family: 'Cairo', sans-serif; font-weight: 400;">
+                <i class="fas fa-heart" style="color: var(--gold-primary); margin-left: 8px;"></i>
+                اكتشف الفوائد الصحية المذهلة لمنتجاتنا الطبيعية
+                <i class="fas fa-heart" style="color: var(--gold-primary); margin-right: 8px;"></i>
+            </p>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- قسم البحث -->
+        <section class="search-section fade-in">
+            <input type="text" class="search-box" placeholder="🔍 ابحث عن فائدة صحية أو منتج..."
+                onkeyup="searchBenefits(this.value)">
+        </section>
+
+        <!-- قسم الفئات -->
+        <section class="categories-section fade-in">
+            <h3 class="categories-title" style="font-family: 'Cairo', sans-serif; font-weight: 600;">
+                <i class="fas fa-tags" style="color: var(--gold-primary); margin-left: 10px;"></i>
+                الفئات الصحية
+            </h3>
+            <div class="category-tags">
+                <div class="category-tag active" onclick="filterByCategory('all')">الكل</div>
+                <div class="category-tag" onclick="filterByCategory('immunity')">المناعة</div>
+                <div class="category-tag" onclick="filterByCategory('digestion')">الهضم</div>
+                <div class="category-tag" onclick="filterByCategory('energy')">الطاقة</div>
+                <div class="category-tag" onclick="filterByCategory('skin')">البشرة</div>
+                <div class="category-tag" onclick="filterByCategory('heart')">القلب</div>
+                <div class="category-tag" onclick="filterByCategory('diabetes')">السكري</div>
+                <div class="category-tag" onclick="filterByCategory('blood_pressure')">الضغط</div>
+                <div class="category-tag" onclick="filterByCategory('respiratory')">الجهاز التنفسي</div>
+                <div class="category-tag" onclick="filterByCategory('brain')">الدماغ</div>
+                <div class="category-tag" onclick="filterByCategory('bones')">العظام</div>
+            </div>
+        </section>
+
+        <!-- قسم الحالات الصحية -->
+        <section class="health-conditions-section fade-in" style="margin: 40px 0; padding: 30px; background: linear-gradient(135deg, rgba(42, 24, 4, 0.6), rgba(26, 15, 0, 0.8)); border-radius: 20px; border: 1px solid var(--border-gold);">
+            <div class="section-header">
+                <h2 class="section-title" style="font-family: 'Cairo', sans-serif; font-weight: 700;">
+                    <i class="fas fa-stethoscope" style="margin-left: 10px;"></i>
+                    فوائد حسب الحالة الصحية
+                </h2>
+            </div>
+            <div class="conditions-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
+                <div class="condition-card" onclick="filterByCondition('diabetes')" style="padding: 25px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-gold); border-radius: 15px; text-align: center; cursor: pointer; transition: all 0.3s ease; font-family: 'Cairo', sans-serif;"
+                     onmouseover="this.style.borderColor='var(--gold-primary)'; this.style.transform='translateY(-5px) scale(1.05)'; this.style.boxShadow='0 10px 30px rgba(212, 175, 55, 0.3)';"
+                     onmouseout="this.style.borderColor='var(--border-gold)'; this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none';">
+                    <i class="fas fa-heartbeat" style="font-size: 3rem; color: var(--gold-primary); margin-bottom: 15px; display: block;"></i>
+                    <h3 style="color: var(--gold-primary); margin-bottom: 10px; font-weight: 600;">السكري</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 400;">فوائد خاصة لمرضى السكري</p>
+                </div>
+                <div class="condition-card" onclick="filterByCondition('blood_pressure')" style="padding: 25px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-gold); border-radius: 15px; text-align: center; cursor: pointer; transition: all 0.3s ease; font-family: 'Cairo', sans-serif;"
+                     onmouseover="this.style.borderColor='var(--gold-primary)'; this.style.transform='translateY(-5px) scale(1.05)'; this.style.boxShadow='0 10px 30px rgba(212, 175, 55, 0.3)';"
+                     onmouseout="this.style.borderColor='var(--border-gold)'; this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none';">
+                    <i class="fas fa-tint" style="font-size: 3rem; color: var(--gold-primary); margin-bottom: 15px; display: block;"></i>
+                    <h3 style="color: var(--gold-primary); margin-bottom: 10px; font-weight: 600;">الضغط</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 400;">فوائد لصحة القلب والضغط</p>
+                </div>
+                <div class="condition-card" onclick="filterByCondition('digestion')" style="padding: 25px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-gold); border-radius: 15px; text-align: center; cursor: pointer; transition: all 0.3s ease; font-family: 'Cairo', sans-serif;"
+                     onmouseover="this.style.borderColor='var(--gold-primary)'; this.style.transform='translateY(-5px) scale(1.05)'; this.style.boxShadow='0 10px 30px rgba(212, 175, 55, 0.3)';"
+                     onmouseout="this.style.borderColor='var(--border-gold)'; this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none';">
+                    <i class="fas fa-leaf" style="font-size: 3rem; color: var(--success); margin-bottom: 15px; display: block;"></i>
+                    <h3 style="color: var(--gold-primary); margin-bottom: 10px; font-weight: 600;">الجهاز الهضمي</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 400;">علاج مشاكل الهضم والقولون</p>
+                </div>
+                <div class="condition-card" onclick="filterByCondition('respiratory')" style="padding: 25px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-gold); border-radius: 15px; text-align: center; cursor: pointer; transition: all 0.3s ease; font-family: 'Cairo', sans-serif;"
+                     onmouseover="this.style.borderColor='var(--gold-primary)'; this.style.transform='translateY(-5px) scale(1.05)'; this.style.boxShadow='0 10px 30px rgba(212, 175, 55, 0.3)';"
+                     onmouseout="this.style.borderColor='var(--border-gold)'; this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none';">
+                    <i class="fas fa-lungs" style="font-size: 3rem; color: var(--info); margin-bottom: 15px; display: block;"></i>
+                    <h3 style="color: var(--gold-primary); margin-bottom: 10px; font-weight: 600;">الجهاز التنفسي</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 400;">علاج السعال والتهاب الحلق</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم الفوائد الصحية -->
+        <section class="health-section">
+            <div class="section-header">
+                <h2 class="section-title">الفوائد الصحية</h2>
+            </div>
+
+            <div class="benefits-grid" id="benefitsGrid">
+
+                <!-- بطاقة عسل السدر -->
+                <div class="benefit-card premium fade-in" data-category="immunity digestion skin">
+                    <div class="premium-badge">الأكثر مبيعاً</div>
+                    <div class="benefit-header">
+                        <div class="benefit-title">
+                            <span class="benefit-icon">👑</span>
+                            <span>ملك الأعسال: عسل السدر</span>
+                        </div>
+                        <div class="benefit-rating">
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                        </div>
+                    </div>
+
+                    <p class="benefit-description">
+                        أجود أنواع العسل اليمني، يُعرف بـ "ملك الأعسال" لقيمته الغذائية والطبية الفائقة
+                    </p>
+
+                    <ul class="benefit-list">
+                        <li><strong>مقوي طبيعي للجهاز المناعي</strong> ضد الفيروسات والبكتيريا</li>
+                        <li><strong>يساعد في سرعة التئام الجروح</strong> والحروق بفضل خصائصه المضادة للبكتيريا</li>
+                        <li><strong>فعال جداً في علاج مشاكل الجهاز الهضمي</strong> والقولون العصبي</li>
+                        <li><strong>غني بمضادات الأكسدة</strong> التي تحارب الشيخوخة الخلوية</li>
+                        <li><strong>يخفف من التهاب الحلق والسعال</strong> كعلاج طبيعي فعال</li>
+                    </ul>
+                </div>
+
+                <!-- بطاقة عسل السمرة -->
+                <div class="benefit-card fade-in" data-category="digestion energy heart">
+                    <div class="benefit-header">
+                        <div class="benefit-title">
+                            <span class="benefit-icon">🌾</span>
+                            <span>عسل السمرة (للمعدة والكبد)</span>
+                        </div>
+                        <div class="benefit-rating">
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">☆</span>
+                        </div>
+                    </div>
+
+                    <p class="benefit-description">
+                        عسل ذو لون داكن وغني بالمعادن، مثالي لصحة الجهاز الهضمي والكبد
+                    </p>
+
+                    <ul class="benefit-list">
+                        <li><strong>صديق مرضى السكري</strong> (بعد استشارة الطبيب) لقلة السكروز الطبيعي</li>
+                        <li><strong>منظف طبيعي للكبد</strong> من السموم والشوائب</li>
+                        <li><strong>علاج فعال لفقر الدم (الأنيميا)</strong> لاحتوائه على نسبة عالية من الحديد</li>
+                        <li><strong>يحسن وظائف الجهاز الهضمي</strong> ويساعد على علاج عسر الهضم</li>
+                        <li><strong>يدعم صحة القلب</strong> بفضل محتواه من مضادات الأكسدة</li>
+                    </ul>
+                </div>
+
+                <!-- بطاقة عسل المراعي -->
+                <div class="benefit-card fade-in" data-category="skin immunity">
+                    <div class="benefit-header">
+                        <div class="benefit-title">
+                            <span class="benefit-icon">🌻</span>
+                            <span>عسل المراعي متعدد الأزهار</span>
+                        </div>
+                        <div class="benefit-rating">
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">☆</span>
+                        </div>
+                    </div>
+
+                    <p class="benefit-description">
+                        عسل طبيعي من مراعي اليمن العشبية، غني بحبوب اللقاح الطبيعية
+                    </p>
+
+                    <ul class="benefit-list">
+                        <li><strong>علاج طبيعي لأمراض الجلد</strong> مثل الأكزيما والصدفية</li>
+                        <li><strong>مرطب طبيعي للبشرة</strong> ويساعد على تجديد الخلايا</li>
+                        <li><strong>يخفف من الحساسية الموسمية</strong> بفضل حبوب اللقاح المحلية</li>
+                        <li><strong>يدعم صحة الجهاز التنفسي</strong> ويساعد على التنفس السليم</li>
+                        <li><strong>غني بالإنزيمات الطبيعية</strong> التي تساعد على الهضم</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- قسم وصفات طبيعية -->
+        <section class="recipes-section fade-in" style="margin: 40px 0; padding: 30px; background: linear-gradient(135deg, rgba(42, 24, 4, 0.6), rgba(26, 15, 0, 0.8)); border-radius: 20px; border: 1px solid var(--border-gold);">
+            <div class="section-header">
+                <h2 class="section-title" style="font-family: 'Cairo', sans-serif; font-weight: 700;">
+                    <i class="fas fa-mortar-pestle" style="margin-left: 10px;"></i>
+                    وصفات طبيعية
+                </h2>
+            </div>
+            <div id="recipesGrid" class="benefits-grid" style="margin-top: 30px;">
+                <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>جارٍ تحميل الوصفات...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم نصائح الاستخدام -->
+        <section class="usage-tips-section fade-in" style="margin: 40px 0; padding: 30px; background: linear-gradient(135deg, rgba(42, 24, 4, 0.6), rgba(26, 15, 0, 0.8)); border-radius: 20px; border: 1px solid var(--border-gold);">
+            <div class="section-header">
+                <h2 class="section-title" style="font-family: 'Cairo', sans-serif; font-weight: 700;">
+                    <i class="fas fa-lightbulb" style="margin-left: 10px; color: var(--gold-primary);"></i>
+                    نصائح الاستخدام
+                </h2>
+            </div>
+            <div id="usageTipsGrid" class="benefits-grid" style="margin-top: 30px;">
+                <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>جارٍ تحميل النصائح...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم الدراسات العلمية -->
+        <section class="studies-section fade-in" style="margin: 40px 0; padding: 30px; background: linear-gradient(135deg, rgba(42, 24, 4, 0.6), rgba(26, 15, 0, 0.8)); border-radius: 20px; border: 1px solid var(--border-gold);">
+            <div class="section-header">
+                <h2 class="section-title" style="font-family: 'Cairo', sans-serif; font-weight: 700;">
+                    <i class="fas fa-book-medical" style="margin-left: 10px;"></i>
+                    الدراسات العلمية
+                </h2>
+            </div>
+            <div id="studiesGrid" class="benefits-grid" style="margin-top: 30px;">
+                <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>جارٍ تحميل الدراسات...</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- API Integration -->
+    <script src="../js/api.js"></script>
+
+    <!-- شريط التنقل السفلي (موحد) -->
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='../index.html'">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='../index.html#products'">
+            <i class="fas fa-box"></i>
+            <span>المنتجات</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='checkout.html'">
+            <i class="fas fa-shopping-cart"></i>
+            <span>السلة</span>
+        </div>
+        <div class="nav-more-wrap">
+            <div class="nav-item active" id="navMoreBtn" onclick="toggleNavMore(event)" role="button" aria-expanded="false" aria-haspopup="true">
+                <i class="fas fa-ellipsis-h"></i>
+                <span>المزيد</span>
+            </div>
+            <ul class="nav-more-dropdown" id="navMoreDropdown" aria-hidden="true">
+                <li><a href="contests.html"><i class="fas fa-trophy"></i> المسابقات</a></li>
+                <li><a href="health-benefits.html"><i class="fas fa-pills"></i> الفوائد الصحية</a></li>
+                <li><a href="our-story.html"><i class="fas fa-book"></i> قصتنا</a></li>
+                <li><a href="my-orders.html"><i class="fas fa-list-alt"></i> طلباتي</a></li>
+            </ul>
+        </div>
+        <div class="nav-item" onclick="window.location.href='profile.html'">
+            <i class="fas fa-user"></i>
+            <span>حسابي</span>
+        </div>
+    </nav>
+
+    <script>
+        // === بيانات المعلومات الصحية ===
+        let allHealthInfos = [];
+        let currentCategory = 'all';
+        let currentCondition = null;
+
+        // تحميل المعلومات الصحية من API
+        async function loadHealthInfos() {
+            try {
+                // انتظار تحميل API
+                if (!window.API) {
+                    await new Promise(resolve => {
+                        const check = setInterval(() => {
+                            if (window.API) { clearInterval(check); resolve(); }
+                        }, 100);
+                        setTimeout(() => { clearInterval(check); resolve(); }, 3000);
+                    });
+                }
+
+                let data;
+                if (window.API && window.API.healthInfo) {
+                    data = await window.API.healthInfo.getAll();
+                } else {
+                    const res = await fetch('/api/health-info');
+                    data = await res.json();
+                }
+
+                allHealthInfos = data.data || data.healthInfos || (Array.isArray(data) ? data : []);
+                renderHealthInfos();
+                loadDynamicSections();
+            } catch (error) {
+                console.warn('لا توجد معلومات صحية من API:', error);
+                // إزالة spinner من الأقسام الديناميكية
+                ['recipesGrid', 'usageTipsGrid', 'studiesGrid'].forEach(id => {
+                    const grid = document.getElementById(id);
+                    if (grid) {
+                        grid.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);"><p>لا توجد بيانات حالياً - أضفها من لوحة التحكم</p></div>';
+                    }
+                });
+            }
+        }
+
+        // عرض المعلومات المحمّلة
+        function renderHealthInfos() {
+            // فلترة حسب الفئة
+            let filtered = allHealthInfos.filter(item => item.contentType === 'benefit' || !item.contentType);
+            if (currentCategory && currentCategory !== 'all') {
+                filtered = filtered.filter(item => item.healthCategory === currentCategory);
+            }
+            if (currentCondition) {
+                filtered = filtered.filter(item => item.healthCondition === currentCondition);
+            }
+
+            // إذا لا توجد بيانات من API، لا نغير البطاقات الثابتة الموجودة
+            if (filtered.length === 0 && allHealthInfos.length === 0) return;
+            if (filtered.length === 0) return;
+
+            // إضافة البطاقات الديناميكية من API بعد البطاقات الثابتة
+            const grid = document.getElementById('benefitsGrid');
+            if (!grid) return;
+
+            // حذف البطاقات الديناميكية القديمة فقط
+            grid.querySelectorAll('.dynamic-card').forEach(el => el.remove());
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'benefit-card fade-in dynamic-card';
+                card.setAttribute('data-category', item.healthCategory || '');
+                card.innerHTML = createHealthInfoCard(item);
+                grid.appendChild(card);
+            });
+        }
+
+        // تحميل الأقسام الديناميكية (وصفات، نصائح، دراسات)
+        function loadDynamicSections() {
+            const recipes = allHealthInfos.filter(i => i.contentType === 'recipe');
+            const tips = allHealthInfos.filter(i => i.contentType === 'usage_tip');
+            const studies = allHealthInfos.filter(i => i.contentType === 'study');
+
+            renderDynamicGrid('recipesGrid', recipes, 'وصفات');
+            renderDynamicGrid('usageTipsGrid', tips, 'نصائح');
+            renderDynamicGrid('studiesGrid', studies, 'دراسات');
+        }
+
+        function renderDynamicGrid(gridId, items, label) {
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            if (items.length === 0) {
+                grid.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);"><p>لا توجد ${label} حالياً - أضفها من لوحة التحكم</p></div>`;
+                return;
+            }
+            grid.innerHTML = items.map(item => `
+                <div class="benefit-card fade-in" style="cursor:pointer;">
+                    <div class="benefit-header">
+                        <div class="benefit-title">
+                            <span class="benefit-icon">${item.icon || '🍯'}</span>
+                            <span>${item.title || ''}</span>
+                        </div>
+                    </div>
+                    <p class="benefit-description">${item.description || ''}</p>
+                    ${item.benefits ? `<ul class="benefit-list">${item.benefits.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
+                    ${item.usage ? `<p style="margin-top:10px; padding:10px; background:rgba(212,175,55,0.1); border-radius:10px; font-size:0.9rem;">📋 ${item.usage}</p>` : ''}
+                    ${item.warnings ? `<p style="margin-top:10px; padding:10px; background:rgba(255,107,107,0.1); border-radius:10px; font-size:0.9rem; color:#ff6b6b;">⚠️ ${item.warnings}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // إنشاء بطاقة معلومة صحية
+        function createHealthInfoCard(item) {
+            return `
+                <div class="benefit-header">
+                    <div class="benefit-title">
+                        <span class="benefit-icon">${item.icon || '🍯'}</span>
+                        <span>${item.title || ''}</span>
+                    </div>
+                </div>
+                <p class="benefit-description">${item.description || ''}</p>
+                ${item.benefits ? `<ul class="benefit-list">${item.benefits.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
+                ${item.relatedProduct ? `<div class="benefit-actions"><button class="btn btn-secondary" onclick="window.location.href='product-details.html?productId=${item.relatedProduct}'"><span>🛒</span><span>اطلب المنتج</span></button></div>` : ''}
+            `;
+        }
+
+        // البحث المحسّن
+        function searchBenefits(query) {
+            if (!query || !query.trim()) {
+                // إظهار جميع البطاقات
+                document.querySelectorAll('.benefit-card').forEach(card => {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.3s ease-out';
+                });
+                return;
+            }
+
+            const searchLower = query.toLowerCase();
+            document.querySelectorAll('.benefit-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchLower)) {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.3s ease-out';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // الفلترة حسب الفئة
+        function filterByCategory(category) {
+            currentCategory = category;
+            currentCondition = null;
+
+            // إظهار/إخفاء البطاقات الثابتة
+            document.querySelectorAll('.benefit-card:not(.dynamic-card)').forEach(card => {
+                const cats = card.getAttribute('data-category') || '';
+                if (category === 'all' || cats.includes(category)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // إعادة رسم البطاقات الديناميكية
+            renderHealthInfos();
+            
+            const tags = document.querySelectorAll('.category-tag');
+            tags.forEach(tag => tag.classList.remove('active'));
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+        }
+
+        // تحميل البيانات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHealthInfos();
+        });
+
+        // الحصول على اسم الفئة
+        function getCategoryName(category) {
+            const names = {
+                'all': 'الكل',
+                'immunity': 'المناعة',
+                'digestion': 'الهضم',
+                'energy': 'الطاقة',
+                'skin': 'البشرة',
+                'heart': 'القلب'
+            };
+            return names[category] || 'الكل';
+        }
+
+        // نظام الإشعارات
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(45deg, #d4af37, #f3cf7a);
+                color: #120a00;
+                padding: 12px 20px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 1000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                animation: slideDown 0.3s ease-out;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // إضافة أنماط الإشعارات
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // تهيئة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function () {
+            // إضافة تأثيرات التمرير
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeIn 0.6s ease-out';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.benefit-card').forEach(card => {
+                observer.observe(card);
+            });
+
+            // تأثيرات التفاعل
+            document.querySelectorAll('.benefit-card').forEach(card => {
+                card.addEventListener('click', function () {
+                    this.style.animation = 'pulse 0.3s ease';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 300);
+                });
+            });
+
+            // تأثيرات التقييم
+            document.querySelectorAll('.benefit-rating').forEach(rating => {
+                rating.addEventListener('click', function () {
+                    const stars = this.querySelectorAll('.star');
+                    stars.forEach((star, index) => {
+                        star.style.animation = `starPulse 0.3s ease ${index * 0.1}s`;
+                    });
+                });
+            });
+        });
+
+        // إضافة تأثير النجوم
+        const starStyle = document.createElement('style');
+        starStyle.textContent = `
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(0.98); }
+            }
+            @keyframes starPulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.3); }
+            }
+        `;
+        document.head.appendChild(starStyle);
+    </script>
+
+</body>
+
+</html>

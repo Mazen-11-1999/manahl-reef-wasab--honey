@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حسابي | مناحل ريف وصاب</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Amiri:wght@400;700&family=Reem+Kufi+Ink:wght@400;500;600;700&family=Scheherazade+New:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0600;
+            --bg-card: #151008;
+            --gold: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #aa8c2c;
+            --gold-glow: rgba(212, 175, 55, 0.35);
+            --text: #e8dcc8;
+            --text-muted: #9a8b6e;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-x: hidden;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            background: linear-gradient(165deg, var(--bg-deep) 0%, #120a00 50%, #0d0800 100%);
+            font-family: 'Cairo', sans-serif;
+            color: var(--text);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--gold-glow), transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* خلفية كاملة: توهج نابض + جزيئات ذهبية عائمة + شروق + خطوط ناعمة */
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.12) 0%, transparent 55%);
+            pointer-events: none;
+            z-index: 0;
+            animation: bgPulseGlow 8s ease-in-out infinite;
+        }
+
+        .bg-particles {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-particles .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #d4af37;
+            border-radius: 50%;
+            box-shadow: 0 0 8px 2px rgba(212, 175, 55, 0.4);
+            opacity: 0;
+            animation: particleFloat 14s linear infinite;
+        }
+
+        .bg-sunrise {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 90px;
+            background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.18) 0%, transparent 70%);
+            filter: blur(35px);
+            pointer-events: none;
+            z-index: 0;
+            animation: bgSunriseMove 10s ease-in-out infinite;
+        }
+
+        .bg-sidr-lines {
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 22px, rgba(212, 175, 55, 0.025) 22px, rgba(212, 175, 55, 0.025) 44px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-sparkles-full {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-sparkles-full .sparkle-dot {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #ffd700;
+            border-radius: 50%;
+            filter: blur(0.5px);
+            opacity: 0;
+            animation: sparkleDot 3s ease-in-out infinite;
+        }
+
+        @keyframes bgPulseGlow {
+
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.08);
+            }
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            8% {
+                opacity: 0.6;
+            }
+
+            92% {
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(-80px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bgSunriseMove {
+
+            0%,
+            100% {
+                opacity: 0.35;
+                transform: translateX(-50%) scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: translateX(-50%) scale(1.15);
+            }
+        }
+
+        @keyframes sparkleDot {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1.3);
+                box-shadow: 0 0 10px 2px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        .auth-wrap {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .logo-block {
+            text-align: center;
+            margin-bottom: 28px;
+            animation: logoReveal 1s ease-out;
+        }
+
+        @keyframes logoReveal {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .logo-circle {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            overflow: hidden;
+            box-shadow: 0 0 30px var(--gold-glow), inset 0 0 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* حاوية اسم العلامة — أنيميشن فاخر (رسم تدريجي + تدرج لوني + قطرة عسل + خط عمودي) */
+        .brand-name-container {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+            min-height: 3.2rem;
+            padding-bottom: 52px;
+        }
+
+        /* النص الرئيسي — إطار شفاف للعمق */
+        .store-name {
+            font-family: 'Scheherazade New', 'Amiri', 'Reem Kufi Ink', serif;
+            font-size: clamp(1.5rem, 5vw, 1.85rem);
+            font-weight: 700;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(212, 175, 55, 0.25);
+            position: relative;
+            display: inline-block;
+            line-height: 1.5;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+
+        /* طبقة النص الذهبي — تدرج متحرك يشمل كل الحروف (مناحل ريف وصاب + الباء) */
+        .gold-text {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            color: #d4af37;
+            background: linear-gradient(105deg, #b8860b, #f0e68c, #d4af37, #e8c968, #f0e68c);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-text-stroke: 0;
+            text-shadow: 0 0 24px rgba(212, 175, 55, 0.4);
+            opacity: 0;
+            animation: drawText 2.2s ease-out forwards, goldShimmer 5s ease-in-out infinite 2s;
+            white-space: nowrap;
+        }
+
+        /* قطرة العسل — متناسقة مع النص، كأنها تسقط من حركة الحرف */
+        .honey-drop {
+            position: absolute;
+            top: 2.7rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            width: 10px;
+            height: 18px;
+            background: linear-gradient(180deg, #ffd700 0%, #d4af37 45%, #b8860b 100%);
+            border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%;
+            box-shadow:
+                0 0 16px rgba(255, 215, 0, 0.5),
+                0 0 32px rgba(212, 175, 55, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            animation: dropDrip 2.8s cubic-bezier(0.25, 0.1, 0.5, 1) 1.4s infinite;
+            z-index: 10;
+        }
+
+        .honey-drop::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+            top: 4px;
+            right: 3px;
+            filter: blur(0.5px);
+        }
+
+        .honey-drop::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 50% 80%, rgba(212, 175, 55, 0.4), transparent 65%);
+            bottom: -4px;
+            left: -5px;
+            filter: blur(6px);
+            z-index: -1;
+        }
+
+        /* الخط العمودي — ينمو مع سقوط القطرة (متناسق مع الحركة) */
+        .vertical-line {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 0;
+            margin-top: 1px;
+            background: linear-gradient(180deg, #ffd700, #d4af37, #b8860b, #d4af37, transparent);
+            box-shadow: 0 0 14px rgba(255, 215, 0, 0.4);
+            animation: lineGrow 2.8s cubic-bezier(0.25, 0.1, 0.5, 1) 1.4s infinite;
+            z-index: 8;
+        }
+
+        /* النقطة على الخط — تتحرك مع القطرة */
+        .line-dot {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            margin-top: 1px;
+            background: radial-gradient(circle at 30% 30%, #fff9e6, #d4af37);
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+            animation: dotMove 2.8s cubic-bezier(0.25, 0.1, 0.5, 1) 1.4s infinite;
+            z-index: 9;
+        }
+
+        /* جزيئات لمعان خفيفة حول الاسم */
+        .sparkles {
+            position: absolute;
+            inset: -15px;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #ffd700;
+            border-radius: 50%;
+            filter: blur(0.5px);
+            opacity: 0;
+            animation: sparkleTwinkle 2.5s ease-in-out infinite;
+        }
+
+        .store-name {
+            animation: glowBreath 4s ease-in-out infinite;
+        }
+
+        /* استجابة الموبايل والتابلت — منع تداخل النص والتكبير/التصغير */
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .auth-wrap {
+                max-width: 100%;
+            }
+
+            .store-name,
+            .gold-text {
+                white-space: normal;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                text-align: center;
+            }
+
+            .store-name {
+                font-size: clamp(1.25rem, 5.5vw, 1.65rem);
+            }
+
+            .brand-name-container {
+                min-height: 2.8rem;
+            }
+
+            .honey-drop {
+                top: 2.25rem;
+            }
+
+            .card {
+                padding: 24px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .store-name {
+                font-size: 1.2rem;
+            }
+
+            .honey-drop {
+                top: 1.95rem;
+                width: 8px;
+                height: 14px;
+            }
+
+            .logo-circle {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 12px;
+            }
+
+            .tabs {
+                padding: 3px;
+            }
+
+            .tab {
+                padding: 12px 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .auth-wrap {
+                max-width: 400px;
+            }
+        }
+
+        @keyframes drawText {
+            0% {
+                opacity: 0;
+                clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+                filter: blur(8px);
+            }
+
+            40% {
+                opacity: 0.5;
+                filter: blur(3px);
+            }
+
+            100% {
+                opacity: 1;
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes goldShimmer {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
+
+            50% {
+                background-position: 100% 50%;
+                filter: brightness(1.15);
+            }
+        }
+
+        /* حركة القطرة — تَسَقُّط واقعي من تحت النص (جاذبية + تشكل ثم سقوط) */
+        @keyframes dropDrip {
+            0% {
+                transform: translateX(-50%) translateY(0) scale(0.75);
+                opacity: 0;
+            }
+
+            6% {
+                transform: translateX(-50%) translateY(1px) scale(1);
+                opacity: 1;
+            }
+
+            15% {
+                transform: translateX(-50%) translateY(4px) scale(1.02);
+            }
+
+            35% {
+                transform: translateX(-50%) translateY(14px) scale(1);
+            }
+
+            55% {
+                transform: translateX(-50%) translateY(26px) scale(0.98);
+            }
+
+            78% {
+                transform: translateX(-50%) translateY(38px) scale(0.92);
+                opacity: 0.95;
+            }
+
+            100% {
+                transform: translateX(-50%) translateY(48px) scale(0.85);
+                opacity: 0;
+            }
+        }
+
+        /* نمو الخط — يتبع سقوط القطرة (واقعي) */
+        @keyframes lineGrow {
+            0% {
+                height: 0;
+                opacity: 0;
+            }
+
+            15% {
+                height: 12px;
+                opacity: 0.9;
+            }
+
+            40% {
+                height: 24px;
+                opacity: 1;
+            }
+
+            70% {
+                height: 40px;
+                opacity: 0.95;
+            }
+
+            100% {
+                height: 48px;
+                opacity: 0;
+            }
+        }
+
+        /* حركة النقطة — مع القطرة من أعلى إلى أسفل */
+        @keyframes dotMove {
+            0% {
+                top: 100%;
+                margin-top: 1px;
+                opacity: 0;
+                transform: translateX(-50%) scale(0.6);
+            }
+
+            12% {
+                top: calc(100% + 8px);
+                margin-top: 1px;
+                opacity: 1;
+                transform: translateX(-50%) scale(1.1);
+            }
+
+            45% {
+                top: calc(100% + 22px);
+                margin-top: 1px;
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+
+            75% {
+                top: calc(100% + 36px);
+                margin-top: 1px;
+                opacity: 0.7;
+                transform: translateX(-50%) scale(0.85);
+            }
+
+            100% {
+                top: calc(100% + 48px);
+                margin-top: 1px;
+                opacity: 0;
+                transform: translateX(-50%) scale(0.5);
+            }
+        }
+
+        @keyframes sparkleTwinkle {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            50% {
+                opacity: 0.9;
+                transform: scale(1.2);
+                box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.6);
+            }
+        }
+
+        @keyframes glowBreath {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.25));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 28px rgba(212, 175, 55, 0.45));
+            }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 14px;
+            padding: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.35s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: #0a0600;
+            box-shadow: 0 4px 15px var(--gold-glow);
+        }
+
+        .tab:not(.active):hover {
+            color: var(--gold-light);
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(21, 16, 8, 0.95) 0%, rgba(10, 6, 0, 0.98) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 22px;
+            padding: 32px 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(212, 175, 55, 0.08);
+            animation: cardIn 0.6s ease-out;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold-glow);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: #0a0600;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 6px 20px var(--gold-glow);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px var(--gold-glow);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            color: var(--gold-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--gold);
+        }
+
+        .msg {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .msg.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .msg.error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid var(--danger);
+            color: #f5b7b1;
+        }
+
+        .msg.success {
+            background: rgba(39, 174, 96, 0.2);
+            border: 1px solid var(--success);
+            color: #a9dfbf;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* إطار ذهبي فاخر نابض حول منطقة تسجيل الدخول */
+        .auth-frame {
+            position: relative;
+            padding: 6px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(170, 140, 44, 0.08) 50%, rgba(212, 175, 55, 0.15) 100%);
+            box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.4), 0 0 30px rgba(212, 175, 55, 0.15), inset 0 0 40px rgba(212, 175, 55, 0.03);
+            animation: framePulse 2.5s ease-in-out infinite;
+        }
+
+        .auth-frame::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 30px;
+            padding: 2px;
+            background: linear-gradient(135deg, #d4af37, #f3cf7a, #aa8c2c, #d4af37);
+            background-size: 300% 300%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: frameBorderFlow 4s ease-in-out infinite, frameGlow 2.5s ease-in-out infinite;
+        }
+
+        @keyframes framePulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.4), 0 0 30px rgba(212, 175, 55, 0.15), inset 0 0 40px rgba(212, 175, 55, 0.03);
+            }
+
+            50% {
+                box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.6), 0 0 45px rgba(212, 175, 55, 0.25), 0 0 80px rgba(212, 175, 55, 0.1), inset 0 0 50px rgba(212, 175, 55, 0.05);
+            }
+        }
+
+        @keyframes frameBorderFlow {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+                opacity: 1;
+            }
+
+            50% {
+                background-position: 100% 50%;
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes frameGlow {
+
+            0%,
+            100% {
+                filter: brightness(1);
+            }
+
+            50% {
+                filter: brightness(1.15);
+            }
+        }
+
+        /* الشعار: بدون حركة مستمرة — حركة أنيقة عند اللمس فقط */
+        .logo-circle {
+            animation: none;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .logo-circle.touch-effect {
+            animation: logoTouch 0.6s ease-out forwards;
+        }
+
+        @keyframes logoTouch {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 30px var(--gold-glow), inset 0 0 20px rgba(0, 0, 0, 0.4);
+            }
+
+            25% {
+                transform: scale(1.08);
+                box-shadow: 0 0 50px var(--gold-glow), 0 0 80px rgba(212, 175, 55, 0.4), inset 0 0 25px rgba(212, 175, 55, 0.15);
+            }
+
+            50% {
+                transform: scale(1.04);
+                box-shadow: 0 0 45px var(--gold-glow), 0 0 60px rgba(212, 175, 55, 0.3), inset 0 0 22px rgba(212, 175, 55, 0.1);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 30px var(--gold-glow), inset 0 0 20px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        /* حاوية سداسيات خلية النحل (تظهر عند اللمس) */
+        #hexagon-pop-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .hex-pop {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+        }
+
+        .hex-pop .hex-shape {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 100%;
+            height: 100%;
+            background: var(--hex-fill, linear-gradient(135deg, #f3cf7a, #d4af37));
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+        }
+
+        .hex-pop.animate .hex-shape {
+            animation: hexFly 1.15s ease-out forwards;
+        }
+
+        @keyframes hexFly {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) translate(var(--hex-dx), var(--hex-dy)) scale(1) rotate(var(--hex-rotate));
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-glow" aria-hidden="true"></div>
+    <div class="bg-particles" id="bgParticles"></div>
+    <div class="bg-sunrise" aria-hidden="true"></div>
+    <div class="bg-sidr-lines" aria-hidden="true"></div>
+    <div class="bg-sparkles-full" id="bgSparklesFull"></div>
+    <div id="hexagon-pop-container" aria-hidden="true"></div>
+    <div class="auth-wrap">
+        <div class="logo-block">
+            <div class="logo-circle" id="logoCircle" role="img" aria-label="شعار مناحل ريف وصاب">
+                <img src="../assets/manahel.jpg" alt="مناحل ريف وصاب"
+                    onerror="this.style.background='#1a1200';this.src='';">
+            </div>
+            <div class="brand-name-container">
+                <div class="store-name" id="storeName">
+                    مناحل ريف وصاب
+                    <div class="gold-text" aria-hidden="true">مناحل ريف وصاب</div>
+                </div>
+                <div class="honey-drop" aria-hidden="true"></div>
+                <div class="vertical-line" aria-hidden="true"></div>
+                <div class="line-dot" aria-hidden="true"></div>
+                <div class="sparkles" id="authSparkles"></div>
+            </div>
+        </div>
+
+        <div class="auth-frame">
+            <div class="tabs">
+                <button type="button" class="tab active" data-tab="login">تسجيل الدخول</button>
+                <button type="button" class="tab" data-tab="register">إنشاء حساب</button>
+            </div>
+
+            <div class="card">
+                <div id="msg" class="msg"></div>
+
+                <div id="panel-login" class="panel active">
+                    <form id="formLogin">
+                        <div class="form-group">
+                            <label for="loginPhone"><i class="fas fa-mobile-alt" style="margin-left: 6px;"></i> رقم
+                                الهاتف</label>
+                            <input type="tel" id="loginPhone" placeholder="مثال: 771234567 أو 967771234567" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword"><i class="fas fa-lock" style="margin-left: 6px;"></i> كلمة
+                                المرور</label>
+                            <input type="password" id="loginPassword" placeholder="كلمة المرور" required minlength="8"
+                                autocomplete="current-password">
+                        </div>
+                        <button type="submit" class="submit-btn" id="btnLogin">دخول</button>
+                    </form>
+                </div>
+
+                <div id="panel-register" class="panel">
+                    <form id="formRegister">
+                        <div class="form-group">
+                            <label for="regPhone"><i class="fas fa-mobile-alt" style="margin-left: 6px;"></i> رقم
+                                الهاتف</label>
+                            <input type="tel" id="regPhone" placeholder="مثال: 771234567" required>
+                            <p class="hint">نفس الرقم لطلباتك والمشاركة في المسابقات</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="regName"><i class="fas fa-user" style="margin-left: 6px;"></i> الاسم
+                                الكامل</label>
+                            <input type="text" id="regName" placeholder="الاسم كما تريد ظهوره" required minlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label for="regPassword"><i class="fas fa-lock" style="margin-left: 6px;"></i> كلمة
+                                المرور</label>
+                            <input type="password" id="regPassword" placeholder="8 أحرف على الأقل" required
+                                minlength="8" autocomplete="new-password">
+                        </div>
+                        <button type="submit" class="submit-btn" id="btnRegister">إنشاء الحساب</button>
+                    </form>
+                </div>
+            </div>
+        </div><!-- /.auth-frame -->
+
+        <div style="text-align: center; margin-top: 32px; padding-bottom: 24px;">
+            <a href="../index.html" class="back-link"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        (function checkAlreadyLoggedIn() {
+            var token = window.API && window.API.getAuthToken ? window.API.getAuthToken() : localStorage.getItem('authToken') || localStorage.getItem('adminToken');
+            if (!token) return;
+            if (!window.API || !window.API.auth || !window.API.auth.getMe) return;
+            window.API.auth.getMe().then(function (data) {
+                var user = data.user || data;
+                // لا توجه للصفحة الرئيسية إذا كان مالك - دعه يبقى في صفحة الدخول
+                if (user && user.id && user.role !== 'admin') {
+                    window.location.replace('../index.html');
+                }
+            }).catch(function () { });
+        })();
+
+        (function initBrandAnimation() {
+            var container = document.getElementById('authSparkles');
+            if (!container) return;
+            for (var i = 0; i < 12; i++) {
+                var s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.left = (Math.random() * 100) + '%';
+                s.style.top = (Math.random() * 100) + '%';
+                s.style.animationDelay = (Math.random() * 2.5) + 's';
+                container.appendChild(s);
+            }
+            var storeName = document.getElementById('storeName');
+            var goldText = storeName && storeName.querySelector('.gold-text');
+            var container = storeName && storeName.closest('.brand-name-container');
+            if (storeName && goldText) {
+                function replayAnimations() {
+                    goldText.style.animation = 'none';
+                    goldText.offsetHeight;
+                    goldText.style.animation = 'drawText 2s ease-out forwards, goldShimmer 5s ease-in-out infinite 0.5s';
+                    if (container) {
+                        [' .honey-drop', ' .vertical-line', ' .line-dot'].forEach(function (sel) {
+                            var el = container.querySelector(sel);
+                            if (el) {
+                                el.style.animation = 'none';
+                                el.offsetHeight;
+                                if (sel === ' .honey-drop') el.style.animation = 'dropDrip 2.8s cubic-bezier(0.25, 0.1, 0.5, 1) 1.4s infinite';
+                                else if (sel === ' .vertical-line') el.style.animation = 'lineGrow 3s ease-in-out 1.2s infinite';
+                                else if (sel === ' .line-dot') el.style.animation = 'dotMove 3s ease-in-out 1.2s infinite';
+                            }
+                        });
+                    }
+                }
+                storeName.addEventListener('click', replayAnimations);
+            }
+        })();
+
+        (function initBackgroundEffects() {
+            var particlesEl = document.getElementById('bgParticles');
+            var sparklesEl = document.getElementById('bgSparklesFull');
+            if (particlesEl) {
+                for (var i = 0; i < 35; i++) {
+                    var p = document.createElement('div');
+                    p.className = 'particle';
+                    p.style.left = (Math.random() * 100) + '%';
+                    p.style.width = (Math.random() * 2 + 1) + 'px';
+                    p.style.height = p.style.width;
+                    p.style.animationDelay = (Math.random() * 14) + 's';
+                    p.style.animationDuration = (Math.random() * 6 + 10) + 's';
+                    particlesEl.appendChild(p);
+                }
+            }
+            if (sparklesEl) {
+                for (var j = 0; j < 25; j++) {
+                    var s = document.createElement('div');
+                    s.className = 'sparkle-dot';
+                    s.style.left = (Math.random() * 100) + '%';
+                    s.style.top = (Math.random() * 100) + '%';
+                    s.style.animationDelay = (Math.random() * 3) + 's';
+                    sparklesEl.appendChild(s);
+                }
+            }
+        })();
+
+        const msgEl = document.getElementById('msg');
+        const tabs = document.querySelectorAll('.tab');
+        const panelLogin = document.getElementById('panel-login');
+        const panelRegister = document.getElementById('panel-register');
+        const formLogin = document.getElementById('formLogin');
+        const formRegister = document.getElementById('formRegister');
+        const btnLogin = document.getElementById('btnLogin');
+        const btnRegister = document.getElementById('btnRegister');
+
+        function showMsg(text, type) {
+            msgEl.textContent = text;
+            msgEl.className = 'msg show ' + (type === 'error' ? 'error' : 'success');
+            msgEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        function hideMsg() {
+            msgEl.className = 'msg';
+        }
+
+        tabs.forEach(t => {
+            t.addEventListener('click', function () {
+                const tab = this.getAttribute('data-tab');
+                tabs.forEach(x => x.classList.remove('active'));
+                this.classList.add('active');
+                panelLogin.classList.toggle('active', tab === 'login');
+                panelRegister.classList.toggle('active', tab === 'register');
+                hideMsg();
+            });
+        });
+
+        formLogin.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            hideMsg();
+            const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            if (!phone || !password) {
+                showMsg('أدخل رقم الهاتف وكلمة المرور', 'error');
+                return;
+            }
+            btnLogin.disabled = true;
+            btnLogin.textContent = 'جاري الدخول...';
+            try {
+                const data = await window.API.auth.login(phone, password);
+                showMsg('تم تسجيل الدخول بنجاح', 'success');
+                setTimeout(function () {
+                    window.location.href = '../index.html';
+                }, 600);
+            } catch (err) {
+                showMsg(err.message || 'رقم الهاتف أو كلمة المرور غير صحيحة', 'error');
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'دخول';
+            }
+        });
+
+        formRegister.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            hideMsg();
+            const phone = document.getElementById('regPhone').value.trim();
+            const name = document.getElementById('regName').value.trim();
+            const password = document.getElementById('regPassword').value;
+            if (!phone || !name || !password) {
+                showMsg('أكمل جميع الحقول', 'error');
+                return;
+            }
+            if (name.length < 2) {
+                showMsg('الاسم حرفين على الأقل', 'error');
+                return;
+            }
+            if (password.length < 8) {
+                showMsg('كلمة المرور 8 أحرف على الأقل', 'error');
+                return;
+            }
+            btnRegister.disabled = true;
+            btnRegister.textContent = 'جاري إنشاء الحساب...';
+            try {
+                await window.API.auth.registerCustomer(phone, name, password);
+                localStorage.removeItem('customerDisplayName');
+                localStorage.setItem('showWelcomeAfterLogin', '1');
+                showMsg('تم إنشاء حسابك. جاري التحويل...', 'success');
+                setTimeout(function () {
+                    window.location.href = '../index.html';
+                }, 800);
+            } catch (err) {
+                showMsg(err.message || 'حدث خطأ. جرّب رقم هاتف آخر أو كلمة مرور أقوى.', 'error');
+                btnRegister.disabled = false;
+                btnRegister.textContent = 'إنشاء الحساب';
+            }
+        });
+
+        // ——— شعار: حركة أنيقة عند اللمس فقط (بدون حركة مستمرة) ———
+        (function initLogoTouch() {
+            var logo = document.getElementById('logoCircle');
+            if (!logo) return;
+            function playTouchEffect(e) {
+                if (e && e.cancelable) e.preventDefault();
+                logo.classList.remove('touch-effect');
+                void logo.offsetWidth;
+                logo.classList.add('touch-effect');
+                setTimeout(function () { logo.classList.remove('touch-effect'); }, 650);
+            }
+            logo.addEventListener('click', function (e) { playTouchEffect(e); });
+            logo.addEventListener('touchend', function (e) { playTouchEffect(e); }, { passive: false });
+        })();
+
+        // ——— سداسيات خلية النحل (Hexagon Pop) عند اللمس/النقر في أي مكان ———
+        (function initHexagonPop() {
+            var container = document.getElementById('hexagon-pop-container');
+            if (!container) return;
+            var lastPop = 0;
+            var throttleMs = 180;
+
+            function randomIn(min, max) {
+                return min + Math.random() * (max - min);
+            }
+            function randomInt(min, max) {
+                return Math.floor(randomIn(min, max + 1));
+            }
+
+            var goldGradients = [
+                'linear-gradient(135deg, #fff4d1, #f3cf7a)',
+                'linear-gradient(135deg, #f3cf7a, #d4af37)',
+                'linear-gradient(135deg, #d4af37, #aa8c2c)',
+                'linear-gradient(135deg, #e6b800, #f4c025)',
+                'linear-gradient(135deg, #ffd54f, #ffb300)',
+                'linear-gradient(135deg, #f9a825, #f57f17)'
+            ];
+
+            function spawnHexagons(x, y) {
+                var now = Date.now();
+                if (now - lastPop < throttleMs) return;
+                lastPop = now;
+
+                var count = 14 + randomInt(0, 6);
+                for (var i = 0; i < count; i++) {
+                    var size = randomIn(10, 22);
+                    var angle = randomIn(0, Math.PI * 2);
+                    var dist = randomIn(70, 160);
+                    var dx = Math.cos(angle) * dist;
+                    var dy = Math.sin(angle) * dist;
+                    var rotate = randomIn(-180, 180);
+
+                    var el = document.createElement('div');
+                    el.className = 'hex-pop animate';
+                    el.style.width = size + 'px';
+                    el.style.height = size + 'px';
+                    el.style.left = (x - size / 2) + 'px';
+                    el.style.top = (y - size / 2) + 'px';
+                    el.style.setProperty('--hex-dx', dx + 'px');
+                    el.style.setProperty('--hex-dy', dy + 'px');
+                    el.style.setProperty('--hex-rotate', rotate + 'deg');
+                    el.style.setProperty('--hex-fill', goldGradients[randomInt(0, goldGradients.length - 1)]);
+
+                    var shape = document.createElement('div');
+                    shape.className = 'hex-shape';
+                    el.appendChild(shape);
+                    container.appendChild(el);
+
+                    setTimeout(function () {
+                        if (el.parentNode) el.parentNode.removeChild(el);
+                    }, 1200);
+                }
+            }
+
+            function getCoords(e) {
+                if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                if (e.changedTouches && e.changedTouches.length) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+                return { x: e.clientX, y: e.clientY };
+            }
+
+            document.addEventListener('click', function (e) {
+                spawnHexagons(e.clientX, e.clientY);
+            });
+            document.addEventListener('touchend', function (e) {
+                if (e.changedTouches && e.changedTouches.length) {
+                    var t = e.changedTouches[0];
+                    spawnHexagons(t.clientX, t.clientY);
+                }
+            }, { passive: true });
+        })();
+    </script>
+</body>
+
+</html>

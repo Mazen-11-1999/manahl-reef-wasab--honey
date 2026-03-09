@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة إدارة المالك  | مناحل ريف وصاب</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --royal-gold: #f4c025;
+            --cream-gold: #fff4d1;
+            --dark-brown: #221e10;
+            --velvet-brown: #1a1608;
+            --deep-brown: #2d2612;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, var(--velvet-brown), var(--dark-brown));
+            min-height: 100vh;
+            color: var(--cream-gold);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .secure-badge {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--royal-gold);
+            font-size: 0.9rem;
+        }
+        .logo-wrap {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 16px;
+            background: linear-gradient(145deg, var(--royal-gold), #b8860b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(244, 192, 37, 0.4);
+            font-size: 2rem;
+        }
+        .title { font-size: 1.75rem; font-weight: 800; color: var(--royal-gold); margin-bottom: 6px; text-align: center; }
+        .subtitle { font-size: 0.95rem; color: var(--cream-gold); opacity: 0.9; margin-bottom: 28px; text-align: center; }
+        .card {
+            width: 100%;
+            max-width: 380px;
+            background: linear-gradient(145deg, var(--deep-brown), var(--velvet-brown));
+            border: 1px solid rgba(244, 192, 37, 0.25);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        .field { margin-bottom: 20px; }
+        .field label { display: block; margin-bottom: 8px; color: var(--cream-gold); font-weight: 500; }
+        .field input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid rgba(244, 192, 37, 0.3);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.25);
+            color: var(--cream-gold);
+            font-size: 1rem;
+        }
+        .field input::placeholder { color: rgba(255,244,209,0.5); }
+        .field input:focus { outline: none; border-color: var(--royal-gold); box-shadow: 0 0 0 2px rgba(244,192,37,0.2); }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--royal-gold), #b8860b);
+            color: var(--velvet-brown);
+            margin-bottom: 12px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(244,192,37,0.4); }
+        .btn-fingerprint {
+            background: linear-gradient(145deg, #493f22, var(--deep-brown));
+            color: var(--royal-gold);
+            border: 1px solid rgba(244, 192, 37, 0.4);
+        }
+        .btn-fingerprint:hover { background: rgba(244,192,37,0.15); border-color: var(--royal-gold); transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .footer-links {
+            margin-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+        .footer-links a { color: var(--royal-gold); text-decoration: none; }
+        .footer-links a:hover { text-decoration: underline; }
+        .msg { text-align: center; padding: 10px; border-radius: 10px; margin-bottom: 16px; font-size: 0.9rem; display: none; }
+        .msg.error { background: rgba(255,107,107,0.2); color: #ff6b6b; display: block; }
+        .msg.success { background: rgba(81,207,102,0.2); color: #51cf66; display: block; }
+
+        /* طبقة مسح البصمة */
+        .fingerprint-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 22, 8, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .fingerprint-overlay.active { display: flex; }
+        .fingerprint-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 3px solid var(--royal-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse-ring 1.5s ease-in-out infinite;
+        }
+        .fingerprint-icon {
+            font-size: 64px;
+            color: var(--royal-gold);
+            animation: finger-glow 1.2s ease-in-out infinite;
+        }
+        .fingerprint-text { color: var(--cream-gold); font-size: 1.1rem; }
+        .fingerprint-cancel { margin-top: 12px; color: var(--royal-gold); cursor: pointer; text-decoration: underline; font-size: 0.9rem; }
+        @keyframes pulse-ring {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(244, 192, 37, 0.4); }
+            50% { box-shadow: 0 0 0 20px rgba(244, 192, 37, 0); }
+        }
+        @keyframes finger-glow {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px var(--royal-gold)); }
+            50% { opacity: 0.85; filter: drop-shadow(0 0 16px var(--royal-gold)); }
+        }
+    </style>
+</head>
+<body>
+    <div class="secure-badge"><i class="fas fa-lock"></i><span>آمن</span></div>
+
+    <div class="logo-wrap"><i class="fas fa-crown" style="color: var(--velvet-brown);"></i></div>
+    <h1 class="title">مناحل ريف وصاب</h1>
+    <p class="subtitle">بوابة إدارة المالك الآمنة</p>
+
+    <div class="card">
+        <div id="loginMsg" class="msg"></div>
+        <form id="loginForm">
+            <div class="field">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" name="password" placeholder="أدخل كلمة المرور" autocomplete="current-password" minlength="6">
+            </div>
+            <button type="submit" class="btn btn-primary" id="btnPassword">
+                <span>دخول للوحة التحكم</span>
+                <i class="fas fa-sign-in-alt"></i>
+            </button>
+        </form>
+        <button type="button" class="btn btn-fingerprint" id="btnFingerprint" aria-label="تسجيل الدخول بالبصمة">
+            <i class="fas fa-fingerprint" style="font-size: 1.4rem;"></i>
+            <span>تسجيل الدخول بالبصمة</span>
+        </button>
+        <p class="subtitle" style="margin-top:12px; font-size:0.85rem; opacity:0.85;">فقط البصمة المسجّلة من لوحة التحكم (بعد الدخول بكلمة المرور) تسمح بالدخول — لا يقبل غيرها.</p>
+        <div class="footer-links">
+            <a href="#" onclick="alert('الدعم الفني: راجع إعدادات الموقع'); return false;">الدعم الفني</a>
+            <a href="#" onclick="alert('نسيت كلمة المرور: تواصل مع المطور أو راجع .env'); return false;">نسيت كلمة المرور؟</a>
+        </div>
+    </div>
+
+    <!-- طبقة مسح البصمة -->
+    <div class="fingerprint-overlay" id="fingerprintOverlay" aria-hidden="true">
+        <div class="fingerprint-circle">
+            <i class="fas fa-fingerprint fingerprint-icon"></i>
+        </div>
+        <p class="fingerprint-text">ضع إصبعك على المستشعر للمسح...</p>
+        <button type="button" class="fingerprint-cancel" id="fingerprintCancel">إلغاء</button>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@13.2.2/dist/bundle.umd.min.js"></script>
+    <script>
+        (function() {
+            const API_BASE = window.location.origin;
+            const loginMsg = document.getElementById('loginMsg');
+            const loginForm = document.getElementById('loginForm');
+            const passwordInput = document.getElementById('password');
+            const btnPassword = document.getElementById('btnPassword');
+            const btnFingerprint = document.getElementById('btnFingerprint');
+            const fingerprintOverlay = document.getElementById('fingerprintOverlay');
+            const fingerprintCancel = document.getElementById('fingerprintCancel');
+
+            function showMsg(text, type) {
+                loginMsg.textContent = text;
+                loginMsg.className = 'msg ' + (type === 'error' ? 'error' : 'success');
+            }
+            function hideMsg() { loginMsg.className = 'msg'; }
+
+            function setToken(token) {
+                localStorage.setItem('adminToken', token);
+                localStorage.setItem('isAdmin', 'true');
+                if (typeof setAuthToken === 'function') setAuthToken(token);
+                else localStorage.setItem('authToken', token);
+            }
+            function goToDashboard() {
+                window.location.href = 'dashboard.html';
+            }
+
+            // دخول بكلمة المرور
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                hideMsg();
+                const password = passwordInput.value.trim();
+                if (!password) { showMsg('أدخل كلمة المرور', 'error'); return; }
+                btnPassword.disabled = true;
+                btnPassword.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الدخول...';
+                try {
+                    const res = await fetch(API_BASE + '/api/admin/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password: password })
+                    });
+                    const data = await res.json();
+                    if (data.success && data.token) {
+                        setToken(data.token);
+                        showMsg('تم الدخول بنجاح', 'success');
+                        setTimeout(goToDashboard, 400);
+                    } else {
+                        showMsg(data.message || 'كلمة المرور غير صحيحة', 'error');
+                        btnPassword.disabled = false;
+                        btnPassword.innerHTML = '<span>دخول للوحة التحكم</span><i class="fas fa-sign-in-alt"></i>';
+                    }
+                } catch (err) {
+                    showMsg('حدث خطأ في الاتصال. تحقق من تشغيل الخادم.', 'error');
+                    btnPassword.disabled = false;
+                    btnPassword.innerHTML = '<span>دخول للوحة التحكم</span><i class="fas fa-sign-in-alt"></i>';
+                }
+            });
+
+            // إظهار/إخفاء طبقة البصمة
+            function showFingerprintOverlay(show) {
+                fingerprintOverlay.classList.toggle('active', !!show);
+                fingerprintOverlay.setAttribute('aria-hidden', !show);
+            }
+            fingerprintCancel.addEventListener('click', function() {
+                showFingerprintOverlay(false);
+            });
+
+            // دخول بالبصمة (WebAuthn)
+            btnFingerprint.addEventListener('click', async function() {
+                if (!window.PublicKeyCredential) {
+                    showMsg('المتصفح أو الجهاز لا يدعم تسجيل الدخول بالبصمة.', 'error');
+                    return;
+                }
+                hideMsg();
+                showFingerprintOverlay(true);
+                btnFingerprint.disabled = true;
+                try {
+                    const startRes = await fetch(API_BASE + '/api/webauthn/authenticate/start', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+                    const startData = await startRes.json();
+                    if (!startData.success || !startData.options) {
+                        showFingerprintOverlay(false);
+                        showMsg(startData.message || 'لا توجد بصمة مسجلة. سجّل الدخول بكلمة المرور أولاً ثم سجّل البصمة من لوحة التحكم.', 'error');
+                        btnFingerprint.disabled = false;
+                        return;
+                    }
+                    const options = startData.options;
+                    const credential = await SimpleWebAuthnBrowser.startAuthentication(options);
+                    const challengeId = options.challengeId;
+                    const completeRes = await fetch(API_BASE + '/api/webauthn/authenticate/complete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ credential: { ...credential, challengeId: challengeId } })
+                    });
+                    const completeData = await completeRes.json();
+                    showFingerprintOverlay(false);
+                    if (completeData.success && completeData.token) {
+                        setToken(completeData.token);
+                        showMsg('تم الدخول بالبصمة بنجاح', 'success');
+                        setTimeout(goToDashboard, 400);
+                    } else {
+                        showMsg(completeData.message || 'فشل التحقق من البصمة', 'error');
+                    }
+                } catch (err) {
+                    showFingerprintOverlay(false);
+                    if (err.name === 'NotAllowedError') {
+                        showMsg('تم إلغاء المسح أو انتهت المهلة.', 'error');
+                    } else {
+                        showMsg(err.message || 'فشل تسجيل الدخول بالبصمة. تأكد من تسجيل البصمة أولاً.', 'error');
+                    }
+                }
+                btnFingerprint.disabled = false;
+            });
+
+            // إن كان لديه token صالح يوجّه للوحة التحكم
+            (function checkExistingAuth() {
+                const token = typeof getAuthToken === 'function' ? getAuthToken() : (localStorage.getItem('authToken') || localStorage.getItem('adminToken'));
+                if (!token) return;
+                fetch(API_BASE + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        var user = data.user || data;
+                        if (user && user.role === 'admin') goToDashboard();
+                    })
+                    .catch(function() {});
+            })();
+        })();
+    </script>
+</body>
+</html>

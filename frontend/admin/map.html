@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خريطة المالك الذكية | مناحل ريف وصاب</title>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ===== المتغيرات العامة ===== */
+        :root {
+            --bg-primary: #0b0600;
+            --bg-secondary: #1a0f00;
+            --bg-card: #231504;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #aa8c2c;
+            --text-primary: #f3cf7a;
+            --text-secondary: #e0c097;
+            --border-gold: rgba(212, 175, 55, 0.3);
+            --shadow-gold: rgba(212, 175, 55, 0.4);
+        }
+
+        /* ===== الأنماط الأساسية ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px 15px;
+        }
+
+        /* ===== الهيدر ===== */
+        header {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--gold-primary);
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--shadow-gold);
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        /* ===== الحاوية الرئيسية ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== خريطة المالك الذكية ===== */
+        .admin-map-view {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: var(--bg-primary);
+            border-radius: 25px;
+            border: 2px solid var(--gold-primary);
+            overflow: hidden;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.7),
+                0 0 40px var(--shadow-gold),
+                inset 0 0 30px rgba(212, 175, 55, 0.05);
+            margin-bottom: 20px;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* تخصيص Leaflet للوضع الداكن */
+        .leaflet-container {
+            background: var(--bg-primary);
+        }
+
+        .leaflet-popup-content-wrapper {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
+            color: var(--text-primary);
+            border: 1px solid var(--gold-primary);
+            border-radius: 15px;
+        }
+
+        .leaflet-popup-tip {
+            background: var(--bg-card);
+            border: 1px solid var(--gold-primary);
+        }
+
+        /* تخصيص Leaflet Markers */
+        .source-marker-custom,
+        .customer-marker-custom,
+        .route-dot-custom {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        /* ===== لوحة المعلومات ===== */
+        .info-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
+            padding: 15px 20px;
+            border-top: 2px solid var(--gold-primary);
+            backdrop-filter: blur(10px);
+            z-index: 15;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 15px;
+            border: 1px solid var(--border-gold);
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--gold-primary);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        /* ===== نافذة تفاصيل العميل ===== */
+        .customer-detail-popup {
+            position: absolute;
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
+            border: 2px solid var(--gold-primary);
+            border-radius: 20px;
+            padding: 20px;
+            min-width: 250px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            z-index: 20;
+            display: none;
+            animation: popupShow 0.3s ease-out;
+        }
+
+        @keyframes popupShow {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .customer-detail-popup.show {
+            display: block;
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-gold);
+            padding-bottom: 10px;
+        }
+
+        .popup-title {
+            color: var(--gold-primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .popup-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .popup-close:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+        }
+
+        .popup-content {
+            color: var(--text-primary);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        .detail-value {
+            color: var(--gold-light);
+            font-weight: bold;
+        }
+
+        .route-button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            border: none;
+            border-radius: 12px;
+            color: var(--bg-primary);
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .route-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+
+        /* ===== أزرار التحكم ===== */
+        .control-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 15;
+        }
+
+        .control-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--shadow-gold);
+        }
+
+        /* ===== تصميم متجاوب ===== */
+        @media (max-width: 768px) {
+            .admin-map-view {
+                height: 400px;
+            }
+
+            .stats-row {
+                flex-direction: column;
+            }
+
+            .stat-item {
+                width: 100%;
+            }
+
+            .customer-detail-popup {
+                min-width: 200px;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-map-view {
+                height: 450px;
+                border-radius: 20px;
+            }
+
+            .header-title {
+                font-size: 1.3rem;
+            }
+
+            .control-buttons {
+                top: 10px;
+                right: 10px;
+            }
+
+            .control-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+
+        /* ===== تأثيرات إضافية ===== */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide-up {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1 class="header-title">🗺️ خريطة المالك الذكية</h1>
+            <p class="header-subtitle">تتبع رحلات العسل من اليمن إلى عملائنا حول العالم</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- خريطة المالك الذكية -->
+        <div class="admin-map-view" id="adminMap">
+            <div id="map"></div>
+
+            <!-- أزرار التحكم -->
+            <div class="control-buttons">
+                <button class="control-btn" onclick="toggleRoutes()" title="إظهار/إخفاء المسارات">
+                    <i class="fas fa-route" id="routeToggleIcon"></i>
+                </button>
+                <button class="control-btn" onclick="animateAllRoutes()" title="تحريك جميع المسارات">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="control-btn" onclick="resetMap()" title="إعادة تعيين الخريطة">
+                    <i class="fas fa-redo"></i>
+                </button>
+                <button class="control-btn" onclick="refreshMapData()" title="تحديث البيانات">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+
+            <!-- لوحة المعلومات -->
+            <div class="info-panel">
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-value" id="statActiveCustomers">0</span>
+                        <span class="stat-label">عميل نشط</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="statCountries">0</span>
+                        <span class="stat-label">دولة</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="statDeliveryRate">0%</span>
+                        <span class="stat-label">معدل التوصيل</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="statAvgDelivery">0 يوم</span>
+                        <span class="stat-label">متوسط التوصيل</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نافذة تفاصيل العميل -->
+            <div class="customer-detail-popup" id="customerPopup">
+                <div class="popup-header">
+                    <div class="popup-title" id="popupTitle">تفاصيل العميل</div>
+                    <button class="popup-close" onclick="closeCustomerPopup()">✕</button>
+                </div>
+                <div class="popup-content" id="popupContent">
+                    <!-- سيتم ملء المحتوى ديناميكياً -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- API Integration -->
+    <script src="../js/api.js"></script>
+
+    <script>
+        // متغيرات عامة
+        let map = null;
+        let sourceMarker = null;
+        let customerMarkers = [];
+        let routeLines = [];
+        let customersData = [];
+        let mapData = null;
+        let routesVisible = false;
+
+        // إحداثيات مناحل ريف وصاب (المصدر) - اليمن
+        const SOURCE_COORDINATES = [15.3694, 44.1910]; // صنعاء
+
+        // تهيئة الخريطة
+        function initMap() {
+            // إنشاء الخريطة
+            map = L.map('map', {
+                center: SOURCE_COORDINATES,
+                zoom: 6,
+                zoomControl: true,
+                attributionControl: true
+            });
+
+            // إضافة طبقة الخريطة (Dark Theme)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            // إضافة علامة المصدر
+            const sourceIcon = L.divIcon({
+                className: 'source-marker-custom',
+                html: '<div style="width: 30px; height: 30px; background: linear-gradient(45deg, #d4af37, #f3cf7a); border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 20px rgba(212, 175, 55, 0.8); display: flex; align-items: center; justify-content: center; font-size: 16px;">🍯</div>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+
+            sourceMarker = L.marker(SOURCE_COORDINATES, { icon: sourceIcon })
+                .addTo(map)
+                .bindPopup(`
+                    <div style="text-align: center; font-family: 'Tajawal', sans-serif;">
+                        <h3 style="color: #d4af37; margin-bottom: 10px;">🍯 مناحل ريف وصاب</h3>
+                        <p style="color: #f3cf7a; margin: 5px 0;">مصدر العسل الأصيل</p>
+                        <p style="color: #e0c097; font-size: 0.9rem; margin: 5px 0;">اليمن - صنعاء</p>
+                </div>
+                `);
+        }
+
+        // تحميل بيانات الخريطة من API
+        async function loadMapData() {
+            try {
+                if (!window.API || !window.API.map) {
+                    console.warn('API not available');
+                    showNotification('⚠️ يجب تشغيل السيرفر', 'warning');
+                    return;
+                }
+
+                const response = await window.API.map.getMapData();
+                
+                if (response.success && response.data) {
+                    mapData = response.data;
+                    customersData = response.data.customers || [];
+                    
+                    // تحديث الإحصائيات
+                    updateStats(response.data.stats);
+                    
+                    // عرض العملاء على الخريطة
+                    displayCustomersOnMap();
+                    
+                    showNotification('✅ تم تحميل بيانات الخريطة بنجاح', 'success');
+                } else {
+                    throw new Error(response.message || 'فشل تحميل البيانات');
+                }
+            } catch (error) {
+                console.error('Error loading map data:', error);
+                showNotification('حدث خطأ في تحميل بيانات الخريطة: ' + (error.message || 'خطأ غير معروف'), 'error');
+            }
+        }
+
+        // عرض العملاء على الخريطة
+        function displayCustomersOnMap() {
+            // إزالة العلامات القديمة
+            customerMarkers.forEach(marker => map.removeLayer(marker));
+            customerMarkers = [];
+
+            if (!customersData || customersData.length === 0) {
+                showNotification('لا توجد عملاء بإحداثيات على الخريطة', 'info');
+                return;
+            }
+
+            customersData.forEach(customer => {
+                if (!customer.location || !customer.location.latitude || !customer.location.longitude) {
+                    return; // تخطي العملاء بدون إحداثيات
+                }
+
+                const lat = customer.location.latitude;
+                const lng = customer.location.longitude;
+
+                // إنشاء أيقونة حسب نوع العميل
+                const iconColor = customer.isVip ? '#d4af37' : '#f3cf7a';
+                const iconSize = customer.isVip ? 20 : 15;
+                
+                const customerIcon = L.divIcon({
+                    className: 'customer-marker-custom',
+                    html: `<div style="width: ${iconSize}px; height: ${iconSize}px; background: ${iconColor}; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);"></div>`,
+                    iconSize: [iconSize, iconSize],
+                    iconAnchor: [iconSize/2, iconSize/2]
+                });
+
+                // محتوى النافذة المنبثقة
+                const popupContent = `
+                    <div style="font-family: 'Tajawal', sans-serif; min-width: 200px;">
+                        <h3 style="color: #d4af37; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                            ${customer.isVip ? '👑' : '👤'} ${customer.name}
+                        </h3>
+                        <div style="color: #f3cf7a; margin: 8px 0;">
+                            <strong>المدينة:</strong> ${customer.city}<br>
+                            <strong>المنطقة:</strong> ${customer.region || 'غير محدد'}<br>
+                            <strong>الدولة:</strong> ${customer.country || 'اليمن'}
+                        </div>
+                        <div style="color: #e0c097; margin: 8px 0; font-size: 0.9rem;">
+                            <div><strong>عدد الطلبات:</strong> ${customer.ordersCount}</div>
+                            <div><strong>إجمالي المشتريات:</strong> ${formatCurrency(customer.totalSpent)}</div>
+                            <div><strong>المسافة:</strong> ${customer.distance} كم</div>
+                            <div><strong>آخر طلب:</strong> ${formatDate(customer.lastOrder)}</div>
+                        </div>
+                        <button onclick="drawRouteToCustomer(${lat}, ${lng}, '${customer.name}', '${customer.city}')" 
+                                style="width: 100%; padding: 8px; background: linear-gradient(45deg, #d4af37, #f3cf7a); border: none; border-radius: 8px; color: #0b0600; font-weight: bold; cursor: pointer; margin-top: 10px;">
+                            🗺️ عرض المسار
+                        </button>
+                    </div>
+                `;
+
+                const marker = L.marker([lat, lng], { icon: customerIcon })
+                    .addTo(map)
+                    .bindPopup(popupContent);
+
+                customerMarkers.push(marker);
+            });
+
+            // ضبط عرض الخريطة ليشمل جميع العلامات
+            if (customerMarkers.length > 0) {
+                const bounds = L.latLngBounds([SOURCE_COORDINATES]);
+                customerMarkers.forEach(marker => {
+                    bounds.extend(marker.getLatLng());
+                });
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+        }
+
+        // تحديث الإحصائيات
+        function updateStats(stats) {
+            if (!stats) return;
+
+            const statActiveCustomers = document.getElementById('statActiveCustomers');
+            const statCountries = document.getElementById('statCountries');
+            const statDeliveryRate = document.getElementById('statDeliveryRate');
+            const statAvgDelivery = document.getElementById('statAvgDelivery');
+
+            if (statActiveCustomers) statActiveCustomers.textContent = stats.activeCustomers || 0;
+            if (statCountries) statCountries.textContent = stats.countries || 0;
+            if (statDeliveryRate) statDeliveryRate.textContent = (stats.deliveryRate || 0) + '%';
+            if (statAvgDelivery) statAvgDelivery.textContent = (stats.avgDeliveryDays || 0) + ' يوم';
+        }
+
+        // تنسيق العملة
+        function formatCurrency(amount) {
+            if (typeof amount === 'number') {
+                return new Intl.NumberFormat('ar-YE', { 
+                    style: 'currency', 
+                    currency: 'YER',
+                    minimumFractionDigits: 0 
+                }).format(amount);
+            }
+            return amount || '0 ر.ي';
+        }
+
+        // تنسيق التاريخ
+        function formatDate(date) {
+            if (!date) return 'غير محدد';
+            const d = new Date(date);
+            return d.toLocaleDateString('ar-YE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+
+        // رسم المسار إلى العميل
+        function drawRouteToCustomer(lat, lng, customerName, cityName) {
+            // إزالة المسارات القديمة
+            routeLines.forEach(line => map.removeLayer(line));
+            routeLines = [];
+
+            // إنشاء مسار من المصدر إلى العميل
+            const route = L.polyline(
+                [SOURCE_COORDINATES, [lat, lng]],
+                {
+                    color: '#d4af37',
+                    weight: 3,
+                    opacity: 0.8,
+                    dashArray: '10, 5'
+                }
+            ).addTo(map);
+
+            routeLines.push(route);
+
+            // إضافة علامة في منتصف المسار
+            const midLat = (SOURCE_COORDINATES[0] + lat) / 2;
+            const midLng = (SOURCE_COORDINATES[1] + lng) / 2;
+
+            const routeIcon = L.divIcon({
+                className: 'route-dot-custom',
+                html: '<div style="width: 12px; height: 12px; background: #f3cf7a; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 10px rgba(212, 175, 55, 0.8); animation: pulse 2s infinite;"></div>',
+                iconSize: [12, 12],
+                iconAnchor: [6, 6]
+            });
+
+            const routeMarker = L.marker([midLat, midLng], { icon: routeIcon })
+                .addTo(map)
+                .bindPopup(`🚚 رحلة العسل إلى ${customerName}`);
+
+            // ضبط عرض الخريطة ليشمل المسار
+            map.fitBounds([SOURCE_COORDINATES, [lat, lng]], { padding: [50, 50] });
+
+            showNotification(`🗺️ جاري عرض رحلة العسل إلى ${customerName} في ${cityName}`, 'success');
+        }
+
+        // تحديث بيانات الخريطة
+        async function refreshMapData() {
+            showNotification('🔄 جاري تحديث البيانات...', 'info');
+            await loadMapData();
+        }
+
+        // تبديل عرض المسارات
+        function toggleRoutes() {
+            routesVisible = !routesVisible;
+            const icon = document.getElementById('routeToggleIcon');
+
+            if (routesVisible) {
+                icon.className = 'fas fa-eye-slash';
+                showNotification('🗺️ تم إظهار جميع المسارات', 'success');
+                animateAllRoutes();
+            } else {
+                icon.className = 'fas fa-route';
+                hideAllRoutes();
+                showNotification('🚫 تم إخفاء جميع المسارات', 'info');
+            }
+        }
+
+        // تحريك جميع المسارات
+        function animateAllRoutes() {
+            if (!customersData || customersData.length === 0) {
+                showNotification('لا توجد عملاء لعرض المسارات', 'warning');
+                return;
+            }
+
+            // إزالة المسارات القديمة
+            routeLines.forEach(line => map.removeLayer(line));
+            routeLines = [];
+
+            // رسم مسار لكل عميل
+            customersData.forEach((customer, index) => {
+                if (!customer.location || !customer.location.latitude || !customer.location.longitude) {
+                    return;
+                }
+
+                setTimeout(() => {
+                    drawRouteToCustomer(
+                        customer.location.latitude,
+                        customer.location.longitude,
+                        customer.name,
+                        customer.city
+                    );
+                }, index * 500);
+            });
+
+            showNotification(`🗺️ تم عرض ${customersData.length} مسار`, 'success');
+        }
+
+        // إخفاء جميع المسارات
+        function hideAllRoutes() {
+            routeLines.forEach(line => map.removeLayer(line));
+            routeLines = [];
+        }
+
+        // إعادة تعيين الخريطة
+        function resetMap() {
+            hideAllRoutes();
+            routesVisible = false;
+            const routeIcon = document.getElementById('routeToggleIcon');
+            if (routeIcon) routeIcon.className = 'fas fa-route';
+            
+            // إعادة ضبط عرض الخريطة
+            if (customerMarkers.length > 0) {
+                const bounds = L.latLngBounds([SOURCE_COORDINATES]);
+                customerMarkers.forEach(marker => {
+                    bounds.extend(marker.getLatLng());
+                });
+                map.fitBounds(bounds, { padding: [50, 50] });
+            } else {
+                map.setView(SOURCE_COORDINATES, 6);
+            }
+            
+            showNotification('🔄 تم إعادة تعيين الخريطة', 'info');
+        }
+
+        // نظام الإشعارات
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                success: 'linear-gradient(45deg, #51cf66, #69db7c)',
+                error: 'linear-gradient(45deg, #ff6b6b, #ff8787)',
+                warning: 'linear-gradient(45deg, #ffd43b, #ffe066)',
+                info: 'linear-gradient(45deg, #d4af37, #f3cf7a)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${colors[type] || colors.info};
+                color: ${type === 'warning' ? '#0b0600' : '#ffffff'};
+                padding: 12px 25px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                animation: slideDown 0.3s ease-out;
+                font-family: 'Tajawal', sans-serif;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' :
+                        type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' :
+                        type === 'warning' ? '<i class="fas fa-exclamation-triangle"></i>' :
+                        '<i class="fas fa-info-circle"></i>';
+            
+            notification.innerHTML = icon + '<span>' + message + '</span>';
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // إضافة أنماط الإشعارات
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // تهيئة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', async function () {
+            // انتظار تحميل API
+            if (!window.API) {
+                const checkAPI = setInterval(() => {
+                    if (window.API) {
+                        clearInterval(checkAPI);
+                        initializePage();
+                    }
+                }, 100);
+                setTimeout(() => clearInterval(checkAPI), 5000);
+            } else {
+                initializePage();
+            }
+
+
+            // إضافة تأثيرات hover للإحصائيات
+            document.querySelectorAll('.stat-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    this.style.animation = 'pulse 0.5s ease';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 500);
+                });
+            });
+        });
+
+        async function initializePage() {
+            // تهيئة الخريطة
+            initMap();
+            
+            // تحميل البيانات
+            await loadMapData();
+            
+            // تحديث البيانات كل 5 دقائق
+            setInterval(loadMapData, 5 * 60 * 1000);
+        }
+
+        // إضافة تأثير النبض
+        const pulseStyle = document.createElement('style');
+        pulseStyle.textContent = `
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+        `;
+        document.head.appendChild(pulseStyle);
+    </script>
+
+    <style>
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: rgba(45, 38, 18, 0.98); backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)); border-top: 2px solid rgba(212, 175, 55, 0.4); z-index: 1000; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6); }
+        .bottom-nav .nav-item { color: #d4af37; text-align: center; font-size: 0.85rem; opacity: 0.7; cursor: pointer; transition: all 0.3s ease; padding: 8px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'Cairo', 'Tajawal', sans-serif; min-width: 60px; text-decoration: none; }
+        .bottom-nav .nav-item i { font-size: 1.3rem; transition: all 0.3s ease; }
+        .bottom-nav .nav-item span { font-size: 0.75rem; font-weight: 500; }
+        .bottom-nav .nav-item:hover { opacity: 1; background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); transform: translateY(-2px); text-shadow: 0 0 8px rgba(212, 175, 55, 0.5); }
+        .bottom-nav .nav-item.active { opacity: 1; color: #f3cf7a; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.4); text-shadow: 0 0 10px rgba(212, 175, 55, 0.6); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
+        .bottom-nav .nav-item.active i { transform: scale(1.1); }
+    </style>
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="fas fa-crown"></i><span>لوحة التحكم</span></div>
+        <div class="nav-item" onclick="window.location.href='create-order.html'"><i class="fas fa-plus-circle"></i><span>طلب جديد</span></div>
+        <div class="nav-item" onclick="window.location.href='products.html'"><i class="fas fa-box-open"></i><span>المنتجات</span></div>
+        <div class="nav-item" onclick="window.location.href='reports.html'"><i class="fas fa-chart-line"></i><span>التقارير</span></div>
+    </nav>
+
+</body>
+
+</html>

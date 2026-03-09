@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>الحالة | مناحل ريف وصاب</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900;1000&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --text-white: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            background: #000;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .story-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .story-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .story-media-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .story-media-wrapper img,
+        .story-media-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .story-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .story-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .story-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-primary);
+            object-fit: cover;
+        }
+
+        .story-header-info {
+            color: var(--text-white);
+        }
+
+        .story-header-info h3 {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .story-header-info span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .close-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: var(--text-white);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .story-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: var(--text-white);
+            z-index: 10;
+            font-size: 1rem;
+            line-height: 1.6;
+            max-height: 30vh;
+            overflow-y: auto;
+        }
+
+        .story-actions {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .action-btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--gold-primary);
+            color: var(--text-white);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .action-btn:hover {
+            background: var(--gold-primary);
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        .action-btn.liked {
+            background: var(--gold-primary);
+            color: #000;
+        }
+
+        .action-count {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-white);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .comments-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            max-height: 50vh;
+            border-top: 2px solid var(--gold-primary);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 20;
+        }
+
+        .comments-panel.active {
+            transform: translateY(0);
+        }
+
+        .comments-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comments-header h3 {
+            color: var(--gold-primary);
+            font-size: 1.1rem;
+        }
+
+        .close-comments {
+            background: transparent;
+            border: none;
+            color: var(--text-white);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .comments-list {
+            padding: 15px 20px;
+            max-height: calc(50vh - 120px);
+            overflow-y: auto;
+        }
+
+        .comment-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .comment-author {
+            color: var(--gold-primary);
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .comment-text {
+            color: var(--text-white);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .comment-date {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .comment-form {
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .comment-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: var(--text-white);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+        }
+
+        .comment-submit {
+            background: var(--gold-primary);
+            color: #000;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .comment-submit:hover {
+            transform: scale(1.1);
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-white);
+            text-align: center;
+            z-index: 1001;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-white);
+            text-align: center;
+            z-index: 1001;
+        }
+
+        /* Swipe indicators */
+        .swipe-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 2rem;
+            z-index: 5;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .swipe-indicator.left {
+            left: 20px;
+        }
+
+        .swipe-indicator.right {
+            right: 20px;
+        }
+
+        .swipe-indicator.hidden {
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="story-viewer" id="storyViewer">
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner"></i>
+            <p>جارٍ التحميل...</p>
+        </div>
+
+        <div class="story-container" id="storyContainer" style="display: none;">
+            <div class="story-header">
+                <div class="story-header-left">
+                    <img src="../assets/manahel.jpg" alt="مناحل ريف وصاب" class="story-avatar" onerror="this.style.display='none'">
+                    <div class="story-header-info">
+                        <h3>مناحل ريف وصاب</h3>
+                        <span id="storyTime"></span>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="closeStory()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="story-media-wrapper" id="storyMediaWrapper">
+                <!-- سيتم إضافة الوسائط هنا -->
+            </div>
+
+            <div class="swipe-indicator left hidden" id="swipeLeft">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="swipe-indicator right hidden" id="swipeRight">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+
+            <div class="story-caption" id="storyCaption" style="display: none;">
+                <!-- سيتم إضافة النص هنا -->
+            </div>
+
+            <div class="story-actions">
+                <button class="action-btn" id="likeBtn" onclick="toggleLike()">
+                    <i class="fas fa-heart"></i>
+                    <span class="action-count" id="likesCount">0</span>
+                </button>
+                <button class="action-btn" onclick="toggleComments()">
+                    <i class="fas fa-comment"></i>
+                    <span class="action-count" id="commentsCount">0</span>
+                </button>
+                <button class="action-btn" onclick="shareStory()">
+                    <i class="fas fa-share"></i>
+                </button>
+            </div>
+
+            <div class="comments-panel" id="commentsPanel">
+                <div class="comments-header">
+                    <h3>التعليقات</h3>
+                    <button class="close-comments" onclick="toggleComments()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="comments-list" id="commentsList">
+                    <!-- سيتم إضافة التعليقات هنا -->
+                </div>
+                <div class="comment-form">
+                    <input type="text" class="comment-input" id="commentInput" placeholder="اكتب تعليقك...">
+                    <button class="comment-submit" onclick="addComment()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Integration -->
+    <script src="../js/api.js"></script>
+
+    <script>
+        let currentStory = null;
+        let isLiked = false;
+        let commentsOpen = false;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // تحميل الحالة
+        async function loadStory() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const storyId = urlParams.get('id');
+
+                if (!storyId) {
+                    showError('معرف الحالة غير موجود');
+                    return;
+                }
+
+                const response = await window.API.stories.getStory(storyId);
+                
+                // التحقق من نجاح الطلب
+                if (!response.success || !response.story) {
+                    showError('الحالة غير موجودة أو تم حذفها');
+                    setTimeout(() => {
+                        window.location.href = '../index.html';
+                    }, 2000);
+                    return;
+                }
+                
+                currentStory = response.story;
+                displayStory(currentStory);
+            } catch (error) {
+                console.error('Error loading story:', error);
+                showError('حدث خطأ في تحميل الحالة');
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 2000);
+            }
+        }
+
+        // عرض الحالة
+        function displayStory(story) {
+            if (!story) {
+                showError('بيانات الحالة غير صحيحة');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('storyContainer').style.display = 'flex';
+
+            const mediaWrapper = document.getElementById('storyMediaWrapper');
+            const captionDiv = document.getElementById('storyCaption');
+            const timeSpan = document.getElementById('storyTime');
+
+            // التحقق من وجود media
+            if (!story.media || !story.media.url) {
+                showError('وسائط الحالة غير متوفرة');
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 2000);
+                return;
+            }
+
+            // عرض الوسائط
+            if (story.media.type === 'video') {
+                mediaWrapper.innerHTML = `
+                    <video autoplay controls class="story-media">
+                        <source src="${story.media.url}" type="video/mp4">
+                    </video>
+                `;
+            } else {
+                mediaWrapper.innerHTML = `
+                    <img src="${story.media.url}" alt="${story.caption || ''}" class="story-media" 
+                         onerror="this.src='https://images.unsplash.com/photo-1587049352846-4a222e784d38?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                `;
+            }
+
+            // عرض النص
+            if (story.caption) {
+                captionDiv.innerHTML = story.caption;
+                captionDiv.style.display = 'block';
+            } else {
+                captionDiv.style.display = 'none';
+            }
+
+            // عرض الوقت
+            if (story.createdAt) {
+                const date = new Date(story.createdAt);
+                if (!isNaN(date.getTime())) {
+                    timeSpan.textContent = date.toLocaleDateString('ar-YE', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                } else {
+                    timeSpan.textContent = 'الآن';
+                }
+            } else {
+                timeSpan.textContent = 'الآن';
+            }
+
+            // تحديث الإحصائيات
+            document.getElementById('likesCount').textContent = story.likesCount || story.likes?.length || 0;
+            document.getElementById('commentsCount').textContent = story.commentsCount || story.comments?.length || 0;
+
+            // عرض التعليقات
+            renderComments(story.comments || []);
+        }
+
+        // عرض التعليقات
+        function renderComments(comments) {
+            const commentsList = document.getElementById('commentsList');
+            
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">لا توجد تعليقات بعد</p>';
+                return;
+            }
+
+            commentsList.innerHTML = comments.map(comment => {
+                const author = comment.customer 
+                    ? `${comment.customer.profile?.firstName || ''} ${comment.customer.profile?.lastName || ''}`.trim() || comment.customer.email
+                    : comment.user?.username || 'مستخدم';
+                const date = new Date(comment.createdAt).toLocaleDateString('ar-YE', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="comment-item">
+                        <div class="comment-author">${author}</div>
+                        <div class="comment-text">${comment.text}</div>
+                        <div class="comment-date">${date}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // تبديل الإعجاب
+        async function toggleLike() {
+            if (!currentStory) return;
+
+            const token = window.API ? window.API.getAuthToken() : null;
+            if (!token) {
+                alert('يرجى تسجيل الدخول أولاً');
+                return;
+            }
+
+            try {
+                let response;
+                if (isLiked) {
+                    response = await window.API.stories.unlikeStory(currentStory._id);
+                    if (response.success) {
+                        isLiked = false;
+                    }
+                } else {
+                    response = await window.API.stories.likeStory(currentStory._id);
+                    if (response.success) {
+                        isLiked = true;
+                    }
+                }
+
+                if (response && response.success) {
+                    const likeBtn = document.getElementById('likeBtn');
+                    const likesCount = document.getElementById('likesCount');
+                    
+                    likeBtn.classList.toggle('liked');
+                    const currentCount = parseInt(likesCount.textContent) || 0;
+                    likesCount.textContent = isLiked ? currentCount + 1 : Math.max(0, currentCount - 1);
+                } else {
+                    throw new Error(response?.message || 'فشل تحديث الإعجاب');
+                }
+            } catch (error) {
+                console.error('Error toggling like:', error);
+                alert('حدث خطأ في تحديث الإعجاب: ' + (error.message || 'خطأ غير معروف'));
+            }
+        }
+
+        // تبديل التعليقات
+        function toggleComments() {
+            commentsOpen = !commentsOpen;
+            document.getElementById('commentsPanel').classList.toggle('active');
+        }
+
+        // إضافة تعليق
+        async function addComment() {
+            if (!currentStory) return;
+
+            const commentInput = document.getElementById('commentInput');
+            const text = commentInput.value.trim();
+
+            if (!text) {
+                alert('يرجى كتابة تعليق');
+                return;
+            }
+
+            const token = window.API ? window.API.getAuthToken() : null;
+            if (!token) {
+                alert('يرجى تسجيل الدخول أولاً');
+                return;
+            }
+
+            try {
+                const response = await window.API.stories.addComment(currentStory._id, text);
+                
+                if (!response.success || !response.comment) {
+                    throw new Error(response.message || 'فشل إضافة التعليق');
+                }
+                
+                // إضافة التعليق للقائمة
+                const commentsList = document.getElementById('commentsList');
+                const comment = response.comment;
+                const author = comment.customer 
+                    ? `${comment.customer.profile?.firstName || ''} ${comment.customer.profile?.lastName || ''}`.trim() || comment.customer.email
+                    : comment.user?.username || 'مستخدم';
+                const date = comment.createdAt 
+                    ? new Date(comment.createdAt).toLocaleDateString('ar-YE', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                    : 'الآن';
+                
+                const commentHTML = `
+                    <div class="comment-item">
+                        <div class="comment-author">${author}</div>
+                        <div class="comment-text">${comment.text}</div>
+                        <div class="comment-date">${date}</div>
+                    </div>
+                `;
+                
+                // إزالة رسالة "لا توجد تعليقات" إذا كانت موجودة
+                if (commentsList.querySelector('p')) {
+                    commentsList.innerHTML = '';
+                }
+                
+                commentsList.insertAdjacentHTML('afterbegin', commentHTML);
+                commentInput.value = '';
+                
+                // تحديث عدد التعليقات
+                const commentsCount = document.getElementById('commentsCount');
+                const currentCount = parseInt(commentsCount.textContent) || 0;
+                commentsCount.textContent = currentCount + 1;
+            } catch (error) {
+                console.error('Error adding comment:', error);
+                alert('حدث خطأ في إضافة التعليق: ' + (error.message || 'خطأ غير معروف'));
+            }
+        }
+
+        // مشاركة الحالة
+        async function shareStory() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'حالة من مناحل ريف وصاب',
+                        text: currentStory?.caption || '',
+                        url: window.location.href
+                    });
+                } catch (error) {
+                    // المستخدم ألغى المشاركة أو حدث خطأ
+                    if (error.name !== 'AbortError') {
+                        console.error('Error sharing:', error);
+                        // محاولة نسخ الرابط كبديل
+                        try {
+                            await navigator.clipboard.writeText(window.location.href);
+                            alert('تم نسخ الرابط');
+                        } catch (clipboardError) {
+                            console.error('Error copying to clipboard:', clipboardError);
+                        }
+                    }
+                }
+            } else {
+                try {
+                    await navigator.clipboard.writeText(window.location.href);
+                    alert('تم نسخ الرابط');
+                } catch (error) {
+                    console.error('Error copying to clipboard:', error);
+                    // بديل: عرض الرابط في prompt
+                    const url = window.location.href;
+                    prompt('انسخ الرابط:', url);
+                }
+            }
+        }
+
+        // إغلاق الحالة
+        function closeStory() {
+            window.location.href = '../index.html';
+        }
+
+        // عرض خطأ
+        function showError(message) {
+            document.getElementById('loading').innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>${message}</p>
+            `;
+        }
+
+        // Swipe gestures (touchstart: use touches[0]; touchend: use changedTouches[0])
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length > 0) {
+                touchStartX = e.touches[0].screenX;
+            }
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (e.changedTouches && e.changedTouches.length > 0) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - يمكن إضافة منطق للانتقال للحالة التالية
+                    console.log('Swipe left');
+                } else {
+                    // Swipe right - إغلاق الحالة
+                    closeStory();
+                }
+            }
+        }
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // إضافة event listener للتعليقات بعد تحميل الصفحة
+            const commentInput = document.getElementById('commentInput');
+            if (commentInput) {
+                commentInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        addComment();
+                    }
+                });
+            }
+            
+            // تحميل الحالة
+            if (window.API) {
+                loadStory();
+            } else {
+                const checkAPI = setInterval(() => {
+                    if (window.API) {
+                        clearInterval(checkAPI);
+                        loadStory();
+                    }
+                }, 100);
+                
+                // إيقاف المحاولة بعد 5 ثواني
+                setTimeout(() => {
+                    clearInterval(checkAPI);
+                    if (!window.API) {
+                        showError('فشل تحميل API. يرجى تحديث الصفحة');
+                    }
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+
+</html>

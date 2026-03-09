@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المسابقات الكبرى | مناحل ريف وصاب</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #120a00;
+            --bg-secondary: #1a0f00;
+            --bg-card: #1d1102;
+            --bg-accent: #2a1804;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #aa8c2c;
+            --text-primary: #e0c097;
+            --text-secondary: #f3cf7a;
+            --text-white: #ffffff;
+            --border-gold: rgba(212, 175, 55, 0.2);
+            --shadow-gold: rgba(212, 175, 55, 0.3);
+            --success: #51cf66;
+            --danger: #ff6b6b;
+            --warning: #ffd43b;
+            --info: #74c0fc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--text-primary);
+            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: linear-gradient(145deg, var(--bg-accent), var(--bg-card));
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--gold-primary);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--shadow-gold);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .featured-contest {
+            background: linear-gradient(rgba(29, 17, 2, 0.95), rgba(29, 17, 2, 0.95)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><polygon fill="%23d4af37" fill-opacity="0.1" points="50,5 61,35 95,35 68,57 79,87 50,65 21,87 32,57 5,35 39,35"/></svg>');
+            border: 2px solid var(--gold-primary);
+            border-radius: 25px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px var(--shadow-gold);
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .featured-contest:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px var(--shadow-gold);
+        }
+
+        .contest-badge {
+            position: absolute;
+            top: 20px;
+            left: -30px;
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+            padding: 5px 40px;
+            transform: rotate(-45deg);
+            font-weight: bold;
+            font-size: 0.8rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+
+        .prize-image {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 0 15px var(--shadow-gold));
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .contest-title {
+            color: var(--text-white);
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--shadow-gold);
+        }
+
+        .contest-description {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .prize-details {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold-primary);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .prize-title {
+            color: var(--gold-primary);
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .prize-items {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .timer-box {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--gold-primary);
+            padding: 15px;
+            border-radius: 15px;
+            min-width: 80px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .timer-box:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .timer-value {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-white);
+            text-shadow: 0 0 5px var(--shadow-gold);
+        }
+
+        .timer-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .participants-section {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--border-gold);
+            margin-bottom: 30px;
+        }
+
+        .participants-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .participants-title {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .participants-count {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .participants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .participant-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .participant-avatar:hover {
+            border-color: var(--gold-primary);
+            transform: scale(1.1);
+        }
+
+        .draw-section {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--gold-primary);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .draw-title {
+            color: var(--gold-primary);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .draw-box {
+            height: 120px;
+            background: var(--bg-primary);
+            border-radius: 15px;
+            border: 2px solid var(--gold-primary);
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .static-text {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .name-slider {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--gold-primary);
+            text-shadow: 0 0 10px var(--shadow-gold);
+            animation: namesRoll 0.1s infinite linear;
+            display: none;
+        }
+
+        @keyframes namesRoll {
+            0% {
+                transform: translateY(50px);
+            }
+
+            100% {
+                transform: translateY(-50px);
+            }
+        }
+
+        .winner-announcement {
+            font-size: 1.5rem;
+            color: var(--success);
+            font-weight: bold;
+            display: none;
+            animation: winnerGlow 1s ease-in-out infinite;
+        }
+
+        @keyframes winnerGlow {
+
+            0%,
+            100% {
+                text-shadow: 0 0 10px var(--success);
+            }
+
+            50% {
+                text-shadow: 0 0 20px var(--success);
+            }
+        }
+
+        .draw-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-enter {
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px var(--shadow-gold);
+            transition: all 0.3s ease;
+        }
+
+        .btn-enter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-gold);
+        }
+
+        .btn-draw {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-draw:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(81, 207, 102, 0.3);
+        }
+
+        .winners-section {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--gold-primary);
+        }
+
+        .winners-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .winners-title {
+            color: var(--gold-primary);
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-right: 3px solid var(--gold-primary);
+            padding-right: 15px;
+        }
+
+        .winners-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .winners-empty-state {
+            text-align: center;
+            padding: 24px 16px;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .winner-card {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid var(--border-gold);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .winner-card:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+            border-color: var(--gold-primary);
+        }
+
+        .winner-medal {
+            font-size: 2rem;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .winner-info {
+            flex: 1;
+        }
+
+        .winner-name {
+            color: var(--text-white);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .winner-prize {
+            color: var(--gold-primary);
+            font-size: 0.9rem;
+        }
+
+        .winner-date {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .winner-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-primary);
+            object-fit: cover;
+        }
+
+        .additional-contests {
+            margin-top: 30px;
+        }
+
+        .mini-contest {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
+            border: 1px solid var(--border-gold);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .mini-contest:hover {
+            border-color: var(--gold-primary);
+            transform: translateY(-2px);
+        }
+
+        .mini-contest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .mini-contest-title {
+            color: var(--text-white);
+            font-weight: bold;
+        }
+
+        .mini-contest-status {
+            background: var(--warning);
+            color: var(--bg-primary);
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .mini-contest-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--bg-card);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 2px solid var(--gold-primary);
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-item {
+            text-align: center;
+            color: var(--text-primary);
+            font-size: 0.7rem;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .nav-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .nav-item.active {
+            color: var(--gold-primary);
+            font-weight: bold;
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-item i {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 3px;
+        }
+        .nav-more-wrap { position: relative; }
+        .nav-more-dropdown {
+            display: none; position: absolute; bottom: 100%; right: 50%; transform: translateX(50%);
+            margin-bottom: 8px; min-width: 180px; background: rgba(45, 38, 18, 0.98);
+            backdrop-filter: blur(20px); border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6); z-index: 1001;
+            padding: 8px 0; list-style: none; margin: 0 0 8px 0;
+        }
+        .nav-more-dropdown.open { display: block; }
+        .nav-more-dropdown a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 18px;
+            color: #d4af37; text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+            width: 100%; text-align: right; box-sizing: border-box; font-family: 'Cairo', sans-serif;
+        }
+        .nav-more-dropdown a:hover { background: rgba(212, 175, 55, 0.15); }
+        .nav-more-dropdown a i { font-size: 1.1rem; width: 22px; }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1 class="header-title">
+                <span>🏆</span>
+                <span>المسابقات الكبرى</span>
+                <span>🎉</span>
+            </h1>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="featured-contest fade-in">
+            <div class="contest-badge">كبرى</div>
+            <img src="https://cdn-icons-png.flaticon.com/512/3113/3113025.png" class="prize-image" alt="الجائزة">
+            <h2 class="contest-title">سحب موسم سدر وصاب</h2>
+            <p class="contest-description">
+                أكبر مسابقة سنوية لعملائنا المميزين! فرصة فريدة للفوز بجوائز ثمينة
+            </p>
+
+            <div class="prize-details">
+                <div class="prize-title">🎁 الجائزة الكبرى:</div>
+                <div class="prize-items">
+                    • ٥ كيلو عسل سدر ملكي (قيمة ٢,٥٠٠ ر.س)<br>
+                    • رحلة سياحية للمناحل في وصاب (شاملة الإقامة)<br>
+                    • بطاقة عضوية VIP لمدة عام<br>
+                    • هدية خاصة من المالك
+                </div>
+            </div>
+
+            <div class="countdown-timer">
+                <div class="timer-box">
+                    <span class="timer-value" id="days">٠٣</span>
+                    <span class="timer-label">يوم</span>
+                </div>
+                <div class="timer-box">
+                    <span class="timer-value" id="hours">١٤</span>
+                    <span class="timer-label">ساعة</span>
+                </div>
+                <div class="timer-box">
+                    <span class="timer-value" id="minutes">٤٥</span>
+                    <span class="timer-label">دقيقة</span>
+                </div>
+                <div class="timer-box">
+                    <span class="timer-value" id="seconds">٢٣</span>
+                    <span class="timer-label">ثانية</span>
+                </div>
+            </div>
+
+            <button class="btn-enter" onclick="enterContest()">
+                <span>🎟️</span>
+                <span>دخول السحب الآن</span>
+            </button>
+        </div>
+
+        <div class="participants-section slide-in">
+            <div class="participants-header">
+                <h3 class="participants-title">المشاركون في السحب</h3>
+                <div class="participants-count">٢٤٥ مشارك</div>
+            </div>
+            <div class="participants-grid" id="participantsGrid">
+                <!-- سيتم إضافة الصور الرمزية ديناميكياً -->
+            </div>
+            <div style="text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
+                و ٢٤٠ مشارك آخر...
+            </div>
+        </div>
+
+        <div class="draw-section slide-in">
+            <h3 class="draw-title">🎲 القرعة العشوائية المباشرة</h3>
+            <div class="draw-box" id="drawBox">
+                <div id="staticText" class="static-text">سيظهر اسم الفائز هنا</div>
+                <div id="nameSlider" class="name-slider">محمد الوصابي... صالح... أحمد... علي...</div>
+                <div id="winnerAnnouncement" class="winner-announcement"></div>
+            </div>
+            <div class="draw-controls">
+                <button class="btn-enter" onclick="enterContest()">
+                    <span>🎟️</span>
+                    <span>دخول السحب</span>
+                </button>
+                <button class="btn-draw" onclick="startDrawEffect()">
+                    <span>🎯</span>
+                    <span>بدء السحب</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="winners-section fade-in">
+            <div class="winners-header">
+                <h3 class="winners-title">لوحة شرف ريف وصاب</h3>
+                <span>🏆</span>
+            </div>
+
+            <div class="winners-list">
+                <div class="winners-empty-state">لا فائزين حتى الآن</div>
+            </div>
+        </div>
+
+        <div class="additional-contests">
+            <div class="mini-contest slide-in">
+                <div class="mini-contest-header">
+                    <div class="mini-contest-title">📸 مسابقة أفضل صورة</div>
+                    <div class="mini-contest-status">نشطة</div>
+                </div>
+                <div class="mini-contest-description">
+                    شارك بصورة مع منتجاتنا واربح هدية شهرية
+                </div>
+            </div>
+
+            <div class="mini-contest slide-in">
+                <div class="mini-contest-header">
+                    <div class="mini-contest-title">📝 مسابقة أفضل مراجعة</div>
+                    <div class="mini-contest-status">نشطة</div>
+                </div>
+                <div class="mini-contest-description">
+                    اكتب مراجعة مفصلة واحصل على خصم ٢٠٪
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='../index.html'">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='../index.html#products'">
+            <i class="fas fa-box"></i>
+            <span>المنتجات</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='checkout.html'">
+            <i class="fas fa-shopping-cart"></i>
+            <span>السلة</span>
+        </div>
+        <div class="nav-more-wrap">
+            <div class="nav-item active" id="navMoreBtn" onclick="toggleNavMore(event)" role="button" aria-expanded="false" aria-haspopup="true">
+                <i class="fas fa-ellipsis-h"></i>
+                <span>المزيد</span>
+            </div>
+            <ul class="nav-more-dropdown" id="navMoreDropdown" aria-hidden="true">
+                <li><a href="contests.html"><i class="fas fa-trophy"></i> المسابقات</a></li>
+                <li><a href="health-benefits.html"><i class="fas fa-pills"></i> الفوائد الصحية</a></li>
+                <li><a href="our-story.html"><i class="fas fa-book"></i> قصتنا</a></li>
+                <li><a href="my-orders.html"><i class="fas fa-list-alt"></i> طلباتي</a></li>
+            </ul>
+        </div>
+        <div class="nav-item" onclick="window.location.href='profile.html'">
+            <i class="fas fa-user"></i>
+            <span>حسابي</span>
+        </div>
+    </nav>
+    <script>
+        function toggleNavMore(e) {
+            if (e) e.stopPropagation();
+            var dd = document.getElementById('navMoreDropdown'); var btn = document.getElementById('navMoreBtn');
+            if (!dd || !btn) return;
+            var isOpen = dd.classList.contains('open');
+            dd.classList.toggle('open', !isOpen);
+            btn.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+            dd.setAttribute('aria-hidden', !isOpen ? 'false' : 'true');
+        }
+        document.addEventListener('click', function () {
+            var dd = document.getElementById('navMoreDropdown'); var btn = document.getElementById('navMoreBtn');
+            if (dd) { dd.classList.remove('open'); dd.setAttribute('aria-hidden', 'true'); }
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+    </script>
+
+    <!-- إضافة api.js -->
+    <script src="../js/api.js"></script>
+
+    <script>
+        let contests = [];
+        let currentContest = null;
+        let participants = [];
+
+        // تحميل المسابقات من API
+        async function loadContests() {
+            try {
+                const response = await window.API.contests.getAll();
+                
+                if (response.success && response.data && response.data.length > 0) {
+                    contests = response.data;
+                } else if (Array.isArray(response)) {
+                    contests = response;
+                } else if (response.contests) {
+                    contests = response.contests;
+                }
+
+                if (contests.length > 0) {
+                    // عرض أول مسابقة نشطة أو أول مسابقة
+                    currentContest = contests.find(c => c.status === 'active') || contests[0];
+                    displayContest(currentContest);
+                } else {
+                    // إذا لم توجد مسابقات، عرض رسالة
+                    showNoContestsMessage();
+                }
+            } catch (error) {
+                console.error('Error loading contests:', error);
+                showNoContestsMessage();
+            }
+        }
+
+        // عرض المسابقة
+        function displayContest(contest) {
+            if (!contest) return;
+
+            // تحديث العنوان
+            const titleElement = document.querySelector('.contest-title');
+            if (titleElement) {
+                titleElement.textContent = contest.name || 'مسابقة ريف وصاب';
+            }
+
+            // تحديث الوصف
+            const descElement = document.querySelector('.contest-description');
+            if (descElement) {
+                descElement.textContent = contest.description || 'أكبر مسابقة سنوية لعملائنا المميزين!';
+            }
+
+            // تحديث الجائزة
+            const prizeElement = document.querySelector('.prize-items');
+            if (prizeElement && contest.prize) {
+                prizeElement.innerHTML = contest.prize.replace(/\n/g, '<br>');
+            }
+
+            // تحديث المشاركين
+            if (contest.participants && Array.isArray(contest.participants)) {
+                participants = contest.participants;
+            } else {
+                participants = [];
+            }
+
+            // تحديث عدد المشاركين
+            const countElement = document.querySelector('.participants-count');
+            if (countElement) {
+                countElement.textContent = `${participants.length} مشارك`;
+            }
+
+            // تحديث المؤقت
+            if (contest.endDate) {
+                updateCountdown(new Date(contest.endDate));
+            } else {
+                updateCountdown();
+            }
+
+            // تحديث الفائزين (من API فقط — لا بيانات وهمية)
+            displayWinners(Array.isArray(contest.winners) ? contest.winners : []);
+
+            // تحديث قائمة المشاركين
+            initParticipants();
+        }
+
+        // عرض رسالة عدم وجود مسابقات
+        function showNoContestsMessage() {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="featured-contest fade-in" style="text-align: center; padding: 60px 20px;">
+                        <h2 class="contest-title">لا توجد مسابقات حالياً</h2>
+                        <p class="contest-description">
+                            سيتم إطلاق مسابقات جديدة قريباً. تابعونا للحصول على آخر الأخبار!
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        // عرض الفائزين (من API فقط — عند عدم وجود فائزين نعرض رسالة)
+        function displayWinners(winners) {
+            const winnersList = document.querySelector('.winners-list');
+            if (!winnersList) return;
+
+            winnersList.innerHTML = '';
+            const list = Array.isArray(winners) ? winners : [];
+
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'winners-empty-state';
+                empty.textContent = 'لا فائزين حتى الآن';
+                winnersList.appendChild(empty);
+                return;
+            }
+
+            const medals = ['🥇', '🥈', '🥉'];
+            list.slice(0, 3).forEach((winner, index) => {
+                const winnerCard = document.createElement('div');
+                winnerCard.className = 'winner-card';
+                winnerCard.innerHTML = `
+                    <div class="winner-medal">${medals[index] || '🏆'}</div>
+                    <div class="winner-info">
+                        <div class="winner-name">${winner.name || 'فائز'}</div>
+                        <div class="winner-prize">${winner.prize || 'جائزة'}</div>
+                        <div class="winner-date">${winner.date ? new Date(winner.date).toLocaleDateString('ar-YE') : '--'}</div>
+                    </div>
+                    <img src="https://via.placeholder.com/50x50/2a1804/d4af37?text=${(winner.name || 'ف').charAt(0)}" class="winner-avatar" alt="الفائز">
+                `;
+                winnersList.appendChild(winnerCard);
+            });
+        }
+
+        function initParticipants() {
+            const grid = document.getElementById('participantsGrid');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+
+            if (participants.length === 0) {
+                // إذا لم توجد مشاركين، لا نعرض شيء
+                return;
+            }
+
+            // عرض أول 12 مشارك
+            const displayParticipants = participants.slice(0, 12);
+            displayParticipants.forEach(participant => {
+                const avatar = document.createElement('div');
+                avatar.className = 'participant-avatar';
+                const name = typeof participant === 'string' ? participant : (participant.name || 'مشارك');
+                avatar.textContent = name.charAt(0);
+                avatar.title = name;
+                grid.appendChild(avatar);
+            });
+        }
+
+        function updateCountdown(customEndDate = null) {
+            const endDate = customEndDate || (() => {
+                const date = new Date();
+                date.setDate(date.getDate() + 3);
+                date.setHours(date.getHours() + 14);
+                date.setMinutes(date.getMinutes() + 45);
+                return date;
+            })();
+
+            function updateTimer() {
+                const now = new Date();
+                const diff = endDate - now;
+
+                if (diff > 0) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+                }
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        async function enterContest() {
+            if (!currentContest || !currentContest._id) {
+                showNotification('⚠️ لا توجد مسابقة نشطة حالياً');
+                return;
+            }
+
+            try {
+                // الحصول على بيانات المستخدم
+                const token = window.API ? window.API.getAuthToken() : localStorage.getItem('authToken');
+                if (!token) {
+                    showNotification('⚠️ يرجى تسجيل الدخول أولاً');
+                    window.location.href = '../index.html';
+                    return;
+                }
+
+                // إضافة المستخدم للمسابقة (يمكن إضافة API endpoint لهذا)
+                showNotification('🎟️ تم إدخالك في السحب بنجاح! حظاً موفقاً');
+
+                // تحديث عدد المشاركين محلياً
+                const countElement = document.querySelector('.participants-count');
+                if (countElement) {
+                    const currentCount = parseInt(countElement.textContent) || participants.length;
+                    countElement.textContent = (currentCount + 1) + ' مشارك';
+                }
+
+                // إضافة المستخدم لقائمة المشاركين
+                const grid = document.getElementById('participantsGrid');
+                if (grid) {
+                    const avatar = document.createElement('div');
+                    avatar.className = 'participant-avatar';
+                    avatar.textContent = 'أنت';
+                    avatar.style.background = 'var(--gold-primary)';
+                    avatar.style.color = 'var(--bg-primary)';
+                    grid.appendChild(avatar);
+                }
+            } catch (error) {
+                console.error('Error entering contest:', error);
+                showNotification('⚠️ حدث خطأ أثناء إدخالك في المسابقة');
+            }
+        }
+
+        function startDrawEffect() {
+            const staticText = document.getElementById('staticText');
+            const nameSlider = document.getElementById('nameSlider');
+            const winnerAnnouncement = document.getElementById('winnerAnnouncement');
+            const drawBox = document.getElementById('drawBox');
+
+            staticText.style.display = 'none';
+            nameSlider.style.display = 'block';
+            winnerAnnouncement.style.display = 'none';
+
+            drawBox.style.borderColor = 'var(--gold-primary)';
+            drawBox.style.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.5)';
+
+            showNotification('🎯 جاري السحب العشوائي...');
+
+            setTimeout(() => {
+                nameSlider.style.animation = 'none';
+                const winner = participants[Math.floor(Math.random() * participants.length)];
+
+                nameSlider.innerHTML = `🎉 مبروك للفائز: ${winner} 🎉`;
+                nameSlider.style.color = 'var(--success)';
+                nameSlider.style.fontSize = '1.8rem';
+
+                drawBox.style.borderColor = 'var(--success)';
+                drawBox.style.boxShadow = '0 0 30px var(--success)';
+
+                showNotification(`🎉 مبروك للفائز: ${winner}!`);
+
+                addToWinnersList(winner);
+            }, 3000);
+        }
+
+        function addToWinnersList(winnerName) {
+            const winnersList = document.querySelector('.winners-list');
+            const newWinner = document.createElement('div');
+            newWinner.className = 'winner-card';
+            newWinner.style.animation = 'fadeIn 0.5s ease-out';
+
+            const medals = ['🥇', '🥈', '🥉'];
+            const randomMedal = medals[Math.floor(Math.random() * medals.length)];
+            const prizes = [
+                'فاز بـ ٢ كيلو عسل سدر ملكي',
+                'فاز بخصم ٥٠٪ لمدة عام',
+                'فاز بعبوة عسل سمرة'
+            ];
+            const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
+
+            newWinner.innerHTML = `
+                <div class="winner-medal">${randomMedal}</div>
+                <div class="winner-info">
+                    <div class="winner-name">${winnerName}</div>
+                    <div class="winner-prize">${randomPrize}</div>
+                    <div class="winner-date">اليوم</div>
+                </div>
+                <img src="https://via.placeholder.com/50x50/2a1804/d4af37?text=${winnerName.charAt(0)}" class="winner-avatar" alt="الفائز">
+            `;
+
+            const first = winnersList.firstChild;
+            if (first && first.classList && first.classList.contains('winners-empty-state'))
+                first.remove();
+            winnersList.insertBefore(newWinner, winnersList.firstChild);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(45deg, #d4af37, #f3cf7a);
+                color: #120a00;
+                padding: 12px 20px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 1000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                animation: slideDown 0.3s ease-out;
+                font-family: 'Tajawal', sans-serif;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // انتظار تحميل API
+            if (window.API) {
+                loadContests();
+            } else {
+                const checkAPI = setInterval(() => {
+                    if (window.API) {
+                        clearInterval(checkAPI);
+                        loadContests();
+                    }
+                }, 100);
+                
+                setTimeout(() => {
+                    clearInterval(checkAPI);
+                    if (!window.API) {
+                        console.error('API not loaded');
+                        showNoContestsMessage();
+                    }
+                }, 5000);
+            }
+
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeIn 0.6s ease-out';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.featured-contest, .participants-section, .draw-section, .winners-section, .mini-contest').forEach(element => {
+                observer.observe(element);
+            });
+
+            document.querySelectorAll('.participant-avatar').forEach(avatar => {
+                avatar.addEventListener('click', function () {
+                    showNotification(`المشارك: ${this.title}`);
+                });
+            });
+        });
+    </script>
+
+    <style>
+        /* شريط التنقل السفلي الموحد */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: rgba(45, 38, 18, 0.98);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+            border-top: 2px solid rgba(212, 175, 55, 0.4);
+            z-index: 1000;
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .nav-item {
+            color: #d4af37;
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            min-width: 60px;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            opacity: 1;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            color: #f3cf7a;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-item.active i {
+            transform: scale(1.1);
+        }
+        .nav-more-wrap { position: relative; }
+        .nav-more-dropdown {
+            display: none; position: absolute; bottom: 100%; right: 50%; transform: translateX(50%);
+            margin-bottom: 8px; min-width: 180px; background: rgba(45, 38, 18, 0.98);
+            backdrop-filter: blur(20px); border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6); z-index: 1001;
+            padding: 8px 0; list-style: none; margin: 0 0 8px 0;
+        }
+        .nav-more-dropdown.open { display: block; }
+        .nav-more-dropdown a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 18px;
+            color: #d4af37; text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
+            width: 100%; text-align: right; box-sizing: border-box; font-family: 'Cairo', sans-serif;
+        }
+        .nav-more-dropdown a:hover { background: rgba(212, 175, 55, 0.15); }
+        .nav-more-dropdown a i { font-size: 1.1rem; width: 22px; }
+    </style>
+    <script>
+        function toggleNavMore(e) {
+            if (e) e.stopPropagation();
+            var dd = document.getElementById('navMoreDropdown'); var btn = document.getElementById('navMoreBtn');
+            if (!dd || !btn) return;
+            var isOpen = dd.classList.contains('open');
+            dd.classList.toggle('open', !isOpen);
+            btn.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+            dd.setAttribute('aria-hidden', !isOpen ? 'false' : 'true');
+        }
+        document.addEventListener('click', function () {
+            var dd = document.getElementById('navMoreDropdown'); var btn = document.getElementById('navMoreBtn');
+            if (dd) { dd.classList.remove('open'); dd.setAttribute('aria-hidden', 'true'); }
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+    </script>
+
+    <!-- شريط التنقل السفلي (موحد) -->
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='../index.html'">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='../index.html#products'">
+            <i class="fas fa-box"></i>
+            <span>المنتجات</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='checkout.html'">
+            <i class="fas fa-shopping-cart"></i>
+            <span>السلة</span>
+        </div>
+        <div class="nav-more-wrap">
+            <div class="nav-item active" id="navMoreBtn" onclick="toggleNavMore(event)" role="button" aria-expanded="false" aria-haspopup="true">
+                <i class="fas fa-ellipsis-h"></i>
+                <span>المزيد</span>
+            </div>
+            <ul class="nav-more-dropdown" id="navMoreDropdown" aria-hidden="true">
+                <li><a href="contests.html"><i class="fas fa-trophy"></i> المسابقات</a></li>
+                <li><a href="health-benefits.html"><i class="fas fa-pills"></i> الفوائد الصحية</a></li>
+                <li><a href="our-story.html"><i class="fas fa-book"></i> قصتنا</a></li>
+                <li><a href="my-orders.html"><i class="fas fa-list-alt"></i> طلباتي</a></li>
+            </ul>
+        </div>
+        <div class="nav-item" onclick="window.location.href='profile.html'">
+            <i class="fas fa-user"></i>
+            <span>حسابي</span>
+        </div>
+    </nav>
+
+</body>
+
+</html>

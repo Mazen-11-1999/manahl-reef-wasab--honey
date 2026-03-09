@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الطلب | مناحل ريف وصاب</title>
+    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #120a00;
+            --bg-secondary: #1a0f00;
+            --bg-card: #1d1102;
+            --bg-accent: #2a1804;
+            --bg-input: #000000;
+            --gold-primary: #d4af37;
+            --gold-light: #f3cf7a;
+            --gold-dark: #aa8c2c;
+            --text-primary: #e0c097;
+            --text-secondary: #f3cf7a;
+            --text-white: #ffffff;
+            --text-muted: #888;
+            --text-dim: #555;
+            --border-gold: rgba(212, 175, 55, 0.3);
+            --shadow-gold: rgba(212, 175, 55, 0.3);
+            --success: #28a745;
+            --danger: #ff4444;
+            --warning: #ff9800;
+            --info: #2196f3;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            color: var(--text-primary);
+            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at top right, rgba(212, 175, 55, 0.05), transparent);
+        }
+
+        .owner-control-panel {
+            background: var(--bg-primary);
+            padding: 20px;
+            direction: rtl;
+            border: 1px solid var(--gold-primary);
+            border-radius: 15px;
+            max-width: 600px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .owner-control-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* حالة التحميل */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .loading-state .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(212, 175, 55, 0.2);
+            border-top: 4px solid var(--gold-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--danger);
+        }
+
+        .error-state i { font-size: 3rem; margin-bottom: 15px; display: block; }
+        .error-state a { color: var(--gold-primary); text-decoration: none; }
+
+        /* الهيدر */
+        .order-header {
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .customer-name {
+            color: var(--text-white);
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .customer-badge {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .order-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status-pending { background: rgba(255, 152, 0, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+        .status-processing { background: rgba(33, 150, 243, 0.2); color: var(--info); border: 1px solid var(--info); }
+        .status-paid { background: rgba(40, 167, 69, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .status-shipped { background: rgba(33, 150, 243, 0.2); color: var(--info); border: 1px solid var(--info); }
+        .status-completed { background: rgba(40, 167, 69, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .status-cancelled { background: rgba(255, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
+        /* تفاصيل الطلب */
+        .order-details-section {
+            margin-bottom: 20px;
+            background: linear-gradient(145deg, rgba(29, 17, 2, 0.5), rgba(42, 24, 4, 0.5));
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-gold);
+        }
+
+        .section-title {
+            color: var(--gold-primary);
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+        }
+
+        .detail-row {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-row:last-child { margin-bottom: 0; }
+
+        .detail-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            min-width: 100px;
+        }
+
+        .detail-value {
+            color: var(--text-white);
+            font-weight: bold;
+        }
+
+        /* جدول المنتجات */
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .products-table th {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold-primary);
+            padding: 10px 8px;
+            font-size: 0.8rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-gold);
+        }
+
+        .products-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .products-table td.product-name { text-align: right; font-weight: 500; }
+
+        /* الإجماليات */
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .total-row.grand {
+            padding-top: 10px;
+            margin-top: 8px;
+            border-top: 2px solid var(--gold-primary);
+            font-size: 1.1rem;
+            color: var(--gold-primary);
+            font-weight: bold;
+        }
+
+        .paid-amount { color: var(--success); }
+        .remaining-amount { color: var(--warning); }
+
+        /* الأزرار */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .btn-invoice {
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(45deg, #25d366, #128c7e);
+            color: white;
+        }
+
+        .btn-manage {
+            background: linear-gradient(45deg, var(--info), #1565c0);
+            color: white;
+        }
+
+        .btn-back {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold-primary);
+            border: 1px solid var(--border-gold);
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* الإشعارات */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--gold-primary);
+            border-radius: 10px;
+            padding: 15px;
+            color: var(--text-primary);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .notification.show { transform: translateX(0); }
+        .notification.success { border-color: var(--success); }
+        .notification.error { border-color: var(--danger); }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-up { animation: slideUp 0.6s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* متجاوب */
+        @media (max-width: 768px) {
+            .owner-control-panel { margin: 10px; padding: 15px; }
+            .customer-name { font-size: 1.1rem; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="owner-control-panel fade-in" id="mainPanel">
+        
+        <!-- حالة التحميل -->
+        <div class="loading-state" id="loadingState">
+            <div class="spinner"></div>
+            <p>جارٍ تحميل بيانات الطلب...</p>
+        </div>
+
+        <!-- حالة الخطأ -->
+        <div class="error-state" id="errorState" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p id="errorMessage">لم يتم العثور على الطلب</p>
+            <a href="dashboard.html"><i class="fas fa-arrow-right"></i> العودة للوحة التحكم</a>
+        </div>
+
+        <!-- محتوى الطلب -->
+        <div id="orderContent" style="display: none;">
+
+        <!-- هيدر العميل -->
+        <div class="order-header">
+            <h3 class="customer-name">
+                    <i class="fas fa-user"></i>
+                    <span id="customerName">---</span>
+            </h3>
+            <span class="customer-badge" id="customerBadge">
+                    <span>👤</span>
+                    <span>عميل</span>
+            </span>
+            <div class="order-status status-pending" id="orderStatus">
+                <span>⏳</span>
+                <span>قيد الانتظار</span>
+            </div>
+        </div>
+
+            <!-- معلومات الطلب -->
+            <div class="order-details-section slide-up" style="animation-delay: 0.1s">
+                <div class="section-title"><i class="fas fa-file-invoice"></i> معلومات الطلب</div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-hashtag"></i> رقم الطلب:</span>
+                    <span class="detail-value" id="orderId">---</span>
+            </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-calendar-alt"></i> التاريخ:</span>
+                    <span class="detail-value" id="orderDate">---</span>
+            </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-credit-card"></i> طريقة الدفع:</span>
+                    <span class="detail-value" id="paymentMethodDisplay">---</span>
+            </div>
+            </div>
+
+            <!-- معلومات العميل -->
+            <div class="order-details-section slide-up" style="animation-delay: 0.15s">
+                <div class="section-title"><i class="fas fa-address-card"></i> معلومات العميل</div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-phone"></i> الهاتف:</span>
+                    <span class="detail-value" id="customerPhone">---</span>
+            </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-map-marker-alt"></i> المنطقة:</span>
+                    <span class="detail-value" id="customerRegion">---</span>
+        </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-home"></i> العنوان:</span>
+                    <span class="detail-value" id="customerAddress">---</span>
+            </div>
+                <div class="detail-row" id="notesRow" style="display: none;">
+                    <span class="detail-label"><i class="fas fa-sticky-note"></i> ملاحظات:</span>
+                    <span class="detail-value" id="customerNotes">---</span>
+                </div>
+            </div>
+
+            <!-- المنتجات -->
+            <div class="order-details-section slide-up" style="animation-delay: 0.2s">
+                <div class="section-title"><i class="fas fa-boxes"></i> المنتجات</div>
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>المنتج</th>
+                            <th>الكمية</th>
+                            <th>السعر</th>
+                            <th>الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsBody">
+                    </tbody>
+                </table>
+
+                <div id="totalsArea">
+                    <!-- سيتم ملؤه ديناميكياً -->
+                </div>
+            </div>
+
+            <!-- تفاصيل الدفع -->
+            <div class="order-details-section slide-up" style="animation-delay: 0.25s">
+                <div class="section-title"><i class="fas fa-money-check-alt"></i> تفاصيل الدفع</div>
+                <div id="paymentArea">
+                    <!-- سيتم ملؤه ديناميكياً -->
+            </div>
+        </div>
+
+        <!-- الأزرار -->
+        <div class="action-buttons slide-up" style="animation-delay: 0.3s">
+                <button class="action-button btn-invoice" onclick="openInvoice()">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>عرض الفاتورة</span>
+            </button>
+                <button class="action-button btn-whatsapp" onclick="contactCustomer()">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>تواصل واتساب</span>
+                </button>
+                <button class="action-button btn-manage" onclick="manageOrder()">
+                    <i class="fas fa-cog"></i>
+                    <span>إدارة الطلب</span>
+                </button>
+                <button class="action-button btn-back" onclick="window.location.href='dashboard.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>الرجوع</span>
+            </button>
+        </div>
+
+        </div>
+
+    </div>
+
+    <!-- الإشعارات -->
+    <div class="notification" id="notification"></div>
+
+    <!-- API Script -->
+    <script src="../js/api.js"></script>
+
+    <script>
+        let currentOrder = null;
+
+        // الحصول على معرف الطلب من URL
+        function getOrderIdFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('orderId') || params.get('id');
+        }
+
+        // تحميل بيانات الطلب من API
+        async function loadOrderData() {
+            const orderParam = getOrderIdFromURL();
+            
+            if (!orderParam) {
+                showError('لم يتم تحديد رقم الطلب');
+                return;
+            }
+
+            try {
+                if (!window.API || !window.API.orders) {
+                    showError('API غير متاح. يرجى التأكد من تشغيل السيرفر.');
+                    return;
+                }
+
+                let response;
+                try {
+                    response = await window.API.orders.getByOrderId(orderParam);
+                    } catch (e) {
+                    try {
+                        response = await window.API.orders.getById(orderParam);
+                    } catch (e2) {
+                        throw new Error('الطلب غير موجود');
+                    }
+                }
+
+                if (response && response.success && response.order) {
+                    currentOrder = response.order;
+                    renderOrderDetails();
+            } else {
+                    throw new Error('لم يتم العثور على بيانات الطلب');
+                }
+            } catch (error) {
+                console.error('Error loading order:', error);
+                showError(error.message || 'حدث خطأ في تحميل بيانات الطلب');
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // عرض تفاصيل الطلب
+        function renderOrderDetails() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('orderContent').style.display = 'block';
+
+            const order = currentOrder;
+
+            // معلومات العميل
+            document.getElementById('customerName').textContent = order.customer?.name || 'غير محدد';
+            document.getElementById('customerPhone').textContent = order.customer?.phone || 'غير محدد';
+            document.getElementById('customerRegion').textContent = order.customer?.region || order.customer?.country || 'غير محدد';
+            document.getElementById('customerAddress').textContent = order.customer?.address || 'غير محدد';
+
+            // ملاحظات
+            if (order.customer?.notes) {
+                document.getElementById('notesRow').style.display = 'flex';
+                document.getElementById('customerNotes').textContent = order.customer.notes;
+            }
+
+            // معلومات الطلب
+            document.getElementById('orderId').textContent = order.orderId || order._id;
+            document.getElementById('orderDate').textContent = new Date(order.createdAt).toLocaleDateString('ar-YE', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+            document.getElementById('paymentMethodDisplay').textContent = getPaymentMethodText(order.paymentMethod);
+
+            // حالة الطلب
+            updateOrderStatus(order.status);
+
+            // المنتجات
+            renderProducts(order.items);
+
+            // الإجماليات
+            renderTotals(order);
+
+            // الدفع
+            renderPayment(order);
+        }
+
+        function updateOrderStatus(status) {
+            const el = document.getElementById('orderStatus');
+            const statusConfig = {
+                'pending': { icon: '⏳', text: 'قيد الانتظار', class: 'status-pending' },
+                'processing': { icon: '⚙️', text: 'قيد التجهيز', class: 'status-processing' },
+                'paid': { icon: '✅', text: 'تم الدفع', class: 'status-paid' },
+                'ready_to_ship': { icon: '📦', text: 'جاهز للشحن', class: 'status-processing' },
+                'shipped': { icon: '🚚', text: 'تم الشحن', class: 'status-shipped' },
+                'delivered': { icon: '📬', text: 'تم التسليم', class: 'status-completed' },
+                'completed': { icon: '✅', text: 'مكتمل', class: 'status-completed' },
+                'cancelled': { icon: '❌', text: 'ملغي', class: 'status-cancelled' }
+            };
+
+            const config = statusConfig[status] || statusConfig['pending'];
+            el.className = `order-status ${config.class}`;
+            el.innerHTML = `<span>${config.icon}</span><span>${config.text}</span>`;
+        }
+
+        function renderProducts(items) {
+            const tbody = document.getElementById('productsBody');
+            const sym = getCurrencySymbol(currentOrder);
+            if (!items || items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">لا توجد منتجات</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = items.map((item, i) => {
+                const total = (item.price || 0) * (item.quantity || 1);
+                return `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td class="product-name">${item.name || 'منتج'}</td>
+                        <td>${item.quantity || 1}</td>
+                        <td>${formatNumber(item.price || 0)} ${sym}</td>
+                        <td style="font-weight: bold;">${formatNumber(total)} ${sym}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderTotals(order) {
+            const area = document.getElementById('totalsArea');
+            const sym = getCurrencySymbol(order);
+            const subtotal = order.total || 0;
+            const shipping = order.shipping || 0;
+            const grandTotal = subtotal + shipping;
+
+            let shippingText = '';
+            if (shipping === 0) {
+                const region = (order.customer?.region || '').toLowerCase();
+                if (region.includes('صنعاء') || order.shippingAgreed) {
+                    shippingText = 'مجاني';
+            } else {
+                    shippingText = 'سيتم التواصل';
+                }
+            } else {
+                shippingText = `${formatNumber(shipping)} ${sym}`;
+            }
+
+            area.innerHTML = `
+                <div class="total-row">
+                    <span>إجمالي المنتجات:</span>
+                    <span>${formatNumber(subtotal)} ${sym}</span>
+                </div>
+                <div class="total-row">
+                    <span>الشحن:</span>
+                    <span>${shippingText}</span>
+                </div>
+                <div class="total-row grand">
+                    <span>المجموع الكلي:</span>
+                    <span>${formatNumber(grandTotal)} ${sym}</span>
+                </div>
+            `;
+        }
+
+        function renderPayment(order) {
+            const area = document.getElementById('paymentArea');
+            const payment = order.payment || {};
+            const paidAmount = payment.paidAmount || 0;
+            const remainingAmount = payment.remainingAmount || 0;
+            const paymentStatus = payment.paymentStatus || 'pending';
+
+            const statusMap = {
+                'pending': '⏳ معلق',
+                'partial': '🔄 مدفوع جزئياً',
+                'paid': '✅ مدفوع بالكامل',
+                'completed': '✅ مكتمل'
+            };
+
+            const sym = getCurrencySymbol(order);
+            let html = `
+                <div class="detail-row">
+                    <span class="detail-label">حالة الدفع:</span>
+                    <span class="detail-value">${statusMap[paymentStatus] || paymentStatus}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">المدفوع:</span>
+                    <span class="detail-value paid-amount">${formatNumber(paidAmount)} ${sym}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">المتبقي:</span>
+                    <span class="detail-value ${remainingAmount > 0 ? 'remaining-amount' : 'paid-amount'}">${formatNumber(remainingAmount)} ${sym}</span>
+                </div>
+            `;
+
+            if (payment.payments && payment.payments.length > 0) {
+                html += '<hr style="border-color: var(--border-gold); margin: 10px 0;">';
+                html += '<div style="font-size: 0.85rem; color: var(--gold-primary); margin-bottom: 8px;">سجل الدفعات:</div>';
+                payment.payments.forEach((p, i) => {
+                    const date = new Date(p.paidAt).toLocaleDateString('ar-YE', { day: 'numeric', month: 'short' });
+                    html += `
+                        <div class="detail-row" style="font-size: 0.85rem;">
+                            <span class="detail-label">${date}:</span>
+                            <span class="detail-value paid-amount">${formatNumber(p.amount)} ${sym}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            area.innerHTML = html;
+        }
+
+        // أدوات مساعدة
+        function formatNumber(num) {
+            return Number(num).toLocaleString('en-US');
+        }
+
+        function getCurrencySymbol(order) {
+            const currency = order?.currency || 'YER';
+            return currency === 'SAR' ? 'ر.س' : 'ر.ي';
+        }
+
+        function getPaymentMethodText(method) {
+            const methods = {
+                'delivery': 'دفع عند الاستلام',
+                'half': 'دفع نصفي (عربون)',
+                'full': 'دفع كامل',
+                'cash': 'نقداً',
+                'cash_on_delivery': 'دفع عند الاستلام',
+                'bank_transfer': 'تحويل بنكي',
+                'card': 'بطاقة',
+                'other': 'أخرى'
+            };
+            return methods[method] || method || 'غير محدد';
+        }
+
+        // فتح الفاتورة
+        function openInvoice() {
+            if (!currentOrder) return;
+            const id = currentOrder.orderId || currentOrder._id;
+            window.open(`invoice.html?orderId=${id}`, '_blank');
+        }
+
+        // تواصل واتساب
+        function contactCustomer() {
+            if (!currentOrder) return;
+            let phone = (currentOrder.customer?.phone || '').replace(/[^\d]/g, '');
+            if (phone.startsWith('0')) phone = '967' + phone.substring(1);
+            else if (!phone.startsWith('967')) phone = '967' + phone;
+
+            const orderId = currentOrder.orderId || currentOrder._id;
+            const message = encodeURIComponent(`مرحباً ${currentOrder.customer?.name || ''}\nبخصوص طلبك رقم #${orderId} من مناحل ريف وصاب 🍯`);
+            window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+        }
+
+        // إدارة الطلب
+        function manageOrder() {
+            if (!currentOrder) return;
+            const id = currentOrder.orderId || currentOrder._id;
+            window.location.href = `orders.html?orderId=${id}`;
+        }
+
+        // نظام الإشعارات
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            setTimeout(() => { notification.classList.add('show'); }, 100);
+            setTimeout(() => { notification.classList.remove('show'); }, 3000);
+        }
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', async function () {
+            let attempts = 0;
+            while (!window.API && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 200));
+                attempts++;
+            }
+            await loadOrderData();
+        });
+    </script>
+
+    <style>
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: rgba(45, 38, 18, 0.98); backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)); border-top: 2px solid rgba(212, 175, 55, 0.4); z-index: 1000; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6); }
+        .bottom-nav .nav-item { color: #d4af37; text-align: center; font-size: 0.85rem; opacity: 0.7; cursor: pointer; transition: all 0.3s ease; padding: 8px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'Cairo', 'Tajawal', sans-serif; min-width: 60px; text-decoration: none; }
+        .bottom-nav .nav-item i { font-size: 1.3rem; transition: all 0.3s ease; }
+        .bottom-nav .nav-item span { font-size: 0.75rem; font-weight: 500; }
+        .bottom-nav .nav-item:hover { opacity: 1; background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); transform: translateY(-2px); text-shadow: 0 0 8px rgba(212, 175, 55, 0.5); }
+        .bottom-nav .nav-item.active { opacity: 1; color: #f3cf7a; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.4); text-shadow: 0 0 10px rgba(212, 175, 55, 0.6); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
+        .bottom-nav .nav-item.active i { transform: scale(1.1); }
+    </style>
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="fas fa-crown"></i><span>لوحة التحكم</span></div>
+        <div class="nav-item" onclick="window.location.href='create-order.html'"><i class="fas fa-plus-circle"></i><span>طلب جديد</span></div>
+        <div class="nav-item" onclick="window.location.href='products.html'"><i class="fas fa-box-open"></i><span>المنتجات</span></div>
+        <div class="nav-item" onclick="window.location.href='reports.html'"><i class="fas fa-chart-line"></i><span>التقارير</span></div>
+    </nav>
+
+</body>
+
+</html>
