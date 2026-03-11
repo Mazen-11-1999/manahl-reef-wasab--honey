@@ -108,9 +108,15 @@ app.use('/api/', (req, res, next) => {
 });
 
 // Ensure uploads directory exists for logos and product images
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+// التحقق من بيئة Vercel
+const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+
+// في Vercel، لا نستخدم مجلد uploads
+if (!isVercel) {
+    const uploadsDir = path.join(__dirname, 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+    }
 }
 
 // Static files
