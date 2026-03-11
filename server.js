@@ -75,15 +75,21 @@ app.use(requestLogger);
 if (config.nodeEnv === 'development') {
     app.use(morgan('dev'));
 } else {
-    const logsDir = path.join(__dirname, 'logs');
-    if (!fs.existsSync(logsDir)) {
-        fs.mkdirSync(logsDir, { recursive: true });
+    // التحقق من بيئة Vercel
+    const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+
+    // في Vercel، لا نستخدم ملفات السجلات
+    if (!isVercel) {
+        const logsDir = path.join(__dirname, 'logs');
+        if (!fs.existsSync(logsDir)) {
+            fs.mkdirSync(logsDir, { recursive: true });
+        }
+        const accessLogStream = fs.createWriteStream(
+            path.join(logsDir, 'access.log'),
+            { flags: 'a' }
+        );
+        app.use(morgan('combined', { stream: accessLogStream }));
     }
-    const accessLogStream = fs.createWriteStream(
-        path.join(logsDir, 'access.log'),
-        { flags: 'a' }
-    );
-    app.use(morgan('combined', { stream: accessLogStream }));
 }
 
 // Rate limiting
@@ -142,12 +148,12 @@ app.get('/admin/', (req, res) => {
 app.get('/pages/:page', (req, res) => {
     const page = req.params.page;
     const pagePath = path.join(__dirname, 'frontend', 'pages', page);
-    
+
     // Security: Only allow HTML files
     if (!page.endsWith('.html')) {
         return res.status(400).json({ success: false, message: 'Invalid page format' });
     }
-    
+
     // Check if file exists
     if (fs.existsSync(pagePath)) {
         res.sendFile(pagePath);
@@ -161,7 +167,7 @@ app.get('/pages/:page', (req, res) => {
 app.post('/api/admin/login', async (req, res) => {
     try {
         const { password } = req.body;
-        
+
         if (!password) {
             return res.status(400).json({ success: false, message: 'كلمة المرور مطلوبة' });
         }
@@ -169,14 +175,14 @@ app.post('/api/admin/login', async (req, res) => {
         // البحث عن admin user
         const User = require('./models/User');
         const admin = await User.findOne({ role: 'admin' }).select('+password');
-        
+
         if (!admin) {
             return res.status(401).json({ success: false, message: 'حساب المشرف غير موجود' });
         }
 
         // التحقق من كلمة المرور
         const isPasswordValid = await admin.comparePassword(password);
-        
+
         if (!isPasswordValid) {
             return res.status(401).json({ success: false, message: 'كلمة المرور غير صحيحة' });
         }
@@ -208,7 +214,7 @@ app.post('/api/admin/login', async (req, res) => {
 app.put('/api/admin/change-password', async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
-        
+
         if (!currentPassword || !newPassword) {
             return res.status(400).json({ success: false, message: 'كلمة المرور الحالية والجديدة مطلوبة' });
         }
@@ -220,14 +226,14 @@ app.put('/api/admin/change-password', async (req, res) => {
         // البحث عن admin user
         const User = require('./models/User');
         const admin = await User.findOne({ role: 'admin' }).select('+password');
-        
+
         if (!admin) {
             return res.status(401).json({ success: false, message: 'حساب المشرف غير موجود' });
         }
 
         // التحقق من كلمة المرور الحالية
         const isPasswordValid = await admin.comparePassword(currentPassword);
-        
+
         if (!isPasswordValid) {
             return res.status(401).json({ success: false, message: 'كلمة المرور الحالية غير صحيحة' });
         }
@@ -366,22 +372,22 @@ app.get('/api/products',
     async (req, res, next) => {
         try {
             const { search, category, minPrice, maxPrice, featured, page = 1, limit = 20, sort } = req.query;
-            
+
             // حد أقصى للمنتجات في استجابة واحدة (لتحمل عدد كبير من المستخدمين)
             const limitNum = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
             const pageNum = Math.max(1, parseInt(page, 10) || 1);
             const skip = (pageNum - 1) * limitNum;
-            
+
             // بناء query (إخفاء المسودات والمنتجات غير النشطة عن الزوار)
             let query = { $and: [{ status: { $ne: 'draft' } }, { isActive: { $ne: false } }] };
-            
+
             if (search) {
                 query.$or = [
                     { name: { $regex: search, $options: 'i' } },
                     { description: { $regex: search, $options: 'i' } }
                 ];
             }
-            
+
             if (category) query.category = category;
             if (featured !== undefined) query.featured = featured === 'true';
             if (minPrice || maxPrice) {
@@ -389,21 +395,21 @@ app.get('/api/products',
                 if (minPrice) query.price.$gte = parseFloat(minPrice);
                 if (maxPrice) query.price.$lte = parseFloat(maxPrice);
             }
-            
+
             // بناء sort
             let sortOption = { createdAt: -1 };
             if (sort) {
                 const [field, order] = sort.split('-');
                 sortOption = { [field]: order === 'asc' ? 1 : -1 };
             }
-            
+
             const products = await Product.find(query)
                 .sort(sortOption)
                 .skip(skip)
                 .limit(limitNum);
-            
+
             const total = await Product.countDocuments(query);
-            
+
             res.json({
                 success: true,
                 data: products,
@@ -443,7 +449,7 @@ app.get('/api/products/:id',
     }
 );
 
-app.post('/api/products', 
+app.post('/api/products',
     authenticateToken,
     sanitize,
     validators.product.createProduct,
@@ -467,7 +473,7 @@ app.post('/api/products',
     }
 );
 
-app.put('/api/products/:id', 
+app.put('/api/products/:id',
     authenticateToken,
     sanitize,
     validators.product.updateProduct,
@@ -499,7 +505,7 @@ app.put('/api/products/:id',
     }
 );
 
-app.delete('/api/products/:id', 
+app.delete('/api/products/:id',
     authenticateToken,
     validators.product.deleteProduct,
     validate,
@@ -508,11 +514,11 @@ app.delete('/api/products/:id',
     async (req, res, next) => {
         try {
             const product = await Product.findByIdAndDelete(req.params.id);
-            
+
             if (!product) {
                 return next(new AppError('المنتج غير موجود', 404));
             }
-            
+
             res.json({ success: true, message: 'تم حذف المنتج بنجاح' });
         } catch (error) {
             next(error);
@@ -534,10 +540,10 @@ app.get('/api/categories',
             if (status) query.status = status;
 
             const categories = await Category.find(query).sort({ order: 1, createdAt: -1 });
-            
+
             // تحديث عدد المنتجات لكل فئة
             for (let cat of categories) {
-                cat.productsCount = await Product.countDocuments({ 
+                cat.productsCount = await Product.countDocuments({
                     category: cat.slug,
                     status: { $ne: 'draft' }
                 });
@@ -557,7 +563,7 @@ app.get('/api/categories/:id', async (req, res, next) => {
         if (!category) {
             return next(new AppError('الفئة غير موجودة', 404));
         }
-        category.productsCount = await Product.countDocuments({ 
+        category.productsCount = await Product.countDocuments({
             category: category.slug,
             status: { $ne: 'draft' }
         });
@@ -755,7 +761,7 @@ app.get('/api/contests',
     }
 );
 
-app.post('/api/contests', 
+app.post('/api/contests',
     authenticateToken,
     sanitize,
     validators.contest.createContest,
@@ -772,7 +778,7 @@ app.post('/api/contests',
     }
 );
 
-app.put('/api/contests/:id', 
+app.put('/api/contests/:id',
     authenticateToken,
     sanitize,
     validators.contest.updateContest,
@@ -801,11 +807,11 @@ app.delete('/api/contests/:id',
     async (req, res, next) => {
         try {
             const contest = await Contest.findByIdAndDelete(req.params.id);
-            
+
             if (!contest) {
                 return next(new AppError('المسابقة غير موجودة', 404));
             }
-            
+
             res.json({ success: true, message: 'تم حذف المسابقة بنجاح' });
         } catch (error) {
             next(error);
@@ -840,13 +846,13 @@ app.post('/api/contests/:id/participate',
 
             // إذا كان مؤهلاً مباشرة (إضافة يدوية من المالك)، لا نحتاج للتحقق
             let eligibility = { eligible: isEligible || false, reasons: [] };
-            
+
             if (!isEligible) {
                 // التحقق من الأهلية فقط إذا لم يكن مؤهلاً مباشرة
                 const participantIndex = contest.participants.length - 1;
                 eligibility = contest.checkParticipantEligibility(participantIndex);
             }
-            
+
             await contest.save();
 
             res.status(200).json({
@@ -926,7 +932,7 @@ app.post('/api/contests/:id/verify-share',
             }
 
             // زيادة عدد المشاركات
-            participant.requirementsStatus.shareWhatsApp.sharesCount = 
+            participant.requirementsStatus.shareWhatsApp.sharesCount =
                 (participant.requirementsStatus.shareWhatsApp.sharesCount || 0) + 1;
 
             if (!participant.requirementsStatus.shareWhatsApp.sharesProof) {
@@ -1056,18 +1062,18 @@ app.get('/api/contests/:id',
     }
 );
 
-app.get('/api/did-you-know', 
+app.get('/api/did-you-know',
     cacheResponse(600, 'did-you-know:'), // Cache لمدة 10 دقائق
     async (req, res, next) => {
-    try {
-        const items = await DidYouKnow.find({ active: true }).sort({ createdAt: -1 });
-        res.json({ success: true, items });
-    } catch (error) {
-        next(error);
-    }
-});
+        try {
+            const items = await DidYouKnow.find({ active: true }).sort({ createdAt: -1 });
+            res.json({ success: true, items });
+        } catch (error) {
+            next(error);
+        }
+    });
 
-app.post('/api/did-you-know', 
+app.post('/api/did-you-know',
     authenticateToken,
     sanitize,
     validators.didYouKnow.createDidYouKnow,
@@ -1085,7 +1091,7 @@ app.post('/api/did-you-know',
     }
 );
 
-app.put('/api/did-you-know/:id', 
+app.put('/api/did-you-know/:id',
     authenticateToken,
     sanitize,
     validators.didYouKnow.updateDidYouKnow,
@@ -1110,7 +1116,7 @@ app.put('/api/did-you-know/:id',
     }
 );
 
-app.delete('/api/did-you-know/:id', 
+app.delete('/api/did-you-know/:id',
     authenticateToken,
     invalidateCache('did-you-know:*'),
     async (req, res, next) => {
@@ -1324,17 +1330,17 @@ const initializeData = async () => {
 const startServer = async () => {
     try {
         console.log('🔄 محاولة الاتصال بقاعدة البيانات...');
-        
+
         // Connect to database
         let dbConnection = null;
         try {
             console.log('📡 استدعاء connectDB()...');
             // إضافة timeout للاتصال (20 ثانية لـ Atlas أو الشبكات البطيئة)
             const connectPromise = connectDB();
-            const overallTimeout = new Promise((_, reject) => 
+            const overallTimeout = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error('Timeout: استغرق الاتصال أكثر من 20 ثانية')), 20000)
             );
-            
+
             dbConnection = await Promise.race([connectPromise, overallTimeout]);
             console.log('📡 connectDB() اكتمل');
             if (dbConnection) {
@@ -1350,7 +1356,7 @@ const startServer = async () => {
             }
             dbConnection = null; // تأكد من أن dbConnection = null
         }
-        
+
         console.log('✅ اكتملت محاولة الاتصال بقاعدة البيانات');
 
         // Initialize data only if database is connected
@@ -1389,14 +1395,14 @@ const startServer = async () => {
         console.log(`📁 مجلد frontend: ${path.join(__dirname, 'frontend')}`);
         console.log(`📄 index.html موجود: ${fs.existsSync(path.join(__dirname, 'frontend', 'index.html'))}`);
         console.log(`🌐 المنفذ: ${config.port}`);
-        
+
         const server = app.listen(config.port, () => {
             logger.info('Server started successfully', {
                 port: config.port,
                 environment: config.nodeEnv,
                 timestamp: new Date().toISOString()
             });
-            
+
             console.log('\n🚀 ============================================');
             console.log(`✅ الخادم يعمل على المنفذ ${config.port}`);
             console.log(`🌐 الصفحة الرئيسية: http://localhost:${config.port}`);
@@ -1410,7 +1416,7 @@ const startServer = async () => {
             console.log(`📝 السجلات: logs/`);
             console.log('============================================\n');
         });
-        
+
         // معالجة أخطاء الخادم
         server.on('error', (error) => {
             if (error.code === 'EADDRINUSE') {
@@ -1513,13 +1519,13 @@ process.on('unhandledRejection', (err) => {
     logger.error('UNHANDLED REJECTION!', err);
     console.error('⚠️  UNHANDLED REJECTION:', err.message);
     console.error('Stack:', err.stack);
-    
+
     // في بيئة التطوير، لا نوقف الخادم
     if (config.nodeEnv === 'development') {
         console.warn('⚠️  الخادم يستمر في العمل (وضع التطوير)');
         return;
     }
-    
+
     // في الإنتاج، نوقف الخادم
     console.error('❌ إيقاف الخادم بسبب خطأ غير معالج');
     process.exit(1);
@@ -1530,13 +1536,13 @@ process.on('uncaughtException', (err) => {
     logger.error('UNCAUGHT EXCEPTION!', err);
     console.error('⚠️  UNCAUGHT EXCEPTION:', err.message);
     console.error('Stack:', err.stack);
-    
+
     // في بيئة التطوير، لا نوقف الخادم
     if (config.nodeEnv === 'development') {
         console.warn('⚠️  الخادم يستمر في العمل (وضع التطوير)');
         return;
     }
-    
+
     // في الإنتاج، نوقف الخادم
     console.error('❌ إيقاف الخادم بسبب خطأ غير معالج');
     process.exit(1);
