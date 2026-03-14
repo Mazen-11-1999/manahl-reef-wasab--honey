@@ -397,6 +397,23 @@ app.get('/api/products',
 
             // حد أقصى للمنتجات في استجابة واحدة (لتحمل عدد كبير من المستخدمين)
             const limitNum = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
+
+            // التحقق من اتصال قاعدة البيانات
+            const db = require('./config/database');
+            if (!db.mongoose.connection.readyState || db.mongoose.connection.readyState !== 1) {
+                // إرجاع بيانات وهمية إذا لم تتصل قاعدة البيانات
+                return res.json({
+                    success: true,
+                    products: [],
+                    pagination: {
+                        currentPage: parseInt(page),
+                        totalPages: 0,
+                        totalProducts: 0,
+                        hasNext: false,
+                        hasPrev: false
+                    }
+                });
+            }
             const pageNum = Math.max(1, parseInt(page, 10) || 1);
             const skip = (pageNum - 1) * limitNum;
 

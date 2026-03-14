@@ -14,8 +14,19 @@ const catchAsync = require('../utils/catchAsync');
  * الحصول على جميع الحالات النشطة
  */
 exports.getStories = catchAsync(async (req, res, next) => {
+    // التحقق من اتصال قاعدة البيانات
+    const db = require('../config/database');
+    if (!db.mongoose.connection.readyState || db.mongoose.connection.readyState !== 1) {
+        // إرجاع بيانات وهمية إذا لم تتصل قاعدة البيانات
+        return res.status(200).json({
+            success: true,
+            count: 0,
+            stories: []
+        });
+    }
+
     const stories = await Story.getActiveStories();
-    
+
     res.status(200).json({
         success: true,
         count: stories.length,
@@ -29,7 +40,7 @@ exports.getStories = catchAsync(async (req, res, next) => {
 exports.getAds = catchAsync(async (req, res, next) => {
     const { position } = req.query;
     const ads = await Story.getActiveAds(position);
-    
+
     res.status(200).json({
         success: true,
         count: ads.length,
@@ -47,14 +58,14 @@ exports.getStory = catchAsync(async (req, res, next) => {
         .populate('likes.customer', 'profile.firstName profile.lastName')
         .populate('comments.user', 'username')
         .populate('comments.customer', 'profile.firstName profile.lastName');
-    
+
     if (!story) {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
     }
-    
+
     // زيادة عدد المشاهدات
     await story.incrementViews();
-    
+
     res.status(200).json({
         success: true,
         story
@@ -81,7 +92,7 @@ exports.uploadStoryMedia = catchAsync(async (req, res, next) => {
  */
 exports.createStory = catchAsync(async (req, res, next) => {
     const { type, media, caption, position, link, startDate, endDate } = req.body;
-    
+
     const storyData = {
         type: type || 'story',
         media: {
@@ -93,17 +104,17 @@ exports.createStory = catchAsync(async (req, res, next) => {
         createdBy: req.user._id || req.user.id,
         status: 'active'
     };
-    
+
     if (type === 'ad') {
         storyData.position = position || 'story';
         storyData.link = link;
         if (startDate) storyData.startDate = new Date(startDate);
         if (endDate) storyData.endDate = new Date(endDate);
     }
-    
+
     const story = new Story(storyData);
     await story.save();
-    
+
     res.status(201).json({
         success: true,
         message: 'تم إنشاء الحالة/الإعلان بنجاح',
@@ -116,13 +127,13 @@ exports.createStory = catchAsync(async (req, res, next) => {
  */
 exports.updateStory = catchAsync(async (req, res, next) => {
     const story = await Story.findById(req.params.id);
-    
+
     if (!story) {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
     }
-    
+
     const { media, caption, status, position, link, startDate, endDate } = req.body;
-    
+
     if (media) story.media = media;
     if (caption !== undefined) story.caption = caption;
     if (status) story.status = status;
@@ -130,9 +141,9 @@ exports.updateStory = catchAsync(async (req, res, next) => {
     if (link !== undefined) story.link = link;
     if (startDate) story.startDate = new Date(startDate);
     if (endDate) story.endDate = new Date(endDate);
-    
+
     await story.save();
-    
+
     res.status(200).json({
         success: true,
         message: 'تم تحديث الحالة/الإعلان بنجاح',
@@ -145,11 +156,11 @@ exports.updateStory = catchAsync(async (req, res, next) => {
  */
 exports.deleteStory = catchAsync(async (req, res, next) => {
     const story = await Story.findByIdAndDelete(req.params.id);
-    
+
     if (!story) {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
     }
-    
+
     res.status(200).json({
         success: true,
         message: 'تم حذف الحالة/الإعلان بنجاح'
@@ -161,20 +172,20 @@ exports.deleteStory = catchAsync(async (req, res, next) => {
  */
 exports.likeStory = catchAsync(async (req, res, next) => {
     const story = await Story.findById(req.params.id);
-    
+
     if (!story) {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
     }
-    
+
     // الحصول على customer إذا كان موجود
     let customerId = null;
     if (req.user) {
         const customer = await Customer.findOne({ user: req.user.id });
         if (customer) customerId = customer._id;
     }
-    
+
     await story.addLike(req.user?.id, customerId);
-    
+
     res.status(200).json({
         success: true,
         message: 'تم إضافة الإعجاب',
@@ -187,20 +198,20 @@ exports.likeStory = catchAsync(async (req, res, next) => {
  */
 exports.unlikeStory = catchAsync(async (req, res, next) => {
     const story = await Story.findById(req.params.id);
-    
+
     if (!story) {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
     }
-    
+
     // الحصول على customer إذا كان موجود
     let customerId = null;
     if (req.user) {
         const customer = await Customer.findOne({ user: req.user.id });
         if (customer) customerId = customer._id;
     }
-    
+
     await story.removeLike(req.user?.id, customerId);
-    
+
     res.status(200).json({
         success: true,
         message: 'تم إزالة الإعجاب',
@@ -213,30 +224,30 @@ exports.unlikeStory = catchAsync(async (req, res, next) => {
  */
 exports.addComment = catchAsync(async (req, res, next) => {
     const { text } = req.body;
-    
+
     if (!text || text.trim().length === 0) {
         return next(new AppError('نص التعليق مطلوب', 400));
     }
-    
+
     const story = await Story.findById(req.params.id);
-    
+
     if (!story) {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
     }
-    
+
     // الحصول على customer إذا كان موجود
     let customerId = null;
     if (req.user) {
         const customer = await Customer.findOne({ user: req.user.id });
         if (customer) customerId = customer._id;
     }
-    
+
     await story.addComment(req.user?.id, customerId, text);
-    
+
     // إعادة جلب القصة مع التعليقات المحدثة
     await story.populate('comments.user', 'username');
     await story.populate('comments.customer', 'profile.firstName profile.lastName');
-    
+
     res.status(200).json({
         success: true,
         message: 'تم إضافة التعليق',
@@ -249,29 +260,29 @@ exports.addComment = catchAsync(async (req, res, next) => {
  */
 exports.deleteComment = catchAsync(async (req, res, next) => {
     const { commentId } = req.params;
-    
+
     const story = await Story.findById(req.params.id);
-    
+
     if (!story) {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
     }
-    
+
     const comment = story.comments.id(commentId);
     if (!comment) {
         return next(new AppError('التعليق غير موجود', 404));
     }
-    
+
     // التحقق من الصلاحيات (المشرف أو صاحب التعليق)
     const isAdmin = req.user?.role === 'admin';
     const isCommentOwner = comment.user?.toString() === req.user?.id?.toString() ||
-                           comment.customer?.user?.toString() === req.user?.id?.toString();
-    
+        comment.customer?.user?.toString() === req.user?.id?.toString();
+
     if (!isAdmin && !isCommentOwner) {
         return next(new AppError('ليس لديك صلاحية لحذف هذا التعليق', 403));
     }
-    
+
     await story.removeComment(commentId);
-    
+
     res.status(200).json({
         success: true,
         message: 'تم حذف التعليق'
@@ -284,19 +295,19 @@ exports.deleteComment = catchAsync(async (req, res, next) => {
 exports.getAllStories = catchAsync(async (req, res, next) => {
     const { type, status, page = 1, limit = 20 } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    
+
     let query = {};
     if (type) query.type = type;
     if (status) query.status = status;
-    
+
     const stories = await Story.find(query)
         .populate('createdBy', 'username')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit));
-    
+
     const total = await Story.countDocuments(query);
-    
+
     res.status(200).json({
         success: true,
         stories,
