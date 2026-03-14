@@ -216,6 +216,11 @@ app.post('/api/admin/login', async (req, res) => {
     }
 });
 
+// Authentication middleware (must be defined before routes)
+const { authenticateToken } = require('./middleware/auth');
+const { validate, sanitize } = require('./middleware/validation');
+const validators = require('./middleware/validators');
+
 // Admin Change Password Route
 app.put('/api/admin/change-password', authenticateToken, async (req, res) => {
     try {
@@ -376,11 +381,6 @@ const uploadStory = multer({
         }
     }
 });
-
-// Old authentication middleware (temporary - will be replaced)
-const { authenticateToken } = require('./middleware/auth');
-const { validate, sanitize } = require('./middleware/validation');
-const validators = require('./middleware/validators');
 
 // Cache middleware
 const { cacheResponse, invalidateCache } = require('./middleware/cache');
