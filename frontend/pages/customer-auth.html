@@ -606,6 +606,111 @@
             }
         }
 
+        /* Benefits Ticker Styles */
+        .benefits-ticker {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(170, 140, 44, 0.05) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            padding: 12px 0;
+            margin: 20px 0 28px 0;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .benefits-ticker::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            animation: shimmerLine 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmerLine {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: translateX(-100%);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateX(100%);
+            }
+        }
+
+        .ticker-content {
+            display: flex;
+            animation: scroll 45s linear infinite;
+            white-space: nowrap;
+            direction: ltr;
+            width: fit-content;
+        }
+
+        .ticker-content:hover {
+            animation-play-state: paused;
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 40px;
+            color: var(--gold-light);
+            font-size: 0.85rem;
+            font-weight: 500;
+            min-width: fit-content;
+        }
+
+        .ticker-item i {
+            color: var(--gold);
+            font-size: 0.9rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Mobile responsive for ticker */
+        @media (max-width: 480px) {
+            .benefits-ticker {
+                margin: 15px 0 20px 0;
+                padding: 10px 0;
+            }
+
+            .ticker-item {
+                font-size: 0.75rem;
+                padding: 0 15px;
+            }
+
+            .ticker-item i {
+                font-size: 0.8rem;
+            }
+        }
+
         .tabs {
             display: flex;
             gap: 0;
@@ -745,19 +850,15 @@
             }
         }
 
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 24px;
-            color: var(--gold-light);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
+        .panel.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
         }
 
-        .back-link:hover {
-            color: var(--gold);
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
         }
 
         .msg {
@@ -766,6 +867,60 @@
             margin-bottom: 16px;
             font-size: 0.9rem;
             display: none;
+        }
+
+        .code-box {
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--gold-light);
+            letter-spacing: 8px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .reset-code-display {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .secondary-btn {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid #444;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-btn:hover {
+            background: #333;
+            border-color: var(--gold);
+            color: var(--gold-light);
         }
 
         .msg.show {
@@ -960,6 +1115,25 @@
             </div>
         </div>
 
+        <!-- Benefits Ticker -->
+        <div class="benefits-ticker">
+            <div class="ticker-content">
+                <div class="ticker-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>أنشئ حسابك الآن لكي تستمتع بكل مميزاتنا... فهو مطلوب لدخول مسابقاتنا عبر اسمك أو رقمك والفوز
+                        بجوائزنا، وللتفاعل معنا، والحصول على ترقيات عند الشراء، وعروض حصرية، وحفظ مشترياتك المفضلة،
+                        ووصول إشعارات جديدنا أولاً - كل هذا يتطلب إنشاء حساب!</span>
+                </div>
+                <!-- Duplicate for seamless scrolling -->
+                <div class="ticker-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>أنشئ حسابك الآن لكي تستمتع بكل مميزاتنا... فهو مطلوب لدخول مسابقاتنا عبر اسمك أو رقمك والفوز
+                        بجوائزنا، وللتفاعل معنا، والحصول على ترقيات عند الشراء، وعروض حصرية، وحفظ مشترياتك المفضلة،
+                        ووصول إشعارات جديدنا أولاً - كل هذا يتطلب إنشاء حساب!</span>
+                </div>
+            </div>
+        </div>
+
         <div class="auth-frame">
             <div class="tabs">
                 <button type="button" class="tab active" data-tab="login">تسجيل الدخول</button>
@@ -1007,6 +1181,80 @@
                         </div>
                         <button type="submit" class="submit-btn" id="btnRegister">إنشاء الحساب</button>
                     </form>
+
+                    <!-- Forgot Password Section -->
+                    <div id="forgotPasswordSection" style="display: none; margin-top: 20px;">
+                        <h3 style="text-align: center; color: var(--gold-light); margin-bottom: 20px;">
+                            <i class="fas fa-key" style="margin-left: 8px;"></i>استعادة كلمة المرور
+                        </h3>
+
+                        <div id="forgotStep1">
+                            <div class="form-group">
+                                <label for="forgotPhone">
+                                    <i class="fas fa-phone" style="margin-left: 6px;"></i>رقم الهاتف
+                                </label>
+                                <input type="tel" id="forgotPhone" placeholder="مثال: 771234567 أو 967771234567"
+                                    required>
+                            </div>
+                            <button type="button" class="submit-btn" onclick="sendResetCode()" id="btnSendCode">
+                                إرسال رمز الاستعادة
+                            </button>
+                        </div>
+
+                        <div id="forgotStep2" style="display: none;">
+                            <div class="reset-code-display">
+                                <h4 style="color: var(--gold-light); text-align: center;">
+                                    <i class="fas fa-shield-alt" style="margin-left: 8px;"></i>رمز الاستعادة
+                                </h4>
+                                <div class="code-box" id="resetTokenDisplay"></div>
+                                <p
+                                    style="text-align: center; color: var(--text-muted); font-size: 14px; margin-top: 10px;">
+                                    انسخ الرمز أعلاه وأدخله في الحقل التالي:
+                                </p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="resetTokenInput">
+                                    <i class="fas fa-key" style="margin-left: 6px;"></i>رمز الاستعادة
+                                </label>
+                                <input type="text" id="resetTokenInput" placeholder="أدخل الرمز المكون من 6 أحرف"
+                                    maxlength="6" style="text-align: center; font-size: 18px; letter-spacing: 2px;">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="newPassword">
+                                    <i class="fas fa-lock" style="margin-left: 6px;"></i>كلمة المرور الجديدة
+                                </label>
+                                <input type="password" id="newPassword" placeholder="8 أحرف على الأقل" required
+                                    minlength="8">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirmNewPassword">
+                                    <i class="fas fa-lock" style="margin-left: 6px;"></i>تأكيد كلمة المرور
+                                </label>
+                                <input type="password" id="confirmNewPassword" placeholder="أعد إدخال كلمة المرور"
+                                    required minlength="8">
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <button type="button" class="submit-btn" onclick="resetPassword()" id="btnResetPassword"
+                                    style="flex: 1;">
+                                    استعادة كلمة المرور
+                                </button>
+                                <button type="button" class="secondary-btn" onclick="backToLogin()" style="flex: 1;">
+                                    العودة
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button type="button" class="link-btn" onclick="showForgotPassword()"
+                            style="background: none; border: none; color: var(--gold-light); text-decoration: underline; cursor: pointer; font-size: 14px;">
+                            نسيت كلمة المرور؟
+                        </button>
+                    </div>
                 </div>
             </div>
         </div><!-- /.auth-frame -->
@@ -1027,6 +1275,36 @@
                 // لا توجه للصفحة الرئيسية إذا كان مالك - دعه يبقى في صفحة الدخول
                 if (user && user.id && user.role !== 'admin') {
                     window.location.replace('../index.html');
+                }
+                // إذا كان المالك، استخدم شارة المالك تلقائياً
+                if (user && user.id && user.role === 'admin') {
+                    // إضافة شارة المالك في الصفحة
+                    var ownerBadge = document.createElement('div');
+                    ownerBadge.className = 'owner-badge';
+                    ownerBadge.innerHTML = `
+                        <div class="shield-icon" viewBox="0 0 24 24">
+                            <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V18H19V19Z" />
+                        </div>
+                        <span class="shield-text">الــمــالـك</span>
+                        <div class="shimmer"></div>
+                    `;
+                    ownerBadge.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        left: 20px;
+                        z-index: 9999;
+                        background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%);
+                        clip-path: polygon(0% 10%, 50% 0%, 100% 10%, 100% 85%, 50% 100%, 0% 85%);
+                        border: 1px solid rgba(166, 124, 0, 0.8);
+                        color: #3e2e01;
+                        padding: 10px 25px;
+                        font-size: 18px;
+                        font-weight: 900;
+                        letter-spacing: 1px;
+                        text-shadow: 0 1px 0px rgba(255,255,255,0.4);
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.6), inset 0 -2px 3px rgba(0,0,0,0.3);
+                    `;
+                    document.body.appendChild(ownerBadge);
                 }
             }).catch(function () { });
         })();
@@ -1210,69 +1488,181 @@
             function randomInt(min, max) {
                 return Math.floor(randomIn(min, max + 1));
             }
-
-            var goldGradients = [
-                'linear-gradient(135deg, #fff4d1, #f3cf7a)',
-                'linear-gradient(135deg, #f3cf7a, #d4af37)',
-                'linear-gradient(135deg, #d4af37, #aa8c2c)',
-                'linear-gradient(135deg, #e6b800, #f4c025)',
-                'linear-gradient(135deg, #ffd54f, #ffb300)',
-                'linear-gradient(135deg, #f9a825, #f57f17)'
-            ];
-
-            function spawnHexagons(x, y) {
-                var now = Date.now();
-                if (now - lastPop < throttleMs) return;
-                lastPop = now;
-
-                var count = 14 + randomInt(0, 6);
-                for (var i = 0; i < count; i++) {
-                    var size = randomIn(10, 22);
-                    var angle = randomIn(0, Math.PI * 2);
-                    var dist = randomIn(70, 160);
-                    var dx = Math.cos(angle) * dist;
-                    var dy = Math.sin(angle) * dist;
-                    var rotate = randomIn(-180, 180);
-
-                    var el = document.createElement('div');
-                    el.className = 'hex-pop animate';
-                    el.style.width = size + 'px';
-                    el.style.height = size + 'px';
-                    el.style.left = (x - size / 2) + 'px';
-                    el.style.top = (y - size / 2) + 'px';
-                    el.style.setProperty('--hex-dx', dx + 'px');
-                    el.style.setProperty('--hex-dy', dy + 'px');
-                    el.style.setProperty('--hex-rotate', rotate + 'deg');
-                    el.style.setProperty('--hex-fill', goldGradients[randomInt(0, goldGradients.length - 1)]);
-
-                    var shape = document.createElement('div');
-                    shape.className = 'hex-shape';
-                    el.appendChild(shape);
-                    container.appendChild(el);
-
-                    setTimeout(function () {
-                        if (el.parentNode) el.parentNode.removeChild(el);
-                    }, 1200);
-                }
-            }
-
-            function getCoords(e) {
-                if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-                if (e.changedTouches && e.changedTouches.length) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-                return { x: e.clientX, y: e.clientY };
-            }
-
-            document.addEventListener('click', function (e) {
-                spawnHexagons(e.clientX, e.clientY);
-            });
-            document.addEventListener('touchend', function (e) {
-                if (e.changedTouches && e.changedTouches.length) {
-                    var t = e.changedTouches[0];
-                    spawnHexagons(t.clientX, t.clientY);
-                }
-            }, { passive: true });
         })();
+
+        // إظهار قسم استعادة كلمة المرور
+        function showForgotPassword() {
+            hideMsg();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordSection').style.display = 'block';
+            document.getElementById('forgotStep1').style.display = 'block';
+            document.getElementById('forgotStep2').style.display = 'none';
+
+            // إخفاء زر "نسيت كلمة المرور؟"
+            document.querySelector('.link-btn').style.display = 'none';
+        }
+
+        // العودة لتسجيل الدخول
+        function backToLogin() {
+            hideMsg();
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordSection').style.display = 'none';
+
+            // إظهار زر "نسيت كلمة المرور؟"
+            document.querySelector('.link-btn').style.display = 'inline-block';
+        }
+
+        // إرسال رمز الاستعادة
+        async function sendResetCode() {
+            hideMsg();
+            const phone = document.getElementById('forgotPhone').value.trim();
+
+            if (!phone) {
+                showMsg('أدخل رقم الهاتف', 'error');
+                return;
+            }
+
+            const btnSendCode = document.getElementById('btnSendCode');
+            btnSendCode.disabled = true;
+            btnSendCode.textContent = 'جاري الإرسال...';
+
+            try {
+                // إنشاء رمز استعادة عشوائي
+                const resetToken = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+                // حفظ الرمز والهاتف في localStorage
+                localStorage.setItem('resetToken', resetToken);
+                localStorage.setItem('resetPhone', phone);
+                localStorage.setItem('resetTokenTime', Date.now().toString());
+
+                // عرض الرمز للمستخدم
+                document.getElementById('resetTokenDisplay').textContent = resetToken;
+                document.getElementById('forgotStep1').style.display = 'none';
+                document.getElementById('forgotStep2').style.display = 'block';
+
+                showMsg('تم إرسال رمز الاستعادة. انسخ الرمز وأدخله في الحقل التالي', 'success');
+
+            } catch (error) {
+                console.error('Send reset code error:', error);
+                showMsg('حدث خطأ في إرسال الرمز. حاول مرة أخرى', 'error');
+                btnSendCode.disabled = false;
+                btnSendCode.textContent = 'إرسال رمز الاستعادة';
+            }
+        }
+
+        // استعادة كلمة المرور
+        async function resetPassword() {
+            hideMsg();
+
+            const phone = localStorage.getItem('resetPhone');
+            const storedToken = localStorage.getItem('resetToken');
+            const tokenTime = localStorage.getItem('resetTokenTime');
+
+            const inputToken = document.getElementById('resetTokenInput').value.trim().toUpperCase();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            // التحقق من صلاحية الرمز (10 دقائق)
+            if (Date.now() - parseInt(tokenTime) > 10 * 60 * 1000) {
+                showMsg('انتهت صلاحية الرمز. اطلب رمزاً جديداً', 'error');
+                backToLogin();
+                return;
+            }
+
+            // التحقق من الرمز
+            if (inputToken !== storedToken) {
+                showMsg('الرمز غير صحيح', 'error');
+                return;
+            }
+
+            // التحقق من كلمة المرور
+            if (!newPassword || newPassword.length < 8) {
+                showMsg('كلمة المرور يجب أن تكون 8 أحرف على الأقل', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                showMsg('كلمتا المرور غير متطابقتين', 'error');
+                return;
+            }
+
+            const btnResetPassword = document.getElementById('btnResetPassword');
+            btnResetPassword.disabled = true;
+            btnResetPassword.textContent = 'جاري الاستعادة...';
+
+            try {
+                // استدعاء API استعادة كلمة المرور
+                const response = await fetch('/api/auth/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        phone: phone,
+                        token: storedToken,
+                        password: newPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMsg('تم استعادة كلمة المرور بنجاح. جاري التوجيه...', 'success');
+
+                    // حذف بيانات الاستعادة
+                    localStorage.removeItem('resetToken');
+                    localStorage.removeItem('resetPhone');
+                    localStorage.removeItem('resetTokenTime');
+
+                    // العودة لتسجيل الدخول بعد 3 ثواني
+                    setTimeout(() => {
+                        backToLogin();
+                    }, 3000);
+                } else {
+                    showMsg(data.message || 'فشل استعادة كلمة المرور', 'error');
+                }
+            } catch (error) {
+                console.error('Reset password error:', error);
+                showMsg('حدث خطأ في استعادة كلمة المرور', 'error');
+            } finally {
+                btnResetPassword.disabled = false;
+                btnResetPassword.textContent = 'استعادة كلمة المرور';
+            }
+        }
+
+        // إظهار زر إضافة معلومة للمالك فقط
+        checkAdminAndShowAddButton();
+
+        var goldGradients = [
+            'linear-gradient(135deg, #fff4d1, #f3cf7a)',
+            'linear-gradient(135deg, #f3cf7a, #d4af37)',
+            'linear-gradient(135deg, #d4af37, #aa8c2c)',
+            'linear-gradient(135deg, #e6b800, #f4c025)',
+            'linear-gradient(135deg, #ffd54f, #ffb300)',
+            'linear-gradient(135deg, #f9a825, #f57f17)'
+        ];
+
+        function spawnHexagons(x, y) {
     </script>
+    var now = Date.now();
+    if (now - lastPop < throttleMs) return; lastPop=now; var count=14 + randomInt(0, 6); for (var i=0; i < count; i++) {
+        var size=randomIn(10, 22); var angle=randomIn(0, Math.PI * 2); var dist=randomIn(70, 160); var
+        dx=Math.cos(angle) * dist; var dy=Math.sin(angle) * dist; var rotate=randomIn(-180, 180); var
+        el=document.createElement('div'); el.className='hex-pop animate' ; el.style.width=size + 'px' ;
+        el.style.height=size + 'px' ; el.style.left=(x - size / 2) + 'px' ; el.style.top=(y - size / 2) + 'px' ;
+        el.style.setProperty('--hex-dx', dx + 'px' ); el.style.setProperty('--hex-dy', dy + 'px' );
+        el.style.setProperty('--hex-rotate', rotate + 'deg' ); el.style.setProperty('--hex-fill',
+        goldGradients[randomInt(0, goldGradients.length - 1)]); var shape=document.createElement('div');
+        shape.className='hex-shape' ; el.appendChild(shape); container.appendChild(el); setTimeout(function () { if
+        (el.parentNode) el.parentNode.removeChild(el); }, 1200); } } function getCoords(e) { if (e.touches &&
+        e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY }; if (e.changedTouches &&
+        e.changedTouches.length) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY }; return { x:
+        e.clientX, y: e.clientY }; } document.addEventListener('click', function (e) { spawnHexagons(e.clientX,
+        e.clientY); }); document.addEventListener('touchend', function (e) { if (e.changedTouches &&
+        e.changedTouches.length) { var t=e.changedTouches[0]; spawnHexagons(t.clientX, t.clientY); } }, { passive: true
+        }); }) (); </script>
 </body>
 
 </html>

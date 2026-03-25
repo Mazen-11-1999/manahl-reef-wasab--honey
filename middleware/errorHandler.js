@@ -48,6 +48,30 @@ const handleJWTExpiredError = () => {
 };
 
 /**
+ * معالجة أخطاء MongoDB
+ */
+const handleMongoError = (err) => {
+    if (err.name === 'MongoNetworkError') {
+        console.error('MongoNetworkError:', err.message);
+        return new AppError('فشل الاتصال بقاعدة البيانات. يرجى المحاولة لاحقاً', 503);
+    }
+    if (err.name === 'MongoTimeoutError') {
+        console.error('MongoTimeoutError:', err.message);
+        return new AppError('انتهت مهلة الاتصال بقاعدة البيانات', 503);
+    }
+    if (err.name === 'MongoServerError') {
+        console.error('MongoServerError:', err.message);
+        return new AppError('خطأ في خادم قاعدة البيانات', 503);
+    }
+    if (err.name === 'MongoError') {
+        console.error('MongoError:', err.message);
+        return new AppError('خطأ في قاعدة البيانات', 503);
+    }
+    console.error('Unknown MongoDB Error:', err);
+    return new AppError('خطأ في قاعدة البيانات', 503);
+};
+
+/**
  * إرسال رسالة خطأ في بيئة التطوير
  */
 const sendErrorDev = (err, res) => {
@@ -93,7 +117,6 @@ module.exports = (err, req, res, next) => {
         sendErrorDev(err, res);
     } else {
         let error = { ...err };
-        error.message = err.message;
 
         // معالجة أنواع الأخطاء المختلفة
         if (err.name === 'CastError') error = handleCastErrorDB(err);
@@ -102,7 +125,12 @@ module.exports = (err, req, res, next) => {
         if (err.name === 'JsonWebTokenError') error = handleJWTError();
         if (err.name === 'TokenExpiredError') error = handleJWTExpiredError();
 
+        // معالجة أخطاء MongoDB
+        if (err.name === 'MongoNetworkError') error = handleMongoError(err);
+        if (err.name === 'MongoTimeoutError') error = handleMongoError(err);
+        if (err.name === 'MongoServerError') error = handleMongoError(err);
+        if (err.name === 'MongoError') error = handleMongoError(err);
+
         sendErrorProd(error, res);
     }
 };
-

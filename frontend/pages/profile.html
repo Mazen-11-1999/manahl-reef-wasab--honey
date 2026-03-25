@@ -196,12 +196,13 @@
             border-radius: 50%;
             object-fit: cover;
         }
+
         .avatar-change-hint {
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.75);
+            background: rgba(0, 0, 0, 0.75);
             color: var(--gold-primary);
             font-size: 0.7rem;
             padding: 4px 8px;
@@ -211,6 +212,7 @@
             transition: opacity 0.25s ease;
             pointer-events: none;
         }
+
         .avatar-wrapper:hover .avatar-change-hint {
             opacity: 1;
         }
@@ -219,14 +221,127 @@
             position: absolute;
             bottom: -5px;
             right: -5px;
-            background: var(--gold-primary);
-            color: var(--bg-primary);
-            font-size: 0.7rem;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 2px solid var(--bg-card);
-            animation: pulse 2s infinite;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            cursor: default;
+            user-select: none;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        /* تصميمات الشارات المختلفة */
+        .vip-badge.premium {
+            background: linear-gradient(135deg, #a67c00 0%, #ffbf00 25%, #ffdc73 50%, #ffbf00 75%, #a67c00 100%);
+            color: #4a3701;
+            text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .vip-badge.active-member {
+            background: linear-gradient(90deg, #8a6426, #f9e498, #8a6426);
+            color: #fcf6ba;
+            text-shadow: 0 0.5px 0 rgba(0, 0, 0, 0.3);
+            animation: rotateBorder 4s linear infinite;
+        }
+
+        .vip-badge.honey-friend {
+            background: linear-gradient(135deg, #8a6426 0%, #d4af37 20%, #f9e498 50%, #d4af37 80%, #8a6426 100%);
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+            color: #2d2101;
+            text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .vip-badge.trusted-partner {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 2px solid #d4af37;
+            color: #f9e498;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            animation: pulse-gold 2s infinite;
+        }
+
+        .vip-badge.new-client {
+            background: linear-gradient(135deg, #bdc3c7 0%, #ecf0f1 50%, #bdc3c7 100%);
+            border-radius: 50px;
+            border: 1px solid #95a5a6;
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        .vip-badge.vip {
+            background: linear-gradient(135deg, #4a3701 0%, #8a6d3b 25%, #d4af37 50%, #8a6d3b 75%, #4a3701 100%);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* تصميم شارة VIP الماسية */
+        .vip-badge.vip-diamond {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 28px;
+            background: linear-gradient(135deg, #a67c00 0%, #bf953f 25%, #fcf6ba 50%, #bf953f 75%, #a67c00 100%);
+            border-radius: 8px;
+            border: 2px solid #8a6d3b;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            font-size: 0.75rem;
+            font-weight: 800;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .vip-badge.vip-diamond:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .diamond-dust-bg {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background-color: #1a1a1a;
+            background-image:
+                radial-gradient(white, rgba(255, 255, 255, .2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255, 255, 255, .15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255, 255, 255, .1) 2px, transparent 3px);
+            background-size: 20px 20px, 15px 15px, 30px 30px;
+            background-position: 0 0, 5px 10px, 15px 5px;
+            border-radius: 6px;
+            z-index: 1;
+        }
+
+        .diamond-sparkle {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
+            transform: skewX(-30deg);
+            animation: diamondSparkle 2s infinite;
+            opacity: 0;
+            z-index: 3;
+        }
+
+        @keyframes diamondSparkle {
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
 
         @keyframes pulse {
@@ -625,6 +740,14 @@
                         <i class="fas fa-chevron-left arrow-gold"></i>
                     </div>
 
+                    <div class="menu-item fade-in" onclick="window.location.href='wishlist.html'">
+                        <div class="menu-link">
+                            <i class="fas fa-heart icon-gold"></i>
+                            <span>المفضلة</span>
+                        </div>
+                        <i class="fas fa-chevron-left arrow-gold"></i>
+                    </div>
+
                     <div class="menu-item fade-in logout-item" onclick="handleLogout()" style="animation-delay: 0.4s">
                         <div class="menu-link logout-link">
                             <i class="fas fa-sign-out-alt logout-icon"></i>
@@ -782,7 +905,8 @@
             <span>السلة</span>
         </div>
         <div class="nav-more-wrap">
-            <div class="nav-item" id="navMoreBtn" onclick="toggleNavMore(event)" role="button" aria-expanded="false" aria-haspopup="true">
+            <div class="nav-item" id="navMoreBtn" onclick="toggleNavMore(event)" role="button" aria-expanded="false"
+                aria-haspopup="true">
                 <i class="fas fa-ellipsis-h"></i>
                 <span>المزيد</span>
             </div>
@@ -885,22 +1009,57 @@
         .nav-item.active i {
             transform: scale(1.1);
         }
-        .nav-more-wrap { position: relative; }
+
+        .nav-more-wrap {
+            position: relative;
+        }
+
         .nav-more-dropdown {
-            display: none; position: absolute; bottom: 100%; right: 50%; transform: translateX(50%);
-            margin-bottom: 8px; min-width: 180px; background: rgba(45, 38, 18, 0.98);
-            backdrop-filter: blur(20px); border: 2px solid rgba(212, 175, 55, 0.4);
-            border-radius: 16px; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6); z-index: 1001;
-            padding: 8px 0; list-style: none; margin: 0 0 8px 0;
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            right: 50%;
+            transform: translateX(50%);
+            margin-bottom: 8px;
+            min-width: 180px;
+            background: rgba(45, 38, 18, 0.98);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.6);
+            z-index: 1001;
+            padding: 8px 0;
+            list-style: none;
+            margin: 0 0 8px 0;
         }
-        .nav-more-dropdown.open { display: block; }
+
+        .nav-more-dropdown.open {
+            display: block;
+        }
+
         .nav-more-dropdown a {
-            display: flex; align-items: center; gap: 10px; padding: 12px 18px;
-            color: #d4af37; text-decoration: none; font-size: 0.9rem; transition: background 0.2s;
-            width: 100%; text-align: right; box-sizing: border-box; font-family: 'Cairo', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            width: 100%;
+            text-align: right;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
         }
-        .nav-more-dropdown a:hover { background: rgba(212, 175, 55, 0.15); }
-        .nav-more-dropdown a i { font-size: 1.1rem; width: 22px; }
+
+        .nav-more-dropdown a:hover {
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .nav-more-dropdown a i {
+            font-size: 1.1rem;
+            width: 22px;
+        }
 
         .profile-container {
             padding-bottom: 80px;
@@ -1196,12 +1355,37 @@
 
             if (vipBadgeEl) {
                 const badgeType = user.badgeType || 'none';
-                if (badgeType === 'vip') {
-                    vipBadgeEl.textContent = 'VIP مناحل ريف وصاب';
-                    vipBadgeEl.style.display = 'block';
-                } else if (badgeType === 'premium') {
+
+                // إذا كان المستخدم هو admin، استخدم شارة المالك تلقائياً
+                const finalBadgeType = (user.role === 'admin') ? 'owner' : badgeType;
+
+                // مسح جميع الكلاسات القديمة
+                vipBadgeEl.className = 'vip-badge';
+
+                if (finalBadgeType === 'owner') {
+                    vipBadgeEl.textContent = 'المالك';
+                    vipBadgeEl.classList.add('owner');
+                } else if (finalBadgeType === 'vip') {
+                    vipBadgeEl.textContent = 'عميل VIP';
+                    vipBadgeEl.classList.add('vip-diamond');
+                } else if (finalBadgeType === 'premium') {
                     vipBadgeEl.textContent = 'عميل مميز';
-                    vipBadgeEl.style.display = 'block';
+                    vipBadgeEl.classList.add('premium');
+                } else if (finalBadgeType === 'active-member') {
+                    vipBadgeEl.textContent = 'عضو فعال';
+                    vipBadgeEl.classList.add('active-member');
+                } else if (finalBadgeType === 'honey-friend') {
+                    vipBadgeEl.textContent = 'صديق العسل';
+                    vipBadgeEl.classList.add('honey-friend');
+                } else if (finalBadgeType === 'trusted-partner') {
+                    vipBadgeEl.textContent = 'شريك موثوق';
+                    vipBadgeEl.classList.add('trusted-partner');
+                } else if (finalBadgeType === 'new-client') {
+                    vipBadgeEl.textContent = 'عميل جديد';
+                    vipBadgeEl.classList.add('new-client');
+                } else if (finalBadgeType === 'sultan') {
+                    vipBadgeEl.textContent = 'سلطان العسل';
+                    vipBadgeEl.classList.add('sultan');
                 } else {
                     vipBadgeEl.style.display = 'none';
                 }

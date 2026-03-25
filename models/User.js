@@ -70,10 +70,10 @@ const UserSchema = new mongoose.Schema({
     vipExpiryDate: {
         type: Date
     },
-    /** شارة العميل: none = بدون، premium = عميل مميز، vip = VIP مناحل ريف وصاب (يدوي من لوحة التحكم) */
+    /** شارة العميل: none = بدون، premium = عميل مميز، active-member = عضو فعال، honey-friend = صديق العسل، trusted-partner = شريك موثوق، new-client = عميل جديد، sultan = سلطان العسل، vip = VIP مناحل ريف وصاب (يدوي من لوحة التحكم)، owner = المالك (للمشرف فقط) */
     badgeType: {
         type: String,
-        enum: ['none', 'premium', 'vip'],
+        enum: ['none', 'premium', 'active-member', 'honey-friend', 'trusted-partner', 'new-client', 'sultan', 'vip', 'owner'],
         default: 'none'
     },
     isActive: {
@@ -120,7 +120,7 @@ UserSchema.index({ 'profile.phone': 1 });
 UserSchema.index({ createdAt: -1 });
 
 // Virtual للحصول على الاسم الكامل
-UserSchema.virtual('fullName').get(function() {
+UserSchema.virtual('fullName').get(function () {
     if (this.profile.firstName && this.profile.lastName) {
         return `${this.profile.firstName} ${this.profile.lastName}`;
     }
@@ -128,7 +128,7 @@ UserSchema.virtual('fullName').get(function() {
 });
 
 // تشفير كلمة المرور قبل الحفظ
-UserSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function (next) {
     // إذا لم يتم تعديل كلمة المرور، تخطى التشفير
     if (!this.isModified('password')) return next();
 
@@ -138,26 +138,26 @@ UserSchema.pre('save', async function(next) {
 });
 
 // تحديث updatedAt قبل التحديث
-UserSchema.pre('findOneAndUpdate', function(next) {
+UserSchema.pre('findOneAndUpdate', function (next) {
     this.set({ updatedAt: new Date() });
     next();
 });
 
 // دالة لمقارنة كلمة المرور
-UserSchema.methods.comparePassword = async function(candidatePassword) {
+UserSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
 // دالة لإنشاء JWT Token
-UserSchema.methods.generateAuthToken = function() {
+UserSchema.methods.generateAuthToken = function () {
     const jwt = require('jsonwebtoken');
     const config = require('../config/env');
-    
+
     return jwt.sign(
-        { 
-            id: this._id, 
-            username: this.username, 
-            role: this.role 
+        {
+            id: this._id,
+            username: this.username,
+            role: this.role
         },
         config.jwtSecret,
         { expiresIn: config.jwtExpire }
@@ -165,10 +165,10 @@ UserSchema.methods.generateAuthToken = function() {
 };
 
 // دالة لإنشاء Refresh Token
-UserSchema.methods.generateRefreshToken = function() {
+UserSchema.methods.generateRefreshToken = function () {
     const jwt = require('jsonwebtoken');
     const config = require('../config/env');
-    
+
     return jwt.sign(
         { id: this._id },
         config.jwtRefreshSecret,
@@ -177,30 +177,30 @@ UserSchema.methods.generateRefreshToken = function() {
 };
 
 // دالة لإنشاء Password Reset Token
-UserSchema.methods.createPasswordResetToken = function() {
+UserSchema.methods.createPasswordResetToken = function () {
     const crypto = require('crypto');
     const resetToken = crypto.randomBytes(32).toString('hex');
-    
+
     this.passwordResetToken = crypto
         .createHash('sha256')
         .update(resetToken)
         .digest('hex');
-    
+
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-    
+
     return resetToken;
 };
 
 // دالة لإنشاء Email Verification Token
-UserSchema.methods.createEmailVerificationToken = function() {
+UserSchema.methods.createEmailVerificationToken = function () {
     const crypto = require('crypto');
     const verificationToken = crypto.randomBytes(32).toString('hex');
-    
+
     this.emailVerificationToken = crypto
         .createHash('sha256')
         .update(verificationToken)
         .digest('hex');
-    
+
     return verificationToken;
 };
 

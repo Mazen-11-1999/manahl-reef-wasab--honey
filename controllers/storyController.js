@@ -277,6 +277,10 @@ exports.deleteComment = catchAsync(async (req, res, next) => {
     const isCommentOwner = comment.user?.toString() === req.user?.id?.toString() ||
         comment.customer?.user?.toString() === req.user?.id?.toString();
 
+    // إذا كان المشرف، استخدم شارة المالك
+    const userBadgeType = isAdmin ? 'owner' : (req.user?.badgeType || 'none');
+    const userName = isAdmin ? 'المالك' : (req.user?.username || 'مستخدم');
+
     if (!isAdmin && !isCommentOwner) {
         return next(new AppError('ليس لديك صلاحية لحذف هذا التعليق', 403));
     }
@@ -285,7 +289,16 @@ exports.deleteComment = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        message: 'تم حذف التعليق'
+        message: 'تم حذف التعليق',
+        deletedComment: {
+            _id: commentId,
+            user: {
+                _id: req.user.id,
+                username: userName,
+                badgeType: userBadgeType,
+                role: req.user.role
+            }
+        }
     });
 });
 

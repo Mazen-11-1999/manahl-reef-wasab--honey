@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>الحالة | مناحل ريف وصاب</title>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900;1000&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900;1000&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
             --bg-primary: #000000;
@@ -28,7 +30,8 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html, body {
+        html,
+        body {
             width: 100%;
             height: 100%;
             overflow: hidden;
@@ -82,7 +85,7 @@
             left: 0;
             right: 0;
             padding: 15px 20px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
             z-index: 10;
             display: flex;
             align-items: center;
@@ -142,7 +145,7 @@
             left: 0;
             right: 0;
             padding: 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
             color: var(--text-white);
             z-index: 10;
             font-size: 1rem;
@@ -253,6 +256,71 @@
             font-weight: bold;
             margin-bottom: 5px;
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* تصميم الشارة بجانب اسم الكاتب */
+        .comment-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .comment-badge.premium {
+            background: linear-gradient(135deg, #a67c00 0%, #ffbf00 25%, #ffdc73 50%, #ffbf00 75%, #a67c00 100%);
+            color: #4a3701;
+            border: 1px solid #8a6d3b;
+        }
+
+        .comment-badge.active-member {
+            background: linear-gradient(90deg, #8a6426, #f9e498, #8a6426);
+            color: #fcf6ba;
+            border: 1px solid #f9e498;
+            animation: rotateBorder 3s linear infinite;
+        }
+
+        .comment-badge.honey-friend {
+            background: linear-gradient(135deg, #8a6426 0%, #d4af37 20%, #f9e498 50%, #d4af37 80%, #8a6426 100%);
+            color: #2d2101;
+            border: 1px solid #d4af37;
+        }
+
+        .comment-badge.trusted-partner {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 1px solid #d4af37;
+            color: #f9e498;
+        }
+
+        .comment-badge.new-client {
+            background: linear-gradient(135deg, #bdc3c7 0%, #ecf0f1 50%, #bdc3c7 100%);
+            border: 1px solid #95a5a6;
+            color: #2c3e50;
+        }
+
+        .comment-badge.vip {
+            background: linear-gradient(135deg, #a67c00 0%, #bf953f 25%, #fcf6ba 50%, #bf953f 75%, #a67c00 100%);
+            color: #4a3701;
+            border: 2px solid #8a6d3b;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .comment-badge.vip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-30deg);
+            animation: vipShine 3s infinite;
         }
 
         .comment-text {
@@ -326,8 +394,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .error {
@@ -376,7 +449,8 @@
         <div class="story-container" id="storyContainer" style="display: none;">
             <div class="story-header">
                 <div class="story-header-left">
-                    <img src="../assets/manahel.jpg" alt="مناحل ريف وصاب" class="story-avatar" onerror="this.style.display='none'">
+                    <img src="../assets/manahel.jpg" alt="مناحل ريف وصاب" class="story-avatar"
+                        onerror="this.style.display='none'">
                     <div class="story-header-info">
                         <h3>مناحل ريف وصاب</h3>
                         <span id="storyTime"></span>
@@ -458,7 +532,7 @@
                 }
 
                 const response = await window.API.stories.getStory(storyId);
-                
+
                 // التحقق من نجاح الطلب
                 if (!response.success || !response.story) {
                     showError('الحالة غير موجودة أو تم حذفها');
@@ -467,7 +541,7 @@
                     }, 2000);
                     return;
                 }
-                
+
                 currentStory = response.story;
                 displayStory(currentStory);
             } catch (error) {
@@ -485,7 +559,7 @@
                 showError('بيانات الحالة غير صحيحة');
                 return;
             }
-            
+
             document.getElementById('loading').style.display = 'none';
             document.getElementById('storyContainer').style.display = 'flex';
 
@@ -528,9 +602,9 @@
             if (story.createdAt) {
                 const date = new Date(story.createdAt);
                 if (!isNaN(date.getTime())) {
-                    timeSpan.textContent = date.toLocaleDateString('ar-YE', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
+                    timeSpan.textContent = date.toLocaleDateString('ar-YE', {
+                        hour: '2-digit',
+                        minute: '2-digit'
                     });
                 } else {
                     timeSpan.textContent = 'الآن';
@@ -550,29 +624,47 @@
         // عرض التعليقات
         function renderComments(comments) {
             const commentsList = document.getElementById('commentsList');
-            
+
             if (comments.length === 0) {
                 commentsList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">لا توجد تعليقات بعد</p>';
                 return;
             }
 
             commentsList.innerHTML = comments.map(comment => {
-                const author = comment.customer 
+                const author = comment.customer
                     ? `${comment.customer.profile?.firstName || ''} ${comment.customer.profile?.lastName || ''}`.trim() || comment.customer.email
                     : comment.user?.username || 'مستخدم';
                 const date = new Date(comment.createdAt).toLocaleDateString('ar-YE', {
                     hour: '2-digit',
                     minute: '2-digit'
                 });
-                
+
                 return `
                     <div class="comment-item">
-                        <div class="comment-author">${author}</div>
+                        <div class="comment-author">
+                            ${author}
+                            ${comment.user?.badgeType ? `<span class="comment-badge ${comment.user.badgeType}">${getBadgeText(comment.user.badgeType)}</span>` : ''}
+                        </div>
                         <div class="comment-text">${comment.text}</div>
                         <div class="comment-date">${date}</div>
                     </div>
                 `;
             }).join('');
+        }
+
+        // الحصول على نص الشارة
+        function getBadgeText(badgeType) {
+            const badges = {
+                'premium': '🍯 عميل مميز',
+                'active-member': '⭐ عضو فعال',
+                'honey-friend': '🐝 صديق العسل',
+                'trusted-partner': '🛡️ شريك موثوق',
+                'new-client': '🆕 عميل جديد',
+                'sultan': '👑 سلطان العسل',
+                'vip': '👑 عميل VIP',
+                'owner': '🛡️ المالك'
+            };
+            return badges[badgeType] || '';
         }
 
         // تبديل الإعجاب
@@ -602,7 +694,7 @@
                 if (response && response.success) {
                     const likeBtn = document.getElementById('likeBtn');
                     const likesCount = document.getElementById('likesCount');
-                    
+
                     likeBtn.classList.toggle('liked');
                     const currentCount = parseInt(likesCount.textContent) || 0;
                     likesCount.textContent = isLiked ? currentCount + 1 : Math.max(0, currentCount - 1);
@@ -641,24 +733,24 @@
 
             try {
                 const response = await window.API.stories.addComment(currentStory._id, text);
-                
+
                 if (!response.success || !response.comment) {
                     throw new Error(response.message || 'فشل إضافة التعليق');
                 }
-                
+
                 // إضافة التعليق للقائمة
                 const commentsList = document.getElementById('commentsList');
                 const comment = response.comment;
-                const author = comment.customer 
+                const author = comment.customer
                     ? `${comment.customer.profile?.firstName || ''} ${comment.customer.profile?.lastName || ''}`.trim() || comment.customer.email
                     : comment.user?.username || 'مستخدم';
-                const date = comment.createdAt 
+                const date = comment.createdAt
                     ? new Date(comment.createdAt).toLocaleDateString('ar-YE', {
                         hour: '2-digit',
                         minute: '2-digit'
                     })
                     : 'الآن';
-                
+
                 const commentHTML = `
                     <div class="comment-item">
                         <div class="comment-author">${author}</div>
@@ -666,15 +758,15 @@
                         <div class="comment-date">${date}</div>
                     </div>
                 `;
-                
+
                 // إزالة رسالة "لا توجد تعليقات" إذا كانت موجودة
                 if (commentsList.querySelector('p')) {
                     commentsList.innerHTML = '';
                 }
-                
+
                 commentsList.insertAdjacentHTML('afterbegin', commentHTML);
                 commentInput.value = '';
-                
+
                 // تحديث عدد التعليقات
                 const commentsCount = document.getElementById('commentsCount');
                 const currentCount = parseInt(commentsCount.textContent) || 0;
@@ -763,7 +855,7 @@
         }
 
         // تهيئة الصفحة
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // إضافة event listener للتعليقات بعد تحميل الصفحة
             const commentInput = document.getElementById('commentInput');
             if (commentInput) {
@@ -773,7 +865,7 @@
                     }
                 });
             }
-            
+
             // تحميل الحالة
             if (window.API) {
                 loadStory();
@@ -784,7 +876,7 @@
                         loadStory();
                     }
                 }, 100);
-                
+
                 // إيقاف المحاولة بعد 5 ثواني
                 setTimeout(() => {
                     clearInterval(checkAPI);

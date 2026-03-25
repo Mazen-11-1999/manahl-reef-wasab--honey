@@ -150,6 +150,23 @@ exports.createOrder = catchAsync(async (req, res, next) => {
         customerDoc = await Customer.findOne({ phone: customer.phone });
     }
 
+    // تحديث إحصائيات العميل إذا كان موجوداً
+    if (customerDoc) {
+        // تحديث نظام الولاء
+        customerDoc.loyalty.totalOrders += 1;
+        customerDoc.loyalty.totalSpent += order.total;
+
+        // تحديث الإحصائيات العامة
+        customerDoc.stats.totalOrders += 1;
+        customerDoc.stats.totalSpent += order.total;
+        customerDoc.stats.lastOrderDate = new Date();
+
+        // حفظ التحديثات (الترقية يدوية من لوحة التحكم)
+        await customerDoc.save();
+
+        console.log(`تم تحديث إحصائيات العميل ${customerDoc.name}: ${customerDoc.loyalty.totalOrders} طلب, ${customerDoc.loyalty.totalSpent} ريال`);
+    }
+
     // الحصول على المشرف الأول للإشعارات
     const adminUser = await User.findOne({ role: 'admin' });
 
@@ -201,7 +218,7 @@ exports.updateOrderStatus = catchAsync(async (req, res, next) => {
 
     const oldStatus = order.status;
     order.status = status;
-    
+
     // إضافة للسجل
     order.statusHistory.push({
         status: status,
@@ -379,9 +396,9 @@ const MAX_ORDERS_LIMIT = 1000;
 
 exports.getOrders = catchAsync(async (req, res, next) => {
     const { status, customerPhone, startDate, endDate, page = 1, limit = 20, sort } = req.query;
-    
+
     let query = {};
-    
+
     if (status) query.status = status;
     if (customerPhone) query['customer.phone'] = customerPhone;
     if (startDate || endDate) {
@@ -389,24 +406,24 @@ exports.getOrders = catchAsync(async (req, res, next) => {
         if (startDate) query.createdAt.$gte = new Date(startDate);
         if (endDate) query.createdAt.$lte = new Date(endDate);
     }
-    
+
     let sortOption = { createdAt: -1 };
     if (sort) {
         const [field, order] = sort.split('-');
         sortOption = { [field]: order === 'asc' ? 1 : -1 };
     }
-    
+
     const limitNum = Math.min(parseInt(limit, 10) || 20, MAX_ORDERS_LIMIT);
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const skip = (pageNum - 1) * limitNum;
-    
+
     const orders = await Order.find(query)
         .sort(sortOption)
         .skip(skip)
         .limit(limitNum);
-    
+
     const total = await Order.countDocuments(query);
-    
+
     res.status(200).json({
         success: true,
         data: orders,
@@ -458,11 +475,11 @@ exports.addPayment = catchAsync(async (req, res, next) => {
         if (updatedOrder.customer.phone) {
             customerDoc = await Customer.findOne({ phone: updatedOrder.customer.phone });
         }
-        
+
         if (customerDoc) {
             updatedOrder.customer._id = customerDoc._id;
         }
-        
+
         await addToPurchaseContests(updatedOrder);
     }
 

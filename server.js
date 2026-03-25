@@ -288,6 +288,9 @@ app.use('/api/site-settings', require('./routes/siteSettingsRoutes'));
 app.use('/api/map', require('./routes/mapRoutes'));
 app.use('/api/whatsapp', require('./routes/whatsappRoutes'));
 
+// AI Assistant Routes
+app.use('/api/ai', aiAssistantRoutes);
+
 // ============================================
 // OLD ROUTES (للتوافق مع الكود الحالي)
 // ============================================
@@ -301,6 +304,9 @@ const ContestSettings = require('./models/ContestSettings');
 const DidYouKnow = require('./models/DidYouKnow');
 const Story = require('./models/Story');
 const Category = require('./models/Category');
+
+// Import AI Assistant routes
+const aiAssistantRoutes = require('./routes/aiAssistantRoutes');
 
 // File upload configuration
 const multer = require('multer');
@@ -324,6 +330,42 @@ const storage = multer.diskStorage({
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
+});
+
+// Security Middleware
+const { generalRateLimit, loginRateLimit, apiRateLimit, uploadRateLimit, commentRateLimit, searchRateLimit } = require('./middleware/advancedSecurity');
+const { checkBlockedIPs, ddosMonitor, userAgentAnalysis, dataSizeMonitor, responseTimeMonitor } = require('./middleware/ddosProtection');
+const { securityHeaders, sslHeaders, cors, requestSizeLimit, securityMonitor } = require('./middleware/advancedSecurity');
+
+// Apply Security Middleware
+app.use(securityHeaders);
+app.use(sslHeaders);
+app.use(cors);
+app.use(securityMonitor);
+app.use(ddosMonitor);
+app.use(userAgentAnalysis);
+app.use(dataSizeMonitor);
+app.use(responseTimeMonitor);
+app.use(checkBlockedIPs);
+
+// Apply Rate Limiting
+app.use(generalRateLimit);
+app.use('/api/auth/login', loginRateLimit);
+app.use('/api/', apiRateLimit);
+app.use('/api/upload', uploadRateLimit);
+app.use('/api/comments', commentRateLimit);
+app.use('/api/products/search', searchRateLimit);
+
+// Request Size Limit
+app.use(requestSizeLimit('10mb'));
+
+// Initialize Cloud Storage
+const cloudStorage = require('./services/cloudStorage');
+const { uploadSingleToCloud, checkFileSize, checkFileType, autoOptimizeImages } = require('./middleware/cloudStorageMiddleware');
+
+// Initialize Cloud Storage on startup
+cloudStorage.initCloudStorage().catch(error => {
+    logger.error('❌ Failed to initialize Cloud Storage:', error);
 });
 
 const upload = multer({
@@ -462,6 +504,10 @@ app.get('/api/products',
                 }
             });
         } catch (error) {
+            console.error('❌ خطأ في جلب المنتجات:', error);
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack?.substring(0, 200));
             next(error);
         }
     }

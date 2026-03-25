@@ -6,6 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مناحل ريف وصاب - الفخامة </title>
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- PWA Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/icon-16x16.png">
+
+    <!-- PWA Theme Color -->
+    <meta name="theme-color" content="#d4af37">
+    <meta name="msapplication-TileColor" content="#d4af37">
+
+    <!-- PWA Tile Image -->
+    <meta name="msapplication-TileImage" content="/assets/icons/icon-144x144.png">
+
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered:', registration);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
@@ -2599,6 +2629,7 @@
                 <li><a href="pages/health-benefits.html"><i class="fas fa-pills"></i> الفوائد الصحية</a></li>
                 <li><a href="pages/our-story.html"><i class="fas fa-book"></i> قصتنا</a></li>
                 <li><a href="pages/my-orders.html"><i class="fas fa-list-alt"></i> طلباتي</a></li>
+                <li><a href="pages/honey-assistant.html"><i class="fas fa-robot"></i> مساعد مناحل ريف</a></li>
             </ul>
         </div>
         <div class="nav-item" onclick="navigateTo('pages/profile.html')">
