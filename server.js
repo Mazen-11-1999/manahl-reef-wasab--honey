@@ -335,12 +335,12 @@ const storage = multer.diskStorage({
 // Security Middleware
 const { generalRateLimit, loginRateLimit, apiRateLimit, uploadRateLimit, commentRateLimit, searchRateLimit } = require('./middleware/advancedSecurity');
 const { checkBlockedIPs, ddosMonitor, userAgentAnalysis, dataSizeMonitor, responseTimeMonitor } = require('./middleware/ddosProtection');
-const { securityHeaders, sslHeaders, cors, requestSizeLimit, securityMonitor } = require('./middleware/advancedSecurity');
+const { securityHeaders, sslHeaders, corsMiddleware, requestSizeLimit, securityMonitor } = require('./middleware/advancedSecurity');
 
 // Apply Security Middleware
 app.use(securityHeaders);
 app.use(sslHeaders);
-app.use(cors);
+app.use(corsMiddleware);
 app.use(securityMonitor);
 app.use(ddosMonitor);
 app.use(userAgentAnalysis);

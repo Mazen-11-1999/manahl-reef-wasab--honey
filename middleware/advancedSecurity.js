@@ -22,7 +22,7 @@ const RATE_LIMIT_CONFIG = {
         standardHeaders: true,
         legacyHeaders: false,
     },
-    
+
     // تسجيل الدخول
     login: {
         windowMs: 15 * 60 * 1000, // 15 دقيقة
@@ -35,7 +35,7 @@ const RATE_LIMIT_CONFIG = {
         skipSuccessfulRequests: true,
         skipFailedRequests: false,
     },
-    
+
     // API
     api: {
         windowMs: 60 * 60 * 1000, // ساعة
@@ -46,7 +46,7 @@ const RATE_LIMIT_CONFIG = {
             error: 'API_RATE_LIMIT_EXCEEDED'
         },
     },
-    
+
     // رفع الملفات
     upload: {
         windowMs: 60 * 60 * 1000, // ساعة
@@ -57,7 +57,7 @@ const RATE_LIMIT_CONFIG = {
             error: 'UPLOAD_RATE_LIMIT_EXCEEDED'
         },
     },
-    
+
     // التعليقات
     comment: {
         windowMs: 60 * 1000, // دقيقة
@@ -68,7 +68,7 @@ const RATE_LIMIT_CONFIG = {
             error: 'COMMENT_RATE_LIMIT_EXCEEDED'
         },
     },
-    
+
     // البحث
     search: {
         windowMs: 60 * 1000, // دقيقة
@@ -158,14 +158,14 @@ exports.advancedHelmet = helmet({
             upgradeInsecureRequests: config.nodeEnv === 'production'
         },
     },
-    
+
     // HSTS (HTTP Strict Transport Security)
     hsts: config.nodeEnv === 'production' ? {
         maxAge: 31536000, // سنة
         includeSubDomains: true,
         preload: true
     } : false,
-    
+
     // إعدادات أخرى
     hidePoweredBy: true,
     noSniff: true,
@@ -184,23 +184,23 @@ exports.waf = (req, res, next) => {
         /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)/i,
         /(\b(OR|AND)\s+\d+\s*=\s*\d+)/i,
         /(\b(OR|AND)\s+\w+\s*=\s*\w+)/i,
-        
+
         // XSS
         /<script[^>]*>.*?<\/script>/gi,
         /<iframe[^>]*>.*?<\/iframe>/gi,
         /javascript:/gi,
         /on\w+\s*=/gi,
-        
+
         // Path Traversal
         /\.\.[\/\\]/gi,
         /\.\.%2f/gi,
         /\.\.%5c/gi,
-        
+
         // Command Injection
         /(\b(cat|ls|dir|type|whoami|uname|id)\b)/i,
         /(\b(ping|wget|curl|nc|netcat)\b)/i,
         /[;&|`$(){}[\]]/gi,
-        
+
         // NoSQL Injection
         /\$where/i,
         /\$ne/i,
@@ -208,7 +208,7 @@ exports.waf = (req, res, next) => {
         /\$lt/i,
         /\$in/i,
         /\$nin/i,
-        
+
         // File Upload Attacks
         /\.php$/i,
         /\.asp$/i,
@@ -218,7 +218,7 @@ exports.waf = (req, res, next) => {
         /\.bat$/i,
         /\.cmd$/i,
     ];
-    
+
     // فحص URL
     const url = req.url;
     for (const pattern of suspiciousPatterns) {
@@ -231,7 +231,7 @@ exports.waf = (req, res, next) => {
             });
         }
     }
-    
+
     // فحص الـ Headers
     for (const [key, value] of Object.entries(req.headers)) {
         if (typeof value === 'string') {
@@ -247,7 +247,7 @@ exports.waf = (req, res, next) => {
             }
         }
     }
-    
+
     // فحص الـ Body (لطلبات POST/PUT)
     if (req.body && typeof req.body === 'object') {
         const bodyString = JSON.stringify(req.body);
@@ -262,7 +262,7 @@ exports.waf = (req, res, next) => {
             }
         }
     }
-    
+
     next();
 };
 
@@ -277,7 +277,7 @@ const BLACKLISTED_IPS = new Set([
 
 exports.ipBlacklist = (req, res, next) => {
     const clientIP = req.ip || req.connection.remoteAddress;
-    
+
     if (BLACKLISTED_IPS.has(clientIP)) {
         logger.error(`🚨 Blacklisted IP attempted access: ${clientIP}`);
         return res.status(403).json({
@@ -286,7 +286,7 @@ exports.ipBlacklist = (req, res, next) => {
             error: 'IP_BLACKLISTED'
         });
     }
-    
+
     next();
 };
 
@@ -316,13 +316,13 @@ exports.securityHeaders = (req, res, next) => {
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-    
+
     // في الإنتاج
     if (config.nodeEnv === 'production') {
         res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         res.setHeader('Expect-CT', 'max-age=86400, enforce');
     }
-    
+
     next();
 };
 
@@ -339,28 +339,28 @@ exports.sslRedirect = (req, res, next) => {
 /**
  * CORS متقدم
  */
-exports.cors = (req, res, next) => {
+exports.corsMiddleware = (req, res, next) => {
     const allowedOrigins = [
         'http://localhost:3000',
         'https://manahlbadr.com',
         'https://www.manahlbadr.com'
     ];
-    
+
     const origin = req.headers.origin;
-    
+
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
-    
+
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Max-Age', '86400'); // 24 ساعة
-    
+
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
-    
+
     next();
 };
 
@@ -370,11 +370,11 @@ exports.cors = (req, res, next) => {
 exports.requestSizeLimit = (maxSize = '10mb') => {
     return (req, res, next) => {
         const contentLength = req.headers['content-length'];
-        
+
         if (contentLength) {
             const sizeInBytes = parseInt(contentLength);
             const maxBytes = parseSize(maxSize);
-            
+
             if (sizeInBytes > maxBytes) {
                 logger.error(`🚨 Request size too large: ${sizeInBytes} bytes from IP: ${req.ip}`);
                 return res.status(413).json({
@@ -384,7 +384,7 @@ exports.requestSizeLimit = (maxSize = '10mb') => {
                 });
             }
         }
-        
+
         next();
     };
 };
@@ -399,13 +399,13 @@ function parseSize(size) {
         'mb': 1024 * 1024,
         'gb': 1024 * 1024 * 1024
     };
-    
+
     const match = size.toString().toLowerCase().match(/^(\d+(?:\.\d+)?)\s*(b|kb|mb|gb)?$/);
-    
+
     if (!match) {
         return 10 * 1024 * 1024; // 10MB افتراضي
     }
-    
+
     const [, value, unit = 'b'] = match;
     return parseFloat(value) * (units[unit] || 1);
 }
@@ -415,7 +415,7 @@ function parseSize(size) {
  */
 exports.securityMonitor = (req, res, next) => {
     const startTime = Date.now();
-    
+
     // تسجيل الطلبات المشبوهة
     const suspiciousIndicators = [
         req.headers['user-agent']?.includes('bot'),
@@ -426,24 +426,24 @@ exports.securityMonitor = (req, res, next) => {
         req.url.includes('.asp'),
         req.url.includes('.jsp')
     ];
-    
+
     if (suspiciousIndicators.some(indicator => indicator)) {
         logger.warn(`🔍 Suspicious request: ${req.method} ${req.url} from IP: ${req.ip}, User-Agent: ${req.headers['user-agent']}`);
     }
-    
+
     // مراقبة وقت الاستجابة
     res.on('finish', () => {
         const duration = Date.now() - startTime;
-        
+
         if (duration > 5000) { // أكثر من 5 ثواني
             logger.warn(`⏱️ Slow request: ${req.method} ${req.url} took ${duration}ms from IP: ${req.ip}`);
         }
-        
+
         if (res.statusCode >= 400) {
             logger.warn(`📊 Error response: ${res.statusCode} for ${req.method} ${req.url} from IP: ${req.ip}`);
         }
     });
-    
+
     next();
 };
 
@@ -455,7 +455,7 @@ exports.sslHeaders = (req, res, next) => {
         res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         res.setHeader('Expect-CT', 'max-age=86400, enforce');
     }
-    
+
     next();
 };
 
