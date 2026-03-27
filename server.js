@@ -288,6 +288,9 @@ app.use('/api/site-settings', require('./routes/siteSettingsRoutes'));
 app.use('/api/map', require('./routes/mapRoutes'));
 app.use('/api/whatsapp', require('./routes/whatsappRoutes'));
 
+// Import AI Assistant routes
+const aiAssistantRoutes = require('./routes/aiAssistantRoutes');
+
 // AI Assistant Routes
 app.use('/api/ai', aiAssistantRoutes);
 
@@ -304,9 +307,6 @@ const ContestSettings = require('./models/ContestSettings');
 const DidYouKnow = require('./models/DidYouKnow');
 const Story = require('./models/Story');
 const Category = require('./models/Category');
-
-// Import AI Assistant routes
-const aiAssistantRoutes = require('./routes/aiAssistantRoutes');
 
 // File upload configuration
 const multer = require('multer');
