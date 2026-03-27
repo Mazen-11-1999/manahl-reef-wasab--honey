@@ -291,8 +291,8 @@ app.use('/api/whatsapp', require('./routes/whatsappRoutes'));
 // Import AI Assistant routes
 const aiAssistantRoutes = require('./routes/aiAssistantRoutes');
 
-// AI Assistant Routes
-app.use('/api/ai', aiAssistantRoutes);
+// AI Assistant Routes - Temporarily disabled for deployment
+// app.use('/api/ai', aiAssistantRoutes);
 
 // ============================================
 // OLD ROUTES (للتوافق مع الكود الحالي)
