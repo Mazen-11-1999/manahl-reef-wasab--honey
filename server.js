@@ -288,9 +288,6 @@ app.use('/api/site-settings', require('./routes/siteSettingsRoutes'));
 app.use('/api/map', require('./routes/mapRoutes'));
 app.use('/api/whatsapp', require('./routes/whatsappRoutes'));
 
-// Import AI Assistant routes
-const aiAssistantRoutes = require('./routes/aiAssistantRoutes');
-
 // AI Assistant Routes - Temporarily disabled for deployment
 // app.use('/api/ai', aiAssistantRoutes);
 
@@ -321,6 +318,9 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
+
+// Import AI Assistant routes
+const aiAssistantRoutes = require('./routes/aiAssistantRoutes');
 
 // Import models from separate files
 const Product = require('./models/Product');
