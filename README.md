@@ -4,7 +4,7 @@
 
 ## 🌐 رابط التطبيق
 
-**التطبيق منشور على:** [https://manahl-reef-wasab-v2.vercel.app](https://manahl-reef-wasab-v2.vercel.app)
+**التطبيق منشور على:** [https://manahl-reef-wasab-honey.vercel.app](https://manahl-reef-wasab-honey.vercel.app)
 
 ## 🚀 الميزات
 
