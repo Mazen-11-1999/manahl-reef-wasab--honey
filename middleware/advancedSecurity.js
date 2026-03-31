@@ -82,25 +82,13 @@ const RATE_LIMIT_CONFIG = {
 };
 
 /**
- * Rate Limiting متقدم
+ * Rate Limiting متقدم - معطل مؤقتاً
  */
 const createRateLimit = (config) => {
-    return rateLimit({
-        windowMs: config.windowMs,
-        max: config.max,
-        message: config.message,
-        standardHeaders: true,
-        legacyHeaders: false,
-        skipSuccessfulRequests: config.skipSuccessfulRequests || false,
-        skipFailedRequests: config.skipFailedRequests || false,
-        handler: (req, res, next) => {
-            logger.warn(`🚨 Rate Limit exceeded for IP: ${req.ip}, Path: ${req.path}`);
-            res.status(429).json(config.message);
-        },
-        onLimitReached: (req, res, options) => {
-            logger.error(`📊 Rate limit reached for IP: ${req.ip}, Path: ${req.path}`);
-        }
-    });
+    return (req, res, next) => {
+        // Rate Limiting معطل مؤقتاً لتجنب أخطاء v7
+        next();
+    };
 };
 
 // Rate Limiting لأنواع مختلفة من الطلبات
@@ -112,68 +100,12 @@ exports.commentRateLimit = createRateLimit(RATE_LIMIT_CONFIG.comment);
 exports.searchRateLimit = createRateLimit(RATE_LIMIT_CONFIG.search);
 
 /**
- * Helmet متقدم مع إعدادات مخصصة
+ * Helmet متقدم مع إعدادات مخصصة - معطل مؤقتاً
  */
-exports.advancedHelmet = helmet({
-    // Content Security Policy
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: [
-                "'self'",
-                "'unsafe-inline'",
-                "https://cdnjs.cloudflare.com",
-                "https://fonts.googleapis.com",
-                "https://cdn.jsdelivr.net"
-            ],
-            scriptSrc: [
-                "'self'",
-                "'unsafe-inline'",
-                "'unsafe-hashes'",
-                "https://cdn.jsdelivr.net",
-                "https://cdnjs.cloudflare.com"
-            ],
-            scriptSrcAttr: ["'unsafe-inline'"],
-            fontSrc: [
-                "'self'",
-                "https://cdnjs.cloudflare.com",
-                "https://fonts.gstatic.com"
-            ],
-            imgSrc: [
-                "'self'",
-                "data:",
-                "https:",
-                "blob:"
-            ],
-            connectSrc: [
-                "'self'",
-                "https://api.stripe.com",
-                "https://checkout.stripe.com"
-            ],
-            frameSrc: ["'none'"],
-            objectSrc: ["'none'"],
-            baseUri: ["'self'"],
-            formAction: ["'self'"],
-            frameAncestors: ["'none'"],
-            upgradeInsecureRequests: config.nodeEnv === 'production'
-        },
-    },
-
-    // HSTS (HTTP Strict Transport Security)
-    hsts: config.nodeEnv === 'production' ? {
-        maxAge: 31536000, // سنة
-        includeSubDomains: true,
-        preload: true
-    } : false,
-
-    // إعدادات أخرى
-    hidePoweredBy: true,
-    noSniff: true,
-    xssFilter: true,
-    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-});
+exports.advancedHelmet = (req, res, next) => {
+    // Helmet معطل مؤقتاً لتجنب أخطاء CSP
+    next();
+};
 
 /**
  * Web Application Firewall (WAF) بسيط
@@ -343,7 +275,8 @@ exports.corsMiddleware = (req, res, next) => {
     const allowedOrigins = [
         'http://localhost:3000',
         'https://manahlbadr.com',
-        'https://www.manahlbadr.com'
+        'https://www.manahlbadr.com',
+        'https://manahl-reef-wasab-honey.vercel.app'
     ];
 
     const origin = req.headers.origin;
