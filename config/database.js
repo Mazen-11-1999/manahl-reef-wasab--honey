@@ -8,18 +8,18 @@ const config = require('./env');
 
 // تحسينات الاتصال (تدعم عدداً كبيراً من المستخدمين)
 const connectionOptions = {
-    maxPoolSize: 2, // تقليل حجم التجمع للبيئة Serverless
-    serverSelectionTimeoutMS: 30000, // زيادة إلى 30 ثانية
-    socketTimeoutMS: 45000, // 45 ثانية قبل إغلاق المقبس الخامل
+    maxPoolSize: 1, // تقليل حجم التجمع للبيئة Serverless
+    serverSelectionTimeoutMS: 45000, // زيادة إلى 45 ثانية
+    socketTimeoutMS: 60000, // 60 ثانية قبل إغلاق المقبس الخامل
     family: 4,
     bufferCommands: false,
     retryWrites: true,
     w: 'majority',
     readPreference: 'primary',
-    connectTimeoutMS: 30000, // 30 ثانية للاتصال الأولي
+    connectTimeoutMS: 45000, // 45 ثانية للاتصال الأولي
     heartbeatFrequencyMS: 10000, // 10 ثواني لل heartbeat
     maxIdleTimeMS: 30000, // 30 ثانية كحد أقصى للاتصال الخامل
-    waitQueueTimeoutMS: 5000, // 5 ثواني للانتظار في الطابور
+    waitQueueTimeoutMS: 10000, // 10 ثواني للانتظار في الطابور
     retryReads: true
 };
 
@@ -94,7 +94,9 @@ const connectDB = async () => {
                 throw new Error('الاتصال فشل - readyState: ' + mongoose.connection.readyState);
             }
         } else {
-            // في الإنتاج، استخدم الاتصال العادي
+            // في الإنتاج، استخدم الاتصال العادي مع timeout أطول
+            optimizedOptions.serverSelectionTimeoutMS = 30000; // 30 ثانية
+            optimizedOptions.connectTimeoutMS = 30000; // 30 ثانية
             await mongoose.connect(config.mongodbUri, optimizedOptions);
             console.log('✅ تم الاتصال بـ MongoDB بنجاح!');
             console.log('🔗 Connection String:', config.mongodbUri.replace(/:([^:@]+)@/, ':***@')); // إخفاء كلمة المرور
