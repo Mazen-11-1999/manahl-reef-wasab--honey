@@ -332,24 +332,25 @@ const Story = require('./models/Story');
 const Category = require('./models/Category');
 
 // Security Middleware
-const { generalRateLimit, loginRateLimit, apiRateLimit, uploadRateLimit, commentRateLimit, searchRateLimit, securityHeaders, sslHeaders, corsMiddleware, requestSizeLimit, securityMonitor } = require('./middleware/advancedSecurity');
+const { generalRateLimit, loginRateLimit, apiRateLimit, uploadRateLimit, commentRateLimit, searchRateLimit, securityHeaders, sslHeaders, corsMiddleware, securityMonitor } = require('./middleware/advancedSecurity');
+const requestSizeLimit = require('./middleware/advancedSecurity').requestSizeLimit;
 
 // Apply Security Middleware
-app.use(securityHeaders);
-app.use(sslHeaders);
-app.use(corsMiddleware);
-app.use(securityMonitor);
+// app.use(securityHeaders);
+// app.use(sslHeaders);
+// app.use(corsMiddleware);
+// app.use(securityMonitor);
 
 // Apply Rate Limiting
-app.use(generalRateLimit);
-app.use('/api/auth/login', loginRateLimit);
-app.use('/api/', apiRateLimit);
-app.use('/api/upload', uploadRateLimit);
-app.use('/api/comments', commentRateLimit);
-app.use('/api/products/search', searchRateLimit);
+// app.use(generalRateLimit);
+// app.use('/api/auth/login', loginRateLimit);
+// app.use('/api/', apiRateLimit);
+// app.use('/api/upload', uploadRateLimit);
+// app.use('/api/comments', commentRateLimit);
+// app.use('/api/products/search', searchRateLimit);
 
 // Request Size Limit
-app.use(requestSizeLimit('10mb'));
+// app.use(requestSizeLimit('10mb'));
 
 // Initialize Cloud Storage
 const cloudStorage = require('./services/cloudStorage');
