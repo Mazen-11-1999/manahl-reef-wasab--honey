@@ -250,7 +250,7 @@ exports.securityHeaders = (req, res, next) => {
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
     // في الإنتاج
-    if (config.nodeEnv === 'production') {
+    if (process.env.NODE_ENV === 'production') {
         res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         res.setHeader('Expect-CT', 'max-age=86400, enforce');
     }
@@ -262,7 +262,7 @@ exports.securityHeaders = (req, res, next) => {
  * SSL Redirect
  */
 exports.sslRedirect = (req, res, next) => {
-    if (config.nodeEnv === 'production' && !req.secure) {
+    if (process.env.NODE_ENV === 'production' && !req.secure) {
         return res.redirect(301, `https://${req.headers.host}${req.url}`);
     }
     next();
@@ -381,10 +381,10 @@ exports.securityMonitor = (req, res, next) => {
 };
 
 /**
- * Security Headers للـ SSL
+ * SSL Headers للـ SSL
  */
 exports.sslHeaders = (req, res, next) => {
-    if (config.nodeEnv === 'production') {
+    if (process.env.NODE_ENV === 'production') {
         res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         res.setHeader('Expect-CT', 'max-age=86400, enforce');
     }
