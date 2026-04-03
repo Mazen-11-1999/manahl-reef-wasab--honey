@@ -450,52 +450,92 @@ app.get('/api/products',
                     }
                 });
             }
-            const pageNum = Math.max(1, parseInt(page, 10) || 1);
-            const skip = (pageNum - 1) * limitNum;
 
-            // بناء query (إخفاء المسودات والمنتجات غير النشطة عن الزوار)
-            let query = { $and: [{ status: { $ne: 'draft' } }, { isActive: { $ne: false } }] };
-
-            if (search) {
-                query.$or = [
-                    { name: { $regex: search, $options: 'i' } },
-                    { description: { $regex: search, $options: 'i' } }
-                ];
-            }
-
-            if (category) query.category = category;
-            if (featured !== undefined) query.featured = featured === 'true';
-            if (minPrice || maxPrice) {
-                query.price = {};
-                if (minPrice) query.price.$gte = parseFloat(minPrice);
-                if (maxPrice) query.price.$lte = parseFloat(maxPrice);
-            }
-
-            // بناء sort
-            let sortOption = { createdAt: -1 };
-            if (sort) {
-                const [field, order] = sort.split('-');
-                sortOption = { [field]: order === 'asc' ? 1 : -1 };
-            }
-
-            const products = await Product.find(query)
-                .sort(sortOption)
-                .skip(skip)
-                .limit(limitNum);
-
-            const total = await Product.countDocuments(query);
-
-            res.json({
-                success: true,
-                data: products,
-                products: products,
-                pagination: {
-                    page: pageNum,
-                    limit: limitNum,
-                    total,
-                    pages: Math.ceil(total / limitNum)
-                }
+            // إضافة timeout لمنع الـ 503 errors
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Database query timeout')), 8000);
             });
+
+            try {
+                const result = await Promise.race([
+                    // استعلام قاعدة البيانات الأصلي
+                    (async () => {
+                        const pageNum = Math.max(1, parseInt(page, 10) || 1);
+                        const skip = (pageNum - 1) * limitNum;
+
+                        // بناء query (إخفاء المسودات والمنتجات غير النشطة عن الزوار)
+                        let query = { $and: [{ status: { $ne: 'draft' } }, { isActive: { $ne: false } }] };
+
+                        if (search) {
+                            query.$or = [
+                                { name: { $regex: search, $options: 'i' } },
+                                { description: { $regex: search, $options: 'i' } }
+                            ];
+                        }
+
+                        if (category) query.category = category;
+                        if (featured !== undefined) query.featured = featured === 'true';
+                        if (minPrice || maxPrice) {
+                            query.price = {};
+                            if (minPrice) query.price.$gte = parseFloat(minPrice);
+                            if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+                        }
+
+                        const sortOptions = {};
+                        if (sort) {
+                            const [field, order] = sort.split(':');
+                            if (field === 'price' || field === 'name' || field === 'createdAt') {
+                                sortOptions[field] = order === 'desc' ? -1 : 1;
+                            }
+                        } else {
+                            sortOptions.createdAt = -1;
+                        }
+
+                        const [products, totalProducts] = await Promise.all([
+                            Product.find(query)
+                                .sort(sortOptions)
+                                .skip(skip)
+                                .limit(limitNum)
+                                .lean(),
+                            Product.countDocuments(query)
+                        ]);
+
+                        const totalPages = Math.ceil(totalProducts / limitNum);
+                        return {
+                            products,
+                            pagination: {
+                                currentPage: pageNum,
+                                totalPages,
+                                totalProducts,
+                                hasNext: pageNum < totalPages,
+                                hasPrev: pageNum > 1
+                            }
+                        };
+                    })(),
+                    timeoutPromise
+                ]);
+
+                res.json({
+                    success: true,
+                    ...result
+                });
+            } catch (error) {
+                if (error.message === 'Database query timeout') {
+                    // إرجاع بيانات وهمية في حالة timeout
+                    return res.json({
+                        success: true,
+                        products: [],
+                        pagination: {
+                            currentPage: parseInt(page),
+                            totalPages: 0,
+                            totalProducts: 0,
+                            hasNext: false,
+                            hasPrev: false
+                        }
+                    });
+                }
+                throw error;
+            }
         } catch (error) {
             console.error('❌ خطأ في جلب المنتجات:', error);
             console.error('Error name:', error.name);

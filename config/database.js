@@ -9,17 +9,17 @@ const config = require('./env');
 // تحسينات الاتصال (تدعم عدداً كبيراً من المستخدمين)
 const connectionOptions = {
     maxPoolSize: 1, // تقليل حجم التجمع للبيئة Serverless
-    serverSelectionTimeoutMS: 45000, // زيادة إلى 45 ثانية
-    socketTimeoutMS: 60000, // 60 ثانية قبل إغلاق المقبس الخامل
+    serverSelectionTimeoutMS: 10000, // تقليل إلى 10 ثواني للسرعة
+    socketTimeoutMS: 30000, // 30 ثانية قبل إغلاق المقبس الخامل
     family: 4,
     bufferCommands: false,
     retryWrites: true,
     w: 'majority',
     readPreference: 'primary',
-    connectTimeoutMS: 45000, // 45 ثانية للاتصال الأولي
-    heartbeatFrequencyMS: 10000, // 10 ثواني لل heartbeat
-    maxIdleTimeMS: 30000, // 30 ثانية كحد أقصى للاتصال الخامل
-    waitQueueTimeoutMS: 10000, // 10 ثواني للانتظار في الطابور
+    connectTimeoutMS: 10000, // 10 ثواني للاتصال الأولي
+    heartbeatFrequencyMS: 5000, // 5 ثواني لل heartbeat
+    maxIdleTimeMS: 10000, // 10 ثواني كحد أقصى للاتصال الخامل
+    waitQueueTimeoutMS: 5000, // 5 ثواني للانتظار في الطابور
     retryReads: true
 };
 
