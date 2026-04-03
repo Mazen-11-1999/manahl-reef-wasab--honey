@@ -9,12 +9,30 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const config = require('../config/env');
 
-/** تطبيع رقم الهاتف للمقارنة */
+/** تطبيع رقم الهاتف للمقارنة (يمني محلي أو دولي E.164 بدون +) */
 function normalizePhone(input) {
     if (!input || typeof input !== 'string') return '';
     const digits = input.replace(/\D/g, '');
-    if (digits.length === 9 && digits.startsWith('7')) return '967' + digits;
-    if (digits.length >= 10) return digits.slice(-9).replace(/^/, '967');
+    if (!digits) return '';
+    // اليمن: 9 أرقام تبدأ بـ 7 بدون مفتاح الدولة
+    if (digits.length === 9 && digits.startsWith('7')) {
+        return '967' + digits;
+    }
+    // رقم دولي كامل (مفتاح دولة + وطني)، عادة 10–15 رقماً
+    if (digits.length >= 10 && digits.length <= 15) {
+        return digits;
+    }
+    // اليمن كاملاً 967 + 9 أرقام
+    if (digits.length === 12 && digits.startsWith('967')) {
+        return digits;
+    }
+    // إدخال طويل قديم: محاولة استخراج 967XXXXXXXXX
+    if (digits.length > 12) {
+        const idx = digits.indexOf('967');
+        if (idx !== -1 && digits.length - idx >= 12) {
+            return digits.substring(idx, idx + 12);
+        }
+    }
     return digits;
 }
 
@@ -141,7 +159,7 @@ exports.registerCustomer = catchAsync(async (req, res, next) => {
         return next(new AppError('رقم الهاتف والاسم وكلمة المرور مطلوبة', 400));
     }
     const normalized = normalizePhone(phone);
-    if (normalized.length < 9) {
+    if (normalized.length < 10) {
         return next(new AppError('رقم الهاتف غير صحيح', 400));
     }
     const nameTrim = name.trim();

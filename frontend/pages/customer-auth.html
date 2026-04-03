@@ -12,6 +12,8 @@
 
     <!-- Vercel Analytics -->
     <script src="https://cdn.vercel-insights.com/v1/script.js"></script>
+    <!-- أرقام دولية + أعلام (الافتراضي: اليمن) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/css/intlTelInput.css" />
     <style>
         :root {
             --bg-deep: #0a0600;
@@ -645,11 +647,12 @@
 
         .ticker-content {
             display: flex;
-            animation: scroll 45s linear infinite reverse;
+            animation: scroll 45s linear infinite ;
             white-space: nowrap;
             direction: ltr;
             width: fit-content;
             will-change: transform;
+          
         }
 
         @media (hover: hover) {
@@ -690,7 +693,7 @@
             }
 
             100% {
-                transform: translateX(-50%);
+                transform: translateX(50%);
             }
         }
 
@@ -810,6 +813,108 @@
             outline: none;
             border-color: var(--gold);
             box-shadow: 0 0 0 3px var(--gold-glow);
+        }
+
+        /* حقل الهاتف الدولي (intl-tel-input) — اتجاه LTR للأرقام */
+        .phone-field-wrap {
+            direction: ltr;
+            text-align: left;
+        }
+
+        .phone-field-wrap .iti {
+            width: 100%;
+            display: block;
+        }
+
+        .phone-field-wrap .iti__flag-container {
+            border-radius: 12px 0 0 12px;
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            border-right: none;
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        .phone-field-wrap .iti__selected-flag {
+            padding: 0 10px 0 12px;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .phone-field-wrap .iti__selected-flag:hover,
+        .phone-field-wrap .iti__selected-flag:focus {
+            background: rgba(212, 175, 55, 0.12);
+        }
+
+        .phone-field-wrap .iti__arrow {
+            border-top-color: var(--gold-light);
+        }
+
+        .phone-field-wrap .iti__country-list {
+            direction: ltr;
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+            max-height: 240px;
+        }
+
+        .phone-field-wrap .iti__country-name,
+        .phone-field-wrap .iti__dial-code {
+            color: var(--text);
+        }
+
+        .phone-field-wrap .iti__country.iti__highlight {
+            background: rgba(212, 175, 55, 0.18);
+        }
+
+        .phone-field-wrap .iti__divider {
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .phone-field-wrap .iti__search-input {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            color: var(--text);
+        }
+
+        .phone-field-wrap .iti input,
+        .phone-field-wrap .iti input[type="tel"] {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0 12px 12px 0;
+            border-left: none;
+            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+        }
+
+        .phone-field-wrap .iti--allow-dropdown input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold-glow);
+        }
+
+        .phone-field-wrap .iti--separate-dial-code .iti__selected-flag {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .phone-field-wrap .iti--separate-dial-code .iti__selected-dial-code {
+            padding: 0 10px 0 8px;
+            color: var(--gold-light);
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-right: none;
+            border-radius: 0;
+            line-height: normal;
+            display: flex;
+            align-items: center;
+        }
+
+        .phone-field-wrap .iti--separate-dial-code input {
+            border-radius: 0 12px 12px 0;
+            padding-left: 14px;
         }
 
         .submit-btn {
@@ -1160,7 +1265,9 @@
                         <div class="form-group">
                             <label for="loginPhone"><i class="fas fa-mobile-alt" style="margin-left: 6px;"></i> رقم
                                 الهاتف</label>
-                            <input type="tel" id="loginPhone" placeholder="مثال: 771234567 أو 967771234567" required>
+                            <div class="phone-field-wrap">
+                                <input type="tel" id="loginPhone" autocomplete="tel" required>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="loginPassword"><i class="fas fa-lock" style="margin-left: 6px;"></i> كلمة
@@ -1177,8 +1284,10 @@
                         <div class="form-group">
                             <label for="regPhone"><i class="fas fa-mobile-alt" style="margin-left: 6px;"></i> رقم
                                 الهاتف</label>
-                            <input type="tel" id="regPhone" placeholder="مثال: 771234567" required>
-                            <p class="hint">نفس الرقم لطلباتك والمشاركة في المسابقات</p>
+                            <div class="phone-field-wrap">
+                                <input type="tel" id="regPhone" autocomplete="tel" required>
+                            </div>
+                            <p class="hint">نفس الرقم لطلباتك والمشاركة في المسابقات — اختر الدولة ثم أدخل الرقم</p>
                         </div>
                         <div class="form-group">
                             <label for="regName"><i class="fas fa-user" style="margin-left: 6px;"></i> الاسم
@@ -1205,8 +1314,9 @@
                                 <label for="forgotPhone">
                                     <i class="fas fa-phone" style="margin-left: 6px;"></i>رقم الهاتف
                                 </label>
-                                <input type="tel" id="forgotPhone" placeholder="مثال: 771234567 أو 967771234567"
-                                    required>
+                                <div class="phone-field-wrap">
+                                    <input type="tel" id="forgotPhone" autocomplete="tel" required>
+                                </div>
                             </div>
                             <button type="button" class="submit-btn" onclick="sendResetCode()" id="btnSendCode">
                                 إرسال رمز الاستعادة
@@ -1276,6 +1386,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/js/intlTelInput.min.js"></script>
     <script src="../js/api.js"></script>
     <script>
         (function checkAlreadyLoggedIn() {
@@ -1393,6 +1504,71 @@
         const btnLogin = document.getElementById('btnLogin');
         const btnRegister = document.getElementById('btnRegister');
 
+        var itiLogin = null;
+        var itiReg = null;
+        var itiForgot = null;
+
+        (function initIntlTel() {
+            var intl = window.intlTelInput;
+            if (typeof intl !== 'function') return;
+            var utilsPath = 'https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/js/utils.js';
+            var opts = {
+                /* اليمن = الدولة الافتراضية عند التحميل */
+                initialCountry: 'ye',
+                /* ترتيب المقدمة: 1 اليمن، 2 السعودية، ثم بقية الدول العربية — وباقي العالم بالبحث/التمرير */
+                preferredCountries: [
+                    'ye', 'sa', 'ae', 'qa', 'kw', 'bh', 'om',
+                    'iq', 'jo', 'lb', 'sy', 'ps',
+                    'eg', 'ly', 'tn', 'dz', 'ma', 'mr',
+                    'sd', 'so', 'dj', 'km'
+                ],
+                separateDialCode: true,
+                utilsScript: utilsPath,
+                formatOnDisplay: true,
+                countrySearch: true
+            };
+            var el;
+            if ((el = document.getElementById('loginPhone'))) itiLogin = intl(el, opts);
+            if ((el = document.getElementById('regPhone'))) itiReg = intl(el, opts);
+            if ((el = document.getElementById('forgotPhone'))) itiForgot = intl(el, opts);
+        })();
+
+        function phoneDigitsForBackend(iti, inputEl) {
+            if (!inputEl) return '';
+            var digits = '';
+            try {
+                if (typeof intlTelInputUtils !== 'undefined' && iti && iti.isValidNumber()) {
+                    return (iti.getNumber() || '').replace(/\D/g, '');
+                }
+            } catch (e) { /* ignore */ }
+            try {
+                if (iti && typeof iti.getNumber === 'function') {
+                    var g = iti.getNumber();
+                    if (g) digits = g.replace(/\D/g, '');
+                }
+            } catch (e2) { /* ignore */ }
+            if (digits.length >= 10) return digits;
+            var d = iti && iti.getSelectedCountryData ? iti.getSelectedCountryData() : null;
+            var dial = d && d.dialCode ? String(d.dialCode) : '';
+            var nat = inputEl.value.replace(/\D/g, '');
+            return (dial + nat).replace(/\D/g, '');
+        }
+
+        function validatePhoneOrShow(iti, inputEl) {
+            var digits = phoneDigitsForBackend(iti, inputEl);
+            if (!digits || digits.length < 10) {
+                showMsg('أدخل رقم هاتف صحيحاً مع رمز الدولة', 'error');
+                return null;
+            }
+            try {
+                if (typeof intlTelInputUtils !== 'undefined' && iti && !iti.isValidNumber()) {
+                    showMsg('رقم الهاتف غير صحيح للدولة المختارة', 'error');
+                    return null;
+                }
+            } catch (e) { /* utils قد لا يكون محمّلاً بعد */ }
+            return digits;
+        }
+
         function showMsg(text, type) {
             msgEl.textContent = text;
             msgEl.className = 'msg show ' + (type === 'error' ? 'error' : 'success');
@@ -1416,16 +1592,18 @@
         formLogin.addEventListener('submit', async function (e) {
             e.preventDefault();
             hideMsg();
-            const phone = document.getElementById('loginPhone').value.trim();
+            const loginPhoneEl = document.getElementById('loginPhone');
+            const phoneDigits = validatePhoneOrShow(itiLogin, loginPhoneEl);
+            if (!phoneDigits) return;
             const password = document.getElementById('loginPassword').value;
-            if (!phone || !password) {
-                showMsg('أدخل رقم الهاتف وكلمة المرور', 'error');
+            if (!password) {
+                showMsg('أدخل كلمة المرور', 'error');
                 return;
             }
             btnLogin.disabled = true;
             btnLogin.textContent = 'جاري الدخول...';
             try {
-                const data = await window.API.auth.login(phone, password);
+                const data = await window.API.auth.login(phoneDigits, password);
                 showMsg('تم تسجيل الدخول بنجاح', 'success');
                 setTimeout(function () {
                     window.location.href = '../index.html';
@@ -1440,11 +1618,13 @@
         formRegister.addEventListener('submit', async function (e) {
             e.preventDefault();
             hideMsg();
-            const phone = document.getElementById('regPhone').value.trim();
+            const regPhoneEl = document.getElementById('regPhone');
+            const phoneDigits = validatePhoneOrShow(itiReg, regPhoneEl);
+            if (!phoneDigits) return;
             const name = document.getElementById('regName').value.trim();
             const password = document.getElementById('regPassword').value;
-            if (!phone || !name || !password) {
-                showMsg('أكمل جميع الحقول', 'error');
+            if (!name || !password) {
+                showMsg('أكمل الاسم وكلمة المرور', 'error');
                 return;
             }
             if (name.length < 2) {
@@ -1458,7 +1638,7 @@
             btnRegister.disabled = true;
             btnRegister.textContent = 'جاري إنشاء الحساب...';
             try {
-                await window.API.auth.registerCustomer(phone, name, password);
+                await window.API.auth.registerCustomer(phoneDigits, name, password);
                 localStorage.removeItem('customerDisplayName');
                 localStorage.setItem('showWelcomeAfterLogin', '1');
                 showMsg('تم إنشاء حسابك. جاري التحويل...', 'success');
@@ -1580,12 +1760,9 @@
         // إرسال رمز الاستعادة
         async function sendResetCode() {
             hideMsg();
-            const phone = document.getElementById('forgotPhone').value.trim();
-
-            if (!phone) {
-                showMsg('أدخل رقم الهاتف', 'error');
-                return;
-            }
+            const forgotPhoneEl = document.getElementById('forgotPhone');
+            const phone = validatePhoneOrShow(itiForgot, forgotPhoneEl);
+            if (!phone) return;
 
             const btnSendCode = document.getElementById('btnSendCode');
             btnSendCode.disabled = true;
