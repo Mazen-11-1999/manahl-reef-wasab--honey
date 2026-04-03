@@ -645,13 +645,20 @@
 
         .ticker-content {
             display: flex;
-            animation: scroll 45s linear infinite;
+            animation: scroll 45s linear infinite reverse;
             white-space: nowrap;
             direction: ltr;
             width: fit-content;
+            will-change: transform;
         }
 
-        .ticker-content:hover {
+        @media (hover: hover) {
+            .benefits-ticker:hover .ticker-content {
+                animation-play-state: paused;
+            }
+        }
+
+        .benefits-ticker:active .ticker-content {
             animation-play-state: paused;
         }
 
@@ -664,6 +671,11 @@
             font-size: 0.85rem;
             font-weight: 500;
             min-width: fit-content;
+        }
+
+        .ticker-item span {
+            direction: rtl;
+            unicode-bidi: isolate;
         }
 
         .ticker-item i {
@@ -1488,6 +1500,57 @@
             function randomInt(min, max) {
                 return Math.floor(randomIn(min, max + 1));
             }
+
+            var goldGradients = [
+                'linear-gradient(135deg, #fff4d1, #f3cf7a)',
+                'linear-gradient(135deg, #f3cf7a, #d4af37)',
+                'linear-gradient(135deg, #d4af37, #aa8c2c)',
+                'linear-gradient(135deg, #e6b800, #f4c025)',
+                'linear-gradient(135deg, #ffd54f, #ffb300)',
+                'linear-gradient(135deg, #f9a825, #f57f17)'
+            ];
+
+            function spawnHexagons(x, y) {
+                var now = Date.now();
+                if (now - lastPop < throttleMs) return;
+                lastPop = now;
+                var count = 14 + randomInt(0, 6);
+                for (var i = 0; i < count; i++) {
+                    var size = randomIn(10, 22);
+                    var angle = randomIn(0, Math.PI * 2);
+                    var dist = randomIn(70, 160);
+                    var dx = Math.cos(angle) * dist;
+                    var dy = Math.sin(angle) * dist;
+                    var rotate = randomIn(-180, 180);
+                    var el = document.createElement('div');
+                    el.className = 'hex-pop animate';
+                    el.style.width = size + 'px';
+                    el.style.height = size + 'px';
+                    el.style.left = (x - size / 2) + 'px';
+                    el.style.top = (y - size / 2) + 'px';
+                    el.style.setProperty('--hex-dx', dx + 'px');
+                    el.style.setProperty('--hex-dy', dy + 'px');
+                    el.style.setProperty('--hex-rotate', rotate + 'deg');
+                    el.style.setProperty('--hex-fill', goldGradients[randomInt(0, goldGradients.length - 1)]);
+                    var shape = document.createElement('div');
+                    shape.className = 'hex-shape';
+                    el.appendChild(shape);
+                    container.appendChild(el);
+                    setTimeout(function () {
+                        if (el.parentNode) el.parentNode.removeChild(el);
+                    }, 1200);
+                }
+            }
+
+            document.addEventListener('click', function (e) {
+                spawnHexagons(e.clientX, e.clientY);
+            });
+            document.addEventListener('touchend', function (e) {
+                if (e.changedTouches && e.changedTouches.length) {
+                    var t = e.changedTouches[0];
+                    spawnHexagons(t.clientX, t.clientY);
+                }
+            }, { passive: true });
         })();
 
         // إظهار قسم استعادة كلمة المرور
@@ -1635,34 +1698,7 @@
         // إظهار زر إضافة معلومة للمالك فقط
         checkAdminAndShowAddButton();
 
-        var goldGradients = [
-            'linear-gradient(135deg, #fff4d1, #f3cf7a)',
-            'linear-gradient(135deg, #f3cf7a, #d4af37)',
-            'linear-gradient(135deg, #d4af37, #aa8c2c)',
-            'linear-gradient(135deg, #e6b800, #f4c025)',
-            'linear-gradient(135deg, #ffd54f, #ffb300)',
-            'linear-gradient(135deg, #f9a825, #f57f17)'
-        ];
-
-        function spawnHexagons(x, y) {
     </script>
-    var now = Date.now();
-    if (now - lastPop < throttleMs) return; lastPop=now; var count=14 + randomInt(0, 6); for (var i=0; i < count; i++) {
-        var size=randomIn(10, 22); var angle=randomIn(0, Math.PI * 2); var dist=randomIn(70, 160); var
-        dx=Math.cos(angle) * dist; var dy=Math.sin(angle) * dist; var rotate=randomIn(-180, 180); var
-        el=document.createElement('div'); el.className='hex-pop animate' ; el.style.width=size + 'px' ;
-        el.style.height=size + 'px' ; el.style.left=(x - size / 2) + 'px' ; el.style.top=(y - size / 2) + 'px' ;
-        el.style.setProperty('--hex-dx', dx + 'px' ); el.style.setProperty('--hex-dy', dy + 'px' );
-        el.style.setProperty('--hex-rotate', rotate + 'deg' ); el.style.setProperty('--hex-fill',
-        goldGradients[randomInt(0, goldGradients.length - 1)]); var shape=document.createElement('div');
-        shape.className='hex-shape' ; el.appendChild(shape); container.appendChild(el); setTimeout(function () { if
-        (el.parentNode) el.parentNode.removeChild(el); }, 1200); } } function getCoords(e) { if (e.touches &&
-        e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY }; if (e.changedTouches &&
-        e.changedTouches.length) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY }; return { x:
-        e.clientX, y: e.clientY }; } document.addEventListener('click', function (e) { spawnHexagons(e.clientX,
-        e.clientY); }); document.addEventListener('touchend', function (e) { if (e.changedTouches &&
-        e.changedTouches.length) { var t=e.changedTouches[0]; spawnHexagons(t.clientX, t.clientY); } }, { passive: true
-        }); }) (); </script>
 </body>
 
 </html>

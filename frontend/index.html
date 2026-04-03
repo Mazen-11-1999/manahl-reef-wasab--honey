@@ -491,6 +491,16 @@
             animation: site-banner-marquee 20s linear infinite;
         }
 
+        @media (hover: hover) {
+            .site-top-banner-marquee-wrap:hover .site-top-banner-text {
+                animation-play-state: paused;
+            }
+        }
+
+        .site-top-banner-marquee-wrap:active .site-top-banner-text {
+            animation-play-state: paused;
+        }
+
         .site-top-banner.speed-slow .site-top-banner-text {
             animation-duration: 28s;
         }

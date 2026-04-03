@@ -249,6 +249,15 @@ exports.securityHeaders = (req, res, next) => {
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
+    // CSP صحيح يسمح بـ Vercel scripts
+    res.setHeader('Content-Security-Policy',
+        "script-src 'self' 'unsafe-inline' 'unsafe-hashes' https://cdn.jsdelivr.net https://cdn.vercel-insights.com https://vercel.live;" +
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;" +
+        "img-src 'self' data: https:;" +
+        "font-src 'self' https://cdn.jsdelivr.net;" +
+        "connect-src 'self' https://vercel.live;"
+    );
+
     // في الإنتاج
     if (process.env.NODE_ENV === 'production') {
         res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
