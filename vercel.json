@@ -13,7 +13,8 @@
   "env": {
     "NODE_ENV": "production",
     "DISABLE_CACHE": "1",
-    "FORCE_REBUILD": "1"
+    "FORCE_REBUILD": "1",
+    "MONGODB_URI": "mongodb+srv://manahlbadr_user:Mb%40drHoney2026!@manahlbadr-cluster.wlghvcc.mongodb.net/manahl-badr?retryWrites=true&w=majority&appName=manahlbadr-cluster"
   },
   "functions": {
     "server.js": {

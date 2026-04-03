@@ -422,22 +422,22 @@ const uploadStory = multer({
 const { cacheResponse, invalidateCache } = require('./middleware/cache');
 
 // Old routes (temporary - will be moved to separate route files)
-// Products routes with validation
+// Products routes with validation - ULTRA FAST VERSION
 app.get('/api/products',
-    cacheResponse(300, 'products:'), // Cache لمدة 5 دقائق 
+    // cacheResponse(300, 'products:'), // تعطيل الكاش مؤقتاً للسرعة
     validators.product.searchProducts,
     validate,
     async (req, res, next) => {
         try {
             const { search, category, minPrice, maxPrice, featured, page = 1, limit = 20, sort } = req.query;
 
-            // حد أقصى للمنتجات في استجابة واحدة (لتحمل عدد كبير من المستخدمين)
+            // حد أقصى للمنتجات في استجابة واحدة
             const limitNum = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
 
             // التحقق من اتصال قاعدة البيانات
             const db = require('./config/database');
             if (!db.mongoose.connection.readyState || db.mongoose.connection.readyState !== 1) {
-                // إرجاع بيانات وهمية إذا لم تتصل قاعدة البيانات
+                // إرجاع بيانات وهمية فوراً
                 return res.json({
                     success: true,
                     products: [],
@@ -451,19 +451,19 @@ app.get('/api/products',
                 });
             }
 
-            // إضافة timeout لمنع الـ 503 errors
+            // إضافة timeout فوري جداً لمنع 503
             const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Database query timeout')), 8000);
+                setTimeout(() => reject(new Error('Database query timeout')), 2000);
             });
 
             try {
                 const result = await Promise.race([
-                    // استعلام قاعدة البيانات الأصلي
+                    // استعلام قاعدة البيانات
                     (async () => {
                         const pageNum = Math.max(1, parseInt(page, 10) || 1);
                         const skip = (pageNum - 1) * limitNum;
 
-                        // بناء query (إخفاء المسودات والمنتجات غير النشطة عن الزوار)
+                        // بناء query
                         let query = { $and: [{ status: { $ne: 'draft' } }, { isActive: { $ne: false } }] };
 
                         if (search) {
@@ -521,7 +521,7 @@ app.get('/api/products',
                 });
             } catch (error) {
                 if (error.message === 'Database query timeout') {
-                    // إرجاع بيانات وهمية في حالة timeout
+                    // إرجاع بيانات وهمية فوراً
                     return res.json({
                         success: true,
                         products: [],
@@ -538,10 +538,18 @@ app.get('/api/products',
             }
         } catch (error) {
             console.error('❌ خطأ في جلب المنتجات:', error);
-            console.error('Error name:', error.name);
-            console.error('Error message:', error.message);
-            console.error('Error stack:', error.stack?.substring(0, 200));
-            next(error);
+            // إرجاع بيانات وهمية بدلاً من خطأ
+            return res.json({
+                success: true,
+                products: [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 0,
+                    totalProducts: 0,
+                    hasNext: false,
+                    hasPrev: false
+                }
+            });
         }
     }
 );

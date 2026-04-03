@@ -9,17 +9,17 @@ const config = require('./env');
 // تحسينات الاتصال (تدعم عدداً كبيراً من المستخدمين)
 const connectionOptions = {
     maxPoolSize: 1, // تقليل حجم التجمع للبيئة Serverless
-    serverSelectionTimeoutMS: 10000, // تقليل إلى 10 ثواني للسرعة
-    socketTimeoutMS: 30000, // 30 ثانية قبل إغلاق المقبس الخامل
+    serverSelectionTimeoutMS: 5000, // تقليل إلى 5 ثواني للسرعة القصوى
+    socketTimeoutMS: 10000, // 10 ثواني فقط
     family: 4,
     bufferCommands: false,
     retryWrites: true,
     w: 'majority',
     readPreference: 'primary',
-    connectTimeoutMS: 10000, // 10 ثواني للاتصال الأولي
-    heartbeatFrequencyMS: 5000, // 5 ثواني لل heartbeat
-    maxIdleTimeMS: 10000, // 10 ثواني كحد أقصى للاتصال الخامل
-    waitQueueTimeoutMS: 5000, // 5 ثواني للانتظار في الطابور
+    connectTimeoutMS: 5000, // 5 ثواني للاتصال الأولي
+    heartbeatFrequencyMS: 3000, // 3 ثواني لل heartbeat
+    maxIdleTimeMS: 5000, // 5 ثواني كحد أقصى للاتصال الخامل
+    waitQueueTimeoutMS: 3000, // 3 ثواني للانتظار في الطابور
     retryReads: true
 };
 
@@ -72,11 +72,11 @@ const connectDB = async () => {
 
         // ضبط timeout حسب البيئة (تطوير / إنتاج)
         if (config.nodeEnv === 'development') {
-            optimizedOptions.serverSelectionTimeoutMS = 20000;
-            optimizedOptions.connectTimeoutMS = 20000;
+            optimizedOptions.serverSelectionTimeoutMS = 5000;
+            optimizedOptions.connectTimeoutMS = 5000;
         } else {
-            optimizedOptions.serverSelectionTimeoutMS = 15000; // إنتاج: 15 ثانية
-            optimizedOptions.connectTimeoutMS = 15000;
+            optimizedOptions.serverSelectionTimeoutMS = 5000; // إنتاج: 5 ثواني للسرعة
+            optimizedOptions.connectTimeoutMS = 5000;
         }
 
         console.log('📡 بدء الاتصال بـ MongoDB...');
@@ -94,9 +94,9 @@ const connectDB = async () => {
                 throw new Error('الاتصال فشل - readyState: ' + mongoose.connection.readyState);
             }
         } else {
-            // في الإنتاج، استخدم الاتصال العادي مع timeout أطول
-            optimizedOptions.serverSelectionTimeoutMS = 30000; // 30 ثانية
-            optimizedOptions.connectTimeoutMS = 30000; // 30 ثانية
+            // في الإنتاج، استخدم الاتصال العادي مع timeout سريع
+            optimizedOptions.serverSelectionTimeoutMS = 5000; // 5 ثواني للسرعة القصوى
+            optimizedOptions.connectTimeoutMS = 5000; // 5 ثواني للسرعة القصوى
             await mongoose.connect(config.mongodbUri, optimizedOptions);
             console.log('✅ تم الاتصال بـ MongoDB بنجاح!');
             console.log('🔗 Connection String:', config.mongodbUri.replace(/:([^:@]+)@/, ':***@')); // إخفاء كلمة المرور
