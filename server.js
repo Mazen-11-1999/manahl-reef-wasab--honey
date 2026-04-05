@@ -13,7 +13,7 @@ const validators = require('./middleware/validators');
 
 // Load environment variables
 const config = require('./config/env');
-const { connectDB } = require('./config/database');
+const { connectDB, ensureDbReady } = require('./config/database');
 const mongoose = require('mongoose');
 
 // Core dependencies
@@ -101,15 +101,18 @@ if (config.nodeEnv === 'development') {
 app.use('/api/', security.generalLimiter);
 app.use('/api/admin', security.adminLimiter);
 
-// منع تنفيذ طلبات API التي تحتاج قاعدة البيانات قبل اكتمال الاتصال (تجنب 500)
-app.use('/api/', (req, res, next) => {
-    if (mongoose.connection.readyState !== 1) {
+// انتظار اتصال MongoDB قبل معالجة API (مهم على Vercel لتجنب 503 عند البارد)
+app.use('/api/', async (req, res, next) => {
+    try {
+        await ensureDbReady();
+        next();
+    } catch (err) {
+        logger.warn('API: قاعدة البيانات غير جاهزة', { message: err.message, path: req.path });
         return res.status(503).json({
             success: false,
-            message: 'قاعدة البيانات غير متصلة. يرجى التحقق من الاتصال أو المحاولة لاحقاً.'
+            message: 'قاعدة البيانات غير متصلة مؤقتاً. حاول مرة أخرى خلال ثوانٍ.'
         });
     }
-    next();
 });
 
 // Ensure uploads directory exists for logos and product images
@@ -1465,7 +1468,7 @@ const startServer = async () => {
             // إضافة timeout للاتصال (20 ثانية لـ Atlas أو الشبكات البطيئة)
             const connectPromise = connectDB();
             const overallTimeout = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Timeout: استغرق الاتصال أكثر من 20 ثانية')), 20000)
+                setTimeout(() => reject(new Error('Timeout: استغرق الاتصال أكثر من 25 ثانية')), 25000)
             );
 
             dbConnection = await Promise.race([connectPromise, overallTimeout]);

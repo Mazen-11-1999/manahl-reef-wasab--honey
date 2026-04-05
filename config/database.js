@@ -1,29 +1,41 @@
 /**
  * Database Configuration
  * إعدادات اتصال قاعدة البيانات MongoDB
+ * — دعم Vercel Serverless: اتصال واحد متزامن (in-flight) + انتظار حتى الجاهزية
  */
 
 const mongoose = require('mongoose');
 const config = require('./env');
 
-// تحسينات الاتصال (تدعم عدداً كبيراً من المستخدمين)
-const connectionOptions = {
-    maxPoolSize: 1, // تقليل حجم التجمع للبيئة Serverless
-    serverSelectionTimeoutMS: 5000, // تقليل إلى 5 ثواني للسرعة القصوى
-    socketTimeoutMS: 10000, // 10 ثواني فقط
+const isVercel = process.env.VERCEL === '1';
+
+const baseConnectionOptions = {
+    maxPoolSize: isVercel ? 5 : 20,
+    socketTimeoutMS: 45000,
     family: 4,
     bufferCommands: false,
     retryWrites: true,
     w: 'majority',
     readPreference: 'primary',
-    connectTimeoutMS: 5000, // 5 ثواني للاتصال الأولي
-    heartbeatFrequencyMS: 3000, // 3 ثواني لل heartbeat
-    maxIdleTimeMS: 5000, // 5 ثواني كحد أقصى للاتصال الخامل
-    waitQueueTimeoutMS: 3000, // 3 ثواني للانتظار في الطابور
+    heartbeatFrequencyMS: 10000,
+    maxIdleTimeMS: isVercel ? 60000 : 30000,
+    waitQueueTimeoutMS: 10000,
     retryReads: true
 };
 
-// معالجة الأخطاء
+/** مهلة أطول على Atlas عند البارد (Vercel / إنتاج) */
+function buildConnectionOptions(dbOptimization) {
+    const optimized = { ...baseConnectionOptions, ...dbOptimization.optimizeConnection() };
+    delete optimized.bufferMaxEntries;
+
+    const longTimeout = isVercel || config.nodeEnv === 'production';
+    const ms = longTimeout ? 12000 : 5000;
+    optimized.serverSelectionTimeoutMS = ms;
+    optimized.connectTimeoutMS = ms;
+
+    return optimized;
+}
+
 mongoose.connection.on('error', (err) => {
     console.error('❌ خطأ في اتصال MongoDB:', err);
 });
@@ -37,132 +49,94 @@ mongoose.connection.on('connected', () => {
     console.log(`📊 قاعدة البيانات: ${mongoose.connection.name}`);
 });
 
-// معالجة إغلاق التطبيق
 process.on('SIGINT', async () => {
     await mongoose.connection.close();
     console.log('🔌 تم إغلاق اتصال MongoDB بسبب إغلاق التطبيق');
     process.exit(0);
 });
 
+/** وعد اتصال واحد — يمنع سباقات متعددة على Vercel */
+let connectInflight = null;
+
+async function connectOnceInternal() {
+    console.log('🔄 محاولة الاتصال بـ MongoDB...');
+    console.log('🔗 Connection String:', config.mongodbUri.replace(/:([^:@]+)@/, ':***@'));
+
+    let dbOptimization;
+    try {
+        dbOptimization = require('./databaseOptimization');
+    } catch (optError) {
+        console.warn('⚠️  databaseOptimization غير متاح:', optError.message);
+        dbOptimization = {
+            optimizeConnection: () => ({}),
+            createIndexes: async () => {}
+        };
+    }
+
+    const optimizedOptions = buildConnectionOptions(dbOptimization);
+
+    console.log('📡 بدء الاتصال بـ MongoDB...');
+    await mongoose.connect(config.mongodbUri, optimizedOptions);
+
+    if (mongoose.connection.readyState !== 1) {
+        throw new Error('الاتصال فشل - readyState: ' + mongoose.connection.readyState);
+    }
+
+    console.log('✅ اتصال MongoDB ناجح');
+
+    if (config.nodeEnv !== 'test') {
+        setTimeout(async () => {
+            try {
+                await dbOptimization.createIndexes();
+            } catch (indexError) {
+                console.warn('⚠️  تحذير: فشل في إنشاء Indexes:', indexError.message);
+            }
+        }, 2000);
+    }
+
+    return mongoose.connection;
+}
+
 /**
- * الاتصال بقاعدة البيانات
+ * الاتصال بقاعدة البيانات (آمن للاستدعاء المتزامن — نفس الوعد للجميع)
  */
 const connectDB = async () => {
+    if (mongoose.connection.readyState === 1) {
+        return mongoose.connection;
+    }
+
+    if (!connectInflight) {
+        connectInflight = connectOnceInternal().finally(() => {
+            connectInflight = null;
+        });
+    }
+
     try {
-        console.log('🔄 محاولة الاتصال بـ MongoDB...');
-        console.log('⏱️  مهلة الاتصال: 30 ثانية...');
-        console.log('🔗 Connection String:', config.mongodbUri.replace(/:([^:@]+)@/, ':***@')); // إخفاء كلمة المرور
-
-        // محاولة تحميل databaseOptimization بشكل آمن
-        let dbOptimization;
-        try {
-            dbOptimization = require('./databaseOptimization');
-        } catch (optError) {
-            console.warn('⚠️  databaseOptimization غير متاح:', optError.message);
-            dbOptimization = {
-                optimizeConnection: () => ({}),
-                createIndexes: async () => { }
-            };
-        }
-
-        const optimizedOptions = { ...connectionOptions, ...dbOptimization.optimizeConnection() };
-
-        // إزالة bufferMaxEntries إذا كان موجوداً (غير مدعوم في MongoDB الحديث)
-        delete optimizedOptions.bufferMaxEntries;
-
-        // ضبط timeout حسب البيئة (تطوير / إنتاج)
-        if (config.nodeEnv === 'development') {
-            optimizedOptions.serverSelectionTimeoutMS = 5000;
-            optimizedOptions.connectTimeoutMS = 5000;
-        } else {
-            optimizedOptions.serverSelectionTimeoutMS = 5000; // إنتاج: 5 ثواني للسرعة
-            optimizedOptions.connectTimeoutMS = 5000;
-        }
-
-        console.log('📡 بدء الاتصال بـ MongoDB...');
-
-        // في بيئة التطوير، استخدم الاتصال العادي بدون Promise.race إضافي
-        if (config.nodeEnv === 'development') {
-            await mongoose.connect(config.mongodbUri, optimizedOptions);
-            // انتظار قصير للتحقق من حالة الاتصال
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-            // التحقق من حالة الاتصال قبل طباعة الرسالة
-            if (mongoose.connection.readyState === 1) {
-                console.log('✅ اتصال MongoDB ناجح');
-            } else {
-                throw new Error('الاتصال فشل - readyState: ' + mongoose.connection.readyState);
-            }
-        } else {
-            // في الإنتاج، استخدم الاتصال العادي مع timeout سريع
-            optimizedOptions.serverSelectionTimeoutMS = 5000; // 5 ثواني للسرعة القصوى
-            optimizedOptions.connectTimeoutMS = 5000; // 5 ثواني للسرعة القصوى
-            await mongoose.connect(config.mongodbUri, optimizedOptions);
-            console.log('✅ تم الاتصال بـ MongoDB بنجاح!');
-            console.log('🔗 Connection String:', config.mongodbUri.replace(/:([^:@]+)@/, ':***@')); // إخفاء كلمة المرور
-            if (mongoose.connection.readyState === 1) {
-                console.log('✅ اتصال MongoDB ناجح');
-            } else {
-                throw new Error('الاتصال فشل - readyState: ' + mongoose.connection.readyState);
-            }
-        }
-
-        // إنشاء Indexes بعد الاتصال (فقط إذا كان الاتصال ناجح)
-        if (mongoose.connection.readyState === 1 && config.nodeEnv !== 'test') {
-            setTimeout(async () => {
-                try {
-                    await dbOptimization.createIndexes();
-                } catch (indexError) {
-                    console.warn('⚠️  تحذير: فشل في إنشاء Indexes:', indexError.message);
-                }
-            }, 2000); // انتظار 2 ثانية لضمان اكتمال الاتصال
-        }
-
-        // إرجاع الاتصال فقط إذا كان متصلاً
-        if (mongoose.connection.readyState === 1) {
-            return mongoose.connection;
-        } else {
-            throw new Error('الاتصال فشل - readyState: ' + mongoose.connection.readyState);
-        }
+        return await connectInflight;
     } catch (error) {
         console.error('❌ خطأ في الاتصال بـ MongoDB:', error.message);
 
-        // في الإنتاج، لا ننهي العملية بل نحاول مرة أخرى
-        if (config.nodeEnv === 'production') {
-            console.warn('⚠️  فشل الاتصال بقاعدة البيانات في الإنتاج - سيتم استخدام البيانات الوهمية');
-            console.log('🔄 سيتم إعادة محاولة الاتصال في الخلفية...');
-
-            // محاولة إعادة الاتصال بعد 10 ثواني
-            setTimeout(() => {
-                console.log('🔄 إعادة محاولة الاتصال بقاعدة البيانات...');
-                connectDB().catch(err => {
-                    console.warn('⚠️  فشلت إعادة محاولة الاتصال:', err.message);
-                });
-            }, 10000);
-
-            return; // لا نرمي الخطأ في الإنتاج
-        }
-
-        // في بيئة التطوير، لا نوقف الخادم إذا فشل الاتصال
         if (config.nodeEnv === 'development') {
-            console.warn('⚠️  فشل الاتصال بقاعدة البيانات:', error.message);
             console.warn('⚠️  الخادم سيعمل بدون قاعدة بيانات (للتطوير فقط)');
-            console.warn('⚠️  بعض الميزات قد لا تعمل بشكل صحيح');
-            console.warn('💡 تأكد من تشغيل MongoDB على: mongodb://localhost:27017/manahl-badr');
-            console.warn('💡 أو استخدم MongoDB Atlas أو Docker');
-            // في بيئة التطوير، نعيد null بدلاً من رمي الخطأ
+            console.warn('💡 تأكد من MongoDB محلياً أو Atlas');
             return null;
         }
 
-        throw error; // في بيئات أخرى، نرمي الخطأ
-        // في الإنتاج (Vercel)، لا نوقف الخادم أبداً
-        console.error('❌ فشل الاتصال بقاعدة البيانات:', error.message);
-        console.error('⚠️  الخادم سيستمر بدون قاعدة بيانات في Vercel');
-        console.error('💡 بعض الميزات قد لا تعمل بشكل صحيح');
-        console.error('🔄 استمرار عمل الخادم...');
-        // في Vercel، نعيد null ونستمر
-        return null;
+        throw error;
     }
 };
 
-module.exports = { connectDB, mongoose };
+/**
+ * انتظار جاهزية قاعدة البيانات قبل معالجة طلبات /api/
+ * يحلّ سباق البارد على Vercel حيث كان readyState !== 1 يعيد 503 فوراً
+ */
+async function ensureDbReady() {
+    await connectDB();
+    if (mongoose.connection.readyState !== 1) {
+        const err = new Error('قاعدة البيانات غير متصلة');
+        err.code = 'DB_NOT_READY';
+        throw err;
+    }
+}
+
+module.exports = { connectDB, ensureDbReady, mongoose };
