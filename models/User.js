@@ -24,9 +24,18 @@ const UserSchema = new mongoose.Schema({
         trim: true,
         match: [/^\S+@\S+\.\S+$/, 'البريد الإلكتروني غير صحيح']
     },
+    /** تسجيل الدخول عبر Google — عند التعيين لا يُشترط إدخال كلمة مرور يدوياً */
+    googleId: {
+        type: String,
+        sparse: true,
+        unique: true,
+        trim: true
+    },
     password: {
         type: String,
-        required: [true, 'كلمة المرور مطلوبة'],
+        required: function passwordRequired() {
+            return !this.googleId;
+        },
         minlength: [8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'],
         select: false // لا يتم جلب كلمة المرور افتراضياً
     },
@@ -116,6 +125,7 @@ const UserSchema = new mongoose.Schema({
 // Indexes لتحسين الأداء
 UserSchema.index({ email: 1 });
 UserSchema.index({ username: 1 });
+UserSchema.index({ googleId: 1 });
 UserSchema.index({ 'profile.phone': 1 });
 UserSchema.index({ createdAt: -1 });
 

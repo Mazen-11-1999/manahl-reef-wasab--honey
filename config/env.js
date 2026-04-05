@@ -26,6 +26,11 @@ const config = {
     port: process.env.PORT || 3000,
     nodeEnv: process.env.NODE_ENV || 'development',
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+    /** نطاقات إضافية لـ CORS في الإنتاج (مفصولة بفواصل)، مثل نسخة Vercel أو www */
+    corsExtraOrigins: (process.env.CORS_EXTRA_ORIGINS || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean),
 
     // WhatsApp Settings
     enableWhatsApp: process.env.ENABLE_WHATSAPP === 'true',
@@ -36,6 +41,10 @@ const config = {
 
     // Database
     mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/manahl-badr',
+
+    // Google OAuth (تسجيل دخول العملاء — اختياري)
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
 
     // JWT
     jwtSecret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production',

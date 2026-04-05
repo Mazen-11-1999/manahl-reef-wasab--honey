@@ -29,7 +29,7 @@ router.post('/chat', async (req, res) => {
             timestamp: new Date().toISOString()
         });
 
-        const response = await aiAssistant.analyzeUserMessage(message);
+        const response = await aiAssistant.analyzeUserMessage(message, userId || null);
 
         logger.info('AI Assistant Response:', {
             success: response.success,

@@ -9,16 +9,16 @@ const { exec } = require('child_process');
 const { promisify } = require('util');
 const config = require('../config/env');
 const logger = require('./logger');
+const AppError = require('../utils/appError');
 
 const execAsync = promisify(exec);
 
-// مجلد النسخ الاحتياطي
-// التحقق من بيئة Vercel
-const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+/** فقط بيئة Vercel serverless — لا تُخلط مع NODE_ENV=production على VPS */
+const isServerlessVercel = process.env.VERCEL === '1';
 
-// في Vercel، لا نستخدم مجلد backups
+// على السيرفر العادي (حتى مع production) نستخدم مجلد backups محلياً
 let BACKUP_DIR, DB_BACKUP_DIR, FILES_BACKUP_DIR;
-if (!isVercel) {
+if (!isServerlessVercel) {
     BACKUP_DIR = path.join(__dirname, '..', 'backups');
     DB_BACKUP_DIR = path.join(BACKUP_DIR, 'database');
     FILES_BACKUP_DIR = path.join(BACKUP_DIR, 'files');
@@ -40,6 +40,16 @@ if (!isVercel) {
  */
 const backupDatabase = async () => {
     try {
+        if (isServerlessVercel) {
+            throw new AppError(
+                'نسخ قاعدة البيانات عبر mongodump غير متاح على Vercel. استخدم «النسخ الاحتياطي» في لوحة MongoDB Atlas، أو شغّل النسخ على سيرفر خاص (VPS) يدعم حفظ الملفات.',
+                503
+            );
+        }
+        if (!DB_BACKUP_DIR) {
+            throw new AppError('مجلد النسخ غير مهيأ.', 500);
+        }
+
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const backupName = `mongodb-backup-${timestamp}`;
         const backupPath = path.join(DB_BACKUP_DIR, backupName);
@@ -105,10 +115,9 @@ const backupDatabase = async () => {
  */
 const backupFiles = async () => {
     try {
-        // التحقق من بيئة Vercel
-        if (isVercel) {
-            logger.info('Backup files not available in Vercel environment');
-            return { success: false, message: 'Backup not available in production' };
+        if (isServerlessVercel) {
+            logger.info('Backup files not available on Vercel serverless');
+            return { success: false, message: 'نسخ الملفات غير متاح على Vercel (لا يوجد قرص دائم). انسخ مجلد uploads من سيرفرك أو استخدم تخزيناً سحابياً.' };
         }
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -233,6 +242,10 @@ const listBackups = (type = 'all') => {
             files: []
         };
 
+        if (!DB_BACKUP_DIR || !FILES_BACKUP_DIR) {
+            return backups;
+        }
+
         if (type === 'all' || type === 'database') {
             const dbFiles = fs.readdirSync(DB_BACKUP_DIR)
                 .filter(file => file.endsWith('.tar.gz'))
@@ -285,6 +298,13 @@ const listBackups = (type = 'all') => {
  */
 const restoreDatabase = async (backupFilename) => {
     try {
+        if (isServerlessVercel) {
+            throw new AppError('استعادة قاعدة البيانات من ملف غير متاحة على Vercel. استخدم Atlas أو سيرفراً بمساحة قرص.', 503);
+        }
+        if (!DB_BACKUP_DIR) {
+            throw new AppError('مجلد النسخ غير مهيأ.', 500);
+        }
+
         const backupPath = path.join(DB_BACKUP_DIR, backupFilename);
 
         if (!fs.existsSync(backupPath)) {
@@ -348,6 +368,18 @@ const restoreDatabase = async (backupFilename) => {
  */
 const getBackupStats = () => {
     try {
+        if (!DB_BACKUP_DIR) {
+            return {
+                database: { count: 0, totalSize: 0, totalSizeMB: '0', latest: null },
+                files: { count: 0, totalSize: 0, totalSizeMB: '0', latest: null },
+                totalSizeMB: '0',
+                environment: isServerlessVercel ? 'vercel' : 'persistent',
+                hint: isServerlessVercel
+                    ? 'على Vercel: اعتمد على نسخ Atlas للبيانات والتخزين السحابي للصور.'
+                    : null
+            };
+        }
+
         const dbBackups = listBackups('database');
         const fileBackups = listBackups('files');
 
@@ -367,7 +399,9 @@ const getBackupStats = () => {
                 totalSizeMB: (totalFilesSize / (1024 * 1024)).toFixed(2),
                 latest: fileBackups.files[0] || null
             },
-            totalSizeMB: ((totalDbSize + totalFilesSize) / (1024 * 1024)).toFixed(2)
+            totalSizeMB: ((totalDbSize + totalFilesSize) / (1024 * 1024)).toFixed(2),
+            environment: 'persistent',
+            hint: null
         };
     } catch (error) {
         logger.error('Error getting backup stats:', error);

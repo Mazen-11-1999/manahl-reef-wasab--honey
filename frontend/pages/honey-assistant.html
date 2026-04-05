@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/modern-design.css">
     <link rel="stylesheet" href="../assets/css/realistic-honey-drips.css">
-    <link rel="stylesheet" href="../assets/css/ultra-realistic-honey-drips.css">
     <style>
         /* Variables */
         :root {
@@ -694,6 +693,229 @@
                 opacity: 0;
             }
         }
+
+        /* توافق مع ألوان الموقع (modern-design) */
+        body {
+            background: linear-gradient(165deg, var(--bg-primary, #0f0a05) 0%, var(--bg-secondary, #1a1608) 100%);
+            color: var(--text-primary, #fff);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d2612 0%, #141109 100%);
+            border-bottom: 1px solid rgba(244, 192, 37, 0.22);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+        }
+
+        .header h1 {
+            color: var(--primary-gold, #f4c025);
+            text-shadow: 0 2px 20px rgba(244, 192, 37, 0.25);
+        }
+
+        .header p {
+            color: var(--text-secondary, #e0d4b8);
+            opacity: 1;
+        }
+
+        .back-to-home {
+            background: rgba(244, 192, 37, 0.12);
+            border-color: rgba(244, 192, 37, 0.45);
+            color: var(--primary-gold, #f4c025);
+        }
+
+        .back-to-home:hover {
+            background: rgba(244, 192, 37, 0.22);
+            color: #fff;
+        }
+
+        .condition-selector,
+        .chat-section,
+        .features-section {
+            background: var(--bg-card, #2d2612);
+            border-color: rgba(244, 192, 37, 0.22) !important;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .condition-selector h3 {
+            color: var(--primary-gold, #f4c025);
+        }
+
+        .condition-select {
+            background: var(--bg-secondary, #1a1608);
+            color: var(--text-primary, #fff);
+            border-color: rgba(244, 192, 37, 0.28);
+        }
+
+        .condition-description {
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--text-secondary, #e0d4b8);
+            border-color: rgba(244, 192, 37, 0.15);
+        }
+
+        .get-recommendation-btn {
+            background: linear-gradient(135deg, var(--primary-gold, #f4c025), var(--dark-gold, #b8860b));
+            color: #1a1408;
+        }
+
+        .chat-container {
+            background: var(--bg-secondary, #1a1608);
+            border-color: rgba(244, 192, 37, 0.2);
+        }
+
+        .message.ai {
+            background: var(--bg-card, #2d2612);
+            color: var(--text-primary, #fff);
+            border: 1px solid rgba(244, 192, 37, 0.18);
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, rgba(244, 192, 37, 0.28), rgba(184, 134, 11, 0.22));
+            color: var(--text-primary, #fff);
+            border: 1px solid rgba(244, 192, 37, 0.35);
+        }
+
+        .message.game {
+            background: linear-gradient(135deg, #3d3520, #2d2612);
+            border: 1px solid rgba(244, 192, 37, 0.3);
+        }
+
+        .typing-indicator {
+            background: var(--bg-card, #2d2612);
+            border-color: rgba(244, 192, 37, 0.2);
+        }
+
+        .input-section {
+            background: var(--bg-card, #2d2612);
+            border-color: rgba(244, 192, 37, 0.15);
+        }
+
+        .message-input {
+            background: var(--bg-secondary, #1a1608);
+            color: var(--text-primary, #fff);
+            border-color: rgba(244, 192, 37, 0.28);
+        }
+
+        .message-input::placeholder {
+            color: var(--text-muted, #9d8b6f);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, var(--primary-gold, #f4c025), var(--dark-gold, #b8860b));
+            color: #1a1408;
+        }
+
+        .suggestion-chip {
+            background: rgba(0, 0, 0, 0.22);
+            color: var(--text-secondary, #e0d4b8);
+            border-color: rgba(244, 192, 37, 0.28);
+        }
+
+        .suggestion-chip:hover {
+            background: rgba(244, 192, 37, 0.18);
+            color: var(--primary-gold, #f4c025);
+            border-color: var(--primary-gold, #f4c025);
+        }
+
+        .game-menu {
+            background: linear-gradient(135deg, #2d2612, #3d3520);
+            border: 1px solid rgba(244, 192, 37, 0.28);
+        }
+
+        .game-option:hover {
+            background: rgba(244, 192, 37, 0.12);
+        }
+
+        .game-emoji {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .product-card {
+            background: var(--bg-secondary, #1a1608);
+            border-color: rgba(244, 192, 37, 0.22);
+        }
+
+        .product-name {
+            color: var(--text-primary, #fff);
+        }
+
+        .price-current {
+            color: var(--primary-gold, #f4c025);
+        }
+
+        .product-link {
+            background: linear-gradient(135deg, var(--primary-gold, #f4c025), var(--dark-gold, #b8860b));
+            color: #1a1408;
+        }
+
+        .features-section h2 {
+            color: var(--primary-gold, #f4c025);
+        }
+
+        .feature-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(244, 192, 37, 0.12);
+        }
+
+        .feature-title {
+            color: var(--text-primary, #fff);
+        }
+
+        .feature-description {
+            color: var(--text-secondary, #e0d4b8);
+        }
+
+        .assistant-disclaimer {
+            max-width: 1200px;
+            margin: 0 auto 2.5rem;
+            padding: 1rem 1.25rem;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--text-muted, #9d8b6f);
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            border: 1px solid rgba(244, 192, 37, 0.15);
+        }
+
+        .product-card-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(244, 192, 37, 0.15);
+        }
+
+        .health-tips-block {
+            align-self: flex-start;
+            max-width: 95%;
+            margin-top: 6px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.28);
+            color: var(--text-secondary, #e0d4b8);
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        .health-tips-block h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.95rem;
+            color: var(--success, #10b981);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .health-tips-block ol {
+            margin: 0;
+            padding-right: 1.2rem;
+        }
+
+        .health-tips-block li {
+            margin-bottom: 6px;
+        }
     </style>
 </head>
 
@@ -705,8 +927,8 @@
                 <i class="fas fa-arrow-right"></i>
                 العودة للرئيسية
             </a>
-            <h1><i class="fas fa-robot"></i> مساعد مناحل ريف</h1>
-            <p>مساعدك الذكي لاختيار العسل المناسب + ألعاب تعليمية ممتعة</p>
+            <h1><i class="fas fa-robot"></i>   مساعد مناحل ريف وصاب</h1>
+            <p>يساعدك على اختيار عسل يناسب وصفك — مع ألعاب بسيطة للتثقيف</p>
         </div>
     </header>
 
@@ -827,11 +1049,8 @@
                 <div class="chat-messages" id="chatMessages">
                     <div class="message ai">
                         <div class="message-content">
-                            مرحباً! أنا مساعد مناحل ريف، كيف يمكنني مساعدتك اليوم؟ 🍯<br><br>
-                            يمكنك اختيار حالتك الصحية من القائمة أعلاه، أو كتابتها مباشرة هنا:<br>
-                            🩺 اختيار العسل المناسب لحالتك الصحية<br>
-                            🎮 لعب ألعاب تعليمية عن العسل<br>
-                            📚 معرفة المزيد عن فوائد العسل
+                            مرحباً! أنا مساعد مناحل ريف 🍯 اختر حالة من القائمة أعلاه أو اكتب بحرية (مثال: «عندي إرهاق وضعف» أو «سعال جاف»). سأقترح منتجات من متجرنا إن وُجدت مطابقة.<br><br>
+                            يمكنك أيضاً كتابة <strong>لعبة</strong> أو <strong>اختبار</strong> للترفيه التعليمي.
                         </div>
                         <div class="message-time">الآن</div>
                     </div>
@@ -883,9 +1102,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-brain"></i>
                     </div>
-                    <div class="feature-title">ذكاء اصطناعي</div>
+                    <div class="feature-title">توصيات من المنتجات</div>
                     <div class="feature-description">
-                        يحلل حالتك الصحية ويقترح العسل المناسب بناءً على أعراضك
+                        يطابق وصفك مع أسماء وأوصاف المنتجات في المتجر ويقترح الأنسب
                     </div>
                 </div>
 
@@ -895,7 +1114,7 @@
                     </div>
                     <div class="feature-title">ألعاب تعليمية</div>
                     <div class="feature-description">
-                        اختبر معرفتك بأنواع العسل وفوائده من خلال ألعاب ممتعة
+                        اختبار سريع عن أنواع العسل وفوائده
                     </div>
                 </div>
 
@@ -903,15 +1122,18 @@
                     <div class="feature-icon">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <div class="feature-title">محادثة ذكية</div>
+                    <div class="feature-title">أسئلة متابعة</div>
                     <div class="feature-description">
-                        يسألك أسئلة متابعة لفهم حالتك بشكل أفضل
+                        قد يطلب توضيحاً بسيطاً قبل عرض المنتجات المناسبة
                     </div>
                 </div>
 
             </div>
-    </div>
-    </section>
+        </section>
+
+        <p class="assistant-disclaimer" role="note">
+            <strong>تنبيه:</strong> المساعد إرشادي ولا يقدّم تشخيصاً طبياً أو علاجاً. للحالات المزمنة، الحمل، الرضاعة، أو تناول أدوية — استشر طبيباً أو اختصاصياً. لا يُعطى العسل لرضع دون سنة حسب التوصيات الطبية المعتادة.
+        </p>
     </div>
 
     <script>
@@ -979,6 +1201,13 @@
             'ضعف جهاز مناعي': 'العسل يعزز جهاز المناعة ويحمي من الأمراض.',
             'تسمم': 'العسل يساعد في detox الجسم وتخليصه من السموم.'
         };
+
+        function escapeHtml(text) {
+            if (text == null) return '';
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
 
         // Global variables
         let conversationId = 'user_' + Date.now();
@@ -1051,35 +1280,42 @@
                     })
                 });
 
-                const data = await response.json();
+                const data = await response.json().catch(() => ({}));
 
                 hideTyping();
 
-                if (data.success && data.data.success) {
-                    // Add AI message
-                    addMessage(data.data.message, 'ai');
+                if (!response.ok) {
+                    addMessage(data.message || 'تعذر الاتصال بالمساعد. تحقق من الشبكة أو حاول لاحقاً.', 'ai');
+                    return;
+                }
 
-                    // Handle game menu
-                    if (data.data.gameMenu) {
-                        showGameMenu(data.data.games);
+                if (data.success && data.data && data.data.success) {
+                    const payload = data.data;
+                    if (payload.message) {
+                        addMessage(payload.message, 'ai');
                     }
 
-                    // Handle game questions
-                    if (data.data.gameType) {
-                        addGameMessage(data.data);
+                    if (payload.healthTips && payload.healthTips.length > 0) {
+                        showHealthTipsBlock(payload.healthTips);
                     }
 
-                    // Handle product recommendations
-                    if (data.data.recommendations && data.data.recommendations.length > 0) {
-                        showProductRecommendations(data.data.recommendations);
+                    if (payload.gameMenu && payload.games) {
+                        showGameMenu(payload.games);
                     }
 
-                    // Update suggestions
-                    if (data.data.suggestions) {
-                        updateSuggestions(data.data.suggestions);
+                    if (payload.gameType) {
+                        addGameMessage(payload);
+                    }
+
+                    if (payload.recommendations && payload.recommendations.length > 0) {
+                        showProductRecommendations(payload.recommendations);
+                    }
+
+                    if (payload.suggestions && payload.suggestions.length) {
+                        updateSuggestions(payload.suggestions);
                     }
                 } else {
-                    addMessage('عذراً، حدث خطأ ما. يرجى المحاولة مرة أخرى.', 'ai');
+                    addMessage((data.data && data.data.message) || data.message || 'عذراً، لم أتمكن من المعالجة. جرّب صياغة أخرى أو اختر من القائمة أعلاه.', 'ai');
                 }
             } catch (error) {
                 hideTyping();
@@ -1094,6 +1330,21 @@
             sendMessage();
         }
 
+        function showHealthTipsBlock(tips) {
+            if (!tips || !tips.length) return;
+            const wrap = document.createElement('div');
+            wrap.className = 'message ai';
+            const inner = document.createElement('div');
+            inner.className = 'health-tips-block';
+            inner.innerHTML =
+                '<h4><i class="fas fa-leaf"></i> نصائح وإرشادات عامة</h4><ol>' +
+                tips.map((t) => '<li>' + escapeHtml(String(t)) + '</li>').join('') +
+                '</ol><p style="margin:10px 0 0;font-size:0.82rem;opacity:0.85;">هذه إرشادات تعليمية وليست تشخيصاً طبياً. للحالات الخطيرة أو المزمنة راجع طبيبك.</p>';
+            wrap.appendChild(inner);
+            chatMessages.appendChild(wrap);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
         // Add message to chat
         function addMessage(content, type) {
             const messageDiv = document.createElement('div');
@@ -1101,7 +1352,11 @@
 
             const messageContent = document.createElement('div');
             messageContent.className = 'message-content';
-            messageContent.innerHTML = content;
+            if (type === 'user') {
+                messageContent.innerHTML = escapeHtml(String(content));
+            } else {
+                messageContent.innerHTML = escapeHtml(String(content)).replace(/\n/g, '<br>');
+            }
 
             const messageTime = document.createElement('div');
             messageTime.className = 'message-time';
@@ -1136,11 +1391,15 @@
             let content = '<div class="game-menu"><h3>🎮 اختر لعبة:</h3><div class="game-options">';
 
             games.forEach(game => {
+                const cmdAttr = encodeURIComponent(game.command || '');
+                const icon = escapeHtml(game.icon || '🎮');
+                const name = escapeHtml(game.name || '');
+                const desc = escapeHtml(game.description || '');
                 content += `
-                    <div class="game-option" onclick="sendQuickMessage('${game.command}')">
-                        <i class="${game.icon}"></i>
-                        <h4>${game.name}</h4>
-                        <p>${game.description}</p>
+                    <div class="game-option" data-cmd="${cmdAttr}">
+                        <span class="game-emoji">${icon}</span>
+                        <h4>${name}</h4>
+                        <p>${desc}</p>
                     </div>
                 `;
             });
@@ -1152,31 +1411,48 @@
             messageDiv.innerHTML = content;
 
             chatMessages.appendChild(messageDiv);
+            messageDiv.querySelectorAll('.game-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    try {
+                        sendQuickMessage(decodeURIComponent(el.getAttribute('data-cmd') || ''));
+                    } catch (e) {
+                        sendQuickMessage('');
+                    }
+                });
+            });
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         // Show product recommendations
         function showProductRecommendations(products) {
+            const base = window.location.origin || '';
             let content = '<div class="product-recommendations">';
 
             products.forEach(product => {
+                const img = product.image
+                    ? (String(product.image).startsWith('http') ? product.image : base + product.image)
+                    : '';
+                const imgBlock = img
+                    ? `<img class="product-card-img" src="${escapeHtml(img)}" alt="">`
+                    : '';
                 content += `
                     <div class="product-card">
-                        <div class="product-rank">${product.rank}</div>
-                        <div class="product-name">${product.name}</div>
+                        <div class="product-rank">${escapeHtml(String(product.rank))}</div>
+                        ${imgBlock}
+                        <div class="product-name">${escapeHtml(product.name)}</div>
                         <div class="product-price">
-                            <span class="price-current">${product.price} ريال</span>
-                            ${product.oldPrice ? `<span class="price-old">${product.oldPrice} ريال</span>` : ''}
+                            <span class="price-current">${escapeHtml(String(product.price ?? ''))} ريال</span>
+                            ${product.oldPrice ? `<span class="price-old">${escapeHtml(String(product.oldPrice))} ريال</span>` : ''}
                         </div>
                         <div class="product-reasons">
-                            ${product.reasons.map(reason => `
+                            ${(product.reasons || []).map(reason => `
                                 <div class="reason-item">
                                     <i class="fas fa-check"></i>
-                                    <span>${reason}</span>
+                                    <span>${escapeHtml(String(reason))}</span>
                                 </div>
                             `).join('')}
                         </div>
-                        <a href="${product.url}" class="product-link" target="_blank">
+                        <a href="${escapeHtml(product.url || '#')}" class="product-link" target="_blank" rel="noopener">
                             <i class="fas fa-shopping-cart"></i> عرض المنتج
                         </a>
                     </div>
@@ -1234,8 +1510,7 @@
             }, 3000);
         }
 
-        // Create honey drips periodically
-        setInterval(createHoneyDrip, 2000);
+        setInterval(createHoneyDrip, 10000);
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {

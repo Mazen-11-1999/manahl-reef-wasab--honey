@@ -912,6 +912,48 @@
 
             <!-- التبويب 1: النظرة العامة -->
             <div id="overview" class="tab-content active">
+                <details class="owner-guide-panel"
+                    style="margin-bottom: 24px; padding: 16px 20px; background: rgba(212, 175, 55, 0.08); border: 1px solid var(--border-gold, rgba(212, 175, 55, 0.35)); border-radius: 12px; text-align: right;">
+                    <summary
+                        style="cursor: pointer; font-weight: 700; color: var(--gold-primary); list-style: none; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-map-signs"></i>
+                        دليل المالك السريع — أين تجد كل شيء؟ (جوال أو كمبيوتر)
+                    </summary>
+                    <div
+                        style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(212, 175, 55, 0.2); color: var(--text-secondary); font-size: 0.92rem; line-height: 1.75;">
+                        <p style="margin: 0 0 10px 0;"><strong>1) الدخول:</strong> من أي مكان افتح المتصفح →
+                            <code style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">/admin/login.html</code>
+                            ثم تبقى في لوحة التحكم.</p>
+                        <p style="margin: 0 0 10px 0;"><strong>2) منتجات + صور المنتج:</strong> من الأعلى اختر تبويب
+                            <strong>المنتجات</strong> أو الرابط <code
+                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">products.html</code>
+                            و<code
+                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">categories.html</code>
+                            للفئات. يمكنك لاحقاً رفع الصور من نفس الأماكن.</p>
+                        <p style="margin: 0 0 10px 0;"><strong>3) حالات وإعلانات (تظهر في الرئيسية):</strong> زر
+                            <strong>الحالات والإعلانات</strong> أدناه أو الصفحة
+                            <code
+                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">stories-management.html</code>
+                            — تدعم صوراً وفيديو حسب الصفحة.</p>
+                        <p style="margin: 0 0 10px 0;"><strong>4) معرض «قصتنا» (6 صور):</strong>
+                            <code
+                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">story-gallery.html</code>
+                        </p>
+                        <p style="margin: 0 0 10px 0;"><strong>5) صيدلة طبيعية / هل تعلم / الشريط العلوي:</strong> من
+                            شريط التبويبات: <strong>الصيدلية الطبيعية</strong>، <strong>هل تعلم</strong>، <strong>الشريط
+                                العلوي</strong>.</p>
+                        <p style="margin: 0 0 10px 0;"><strong>6) النسخ الاحتياطي:</strong> تبويب <strong>نسخ
+                                احتياطي</strong> — على <strong>Vercel</strong> اعتمد نسخ <strong>MongoDB Atlas</strong>
+                            من لوحة Atlas؛ نسخ الملفات عبر السيرفر يناسب VPS بقرص دائم.</p>
+                        <p style="margin: 0;"><strong>7) صور وفيديو لا تُضاع على Vercel:</strong> في إعدادات Vercel فعّل
+                            <strong>التخزين السحابي</strong> (مثل Cloudinary):
+                            <code
+                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">CLOUD_STORAGE_ENABLED=true</code>
+                            + <code
+                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">CLOUD_STORAGE_PROVIDER=cloudinary</code>
+                            ومفاتيح Cloudinary.</p>
+                    </div>
+                </details>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <span class="stat-icon"><i class="fas fa-dollar-sign"></i></span>

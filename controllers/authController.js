@@ -3,11 +3,16 @@
  * Controller للمصادقة وإدارة المستخدمين
  */
 
+const crypto = require('crypto');
+const https = require('https');
+const { URL } = require('url');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Customer = require('../models/Customer');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const config = require('../config/env');
+const logger = require('../utils/logger');
 
 /** تطبيع رقم الهاتف للمقارنة (يمني محلي أو دولي E.164 بدون +) */
 function normalizePhone(input) {
@@ -221,6 +226,220 @@ exports.registerCustomer = catchAsync(async (req, res, next) => {
     });
 });
 
+/** يجب أن يطابق المسار المسجّل في Google Cloud وـ FRONTEND_URL */
+function getGoogleRedirectUri() {
+    const base = (config.frontendUrl || '').replace(/\/$/, '');
+    return `${base}/api/auth/google/callback`;
+}
+
+function httpsRequestJson(urlString, options) {
+    return new Promise((resolve, reject) => {
+        const u = new URL(urlString);
+        const reqOpts = {
+            hostname: u.hostname,
+            path: u.pathname + u.search,
+            method: options.method || 'GET',
+            headers: options.headers || {}
+        };
+        const req = https.request(reqOpts, (res) => {
+            let data = '';
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+            res.on('end', () => {
+                try {
+                    resolve({ status: res.statusCode, json: JSON.parse(data || '{}'), raw: data });
+                } catch (e) {
+                    resolve({ status: res.statusCode, json: null, raw: data });
+                }
+            });
+        });
+        req.on('error', reject);
+        if (options.body) req.write(options.body);
+        req.end();
+    });
+}
+
+async function uniqueSyntheticPhoneFromSub(sub) {
+    for (let i = 0; i < 8; i++) {
+        const h = crypto.createHash('sha256').update(String(sub) + String(i)).digest();
+        const num = h.readUInt32BE(0) % 100000000;
+        const phone = '9677' + String(num).padStart(8, '0');
+        const exists = await Customer.findOne({ phone });
+        if (!exists) return phone;
+    }
+    return '9677' + String(Date.now()).slice(-8);
+}
+
+/**
+ * GET /api/auth/google — إعادة توجيه إلى Google OAuth
+ */
+exports.googleAuthStart = catchAsync(async (req, res, next) => {
+    if (!config.googleClientId || !config.googleClientSecret) {
+        return next(new AppError('تسجيل الدخول بـ Google غير مُفعّل. أضف GOOGLE_CLIENT_ID و GOOGLE_CLIENT_SECRET في إعدادات الخادم.', 503));
+    }
+    const state = jwt.sign(
+        { p: 'g_oauth', rnd: crypto.randomBytes(8).toString('hex') },
+        config.jwtSecret,
+        { expiresIn: '10m' }
+    );
+    const redirectUri = encodeURIComponent(getGoogleRedirectUri());
+    const scope = encodeURIComponent('openid email profile');
+    const url =
+        'https://accounts.google.com/o/oauth2/v2/auth' +
+        `?client_id=${encodeURIComponent(config.googleClientId)}` +
+        `&redirect_uri=${redirectUri}` +
+        '&response_type=code' +
+        `&scope=${scope}` +
+        `&state=${encodeURIComponent(state)}` +
+        '&prompt=select_account';
+    res.redirect(302, url);
+});
+
+/**
+ * GET /api/auth/google/callback — استلام الرمز وإصدار JWT للموقع
+ */
+exports.googleAuthCallback = catchAsync(async (req, res, next) => {
+    const frontBase = (config.frontendUrl || '').replace(/\/$/, '');
+    const authPage = `${frontBase}/pages/customer-auth.html`;
+
+    if (req.query.error) {
+        logger.warn('Google OAuth error query', { error: req.query.error });
+        return res.redirect(302, `${authPage}?google_error=access_denied`);
+    }
+
+    const { code, state } = req.query;
+    if (!code || !state) {
+        return res.redirect(302, `${authPage}?google_error=invalid_request`);
+    }
+
+    let decoded;
+    try {
+        decoded = jwt.verify(state, config.jwtSecret);
+    } catch (e) {
+        return res.redirect(302, `${authPage}?google_error=state_expired`);
+    }
+    if (decoded.p !== 'g_oauth') {
+        return next(new AppError('طلب غير صالح', 400));
+    }
+
+    if (!config.googleClientId || !config.googleClientSecret) {
+        return next(new AppError('إعداد Google غير مكتمل', 503));
+    }
+
+    const redirectUri = getGoogleRedirectUri();
+    const tokenBody = new URLSearchParams({
+        code,
+        client_id: config.googleClientId,
+        client_secret: config.googleClientSecret,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code'
+    }).toString();
+
+    const tokenResult = await httpsRequestJson('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(tokenBody)
+        },
+        body: tokenBody
+    });
+    const tokenJson = tokenResult.json || {};
+    if (!tokenResult.status || tokenResult.status < 200 || tokenResult.status >= 300 || !tokenJson.access_token) {
+        logger.error('Google token exchange failed', { status: tokenResult.status, tokenJson });
+        return res.redirect(302, `${authPage}?google_error=token`);
+    }
+
+    const uiUrl = `https://www.googleapis.com/oauth2/v3/userinfo`;
+    const userinfoRes = await httpsRequestJson(uiUrl, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${tokenJson.access_token}` }
+    });
+    const profile = userinfoRes.json || {};
+    if (!profile.sub || !profile.email) {
+        return res.redirect(302, `${authPage}?google_error=profile`);
+    }
+    if (profile.email_verified === false) {
+        return res.redirect(302, `${authPage}?google_error=email_not_verified`);
+    }
+
+    const email = String(profile.email).toLowerCase().trim();
+    const sub = String(profile.sub);
+    const given = (profile.given_name || '').trim();
+    const family = (profile.family_name || '').trim();
+    const nameFromGoogle = [given, family].filter(Boolean).join(' ') || (profile.name || '').trim() || 'عميل';
+
+    let user = await User.findOne({ googleId: sub });
+    if (!user) {
+        user = await User.findOne({ email });
+    }
+
+    if (user) {
+        if (!user.googleId) {
+            user.googleId = sub;
+        }
+        user.lastLogin = new Date();
+        if (profile.picture && !user.profile?.avatar) {
+            user.profile = user.profile || {};
+            user.profile.avatar = profile.picture;
+        }
+        user.isEmailVerified = true;
+        await user.save({ validateBeforeSave: false });
+
+        const cust = await Customer.findOne({ user: user._id });
+        if (cust && profile.picture && !cust.profile?.avatar) {
+            cust.profile = cust.profile || {};
+            cust.profile.avatar = profile.picture;
+            await cust.save({ validateBeforeSave: false });
+        }
+    } else {
+        const username = (`g_${sub}`).slice(0, 30);
+        const randPass = crypto.randomBytes(32).toString('hex');
+        const phone = await uniqueSyntheticPhoneFromSub(sub);
+
+        user = await User.create({
+            username,
+            email,
+            googleId: sub,
+            password: randPass,
+            role: 'user',
+            profile: {
+                firstName: given || nameFromGoogle,
+                lastName: family,
+                avatar: profile.picture || undefined
+            },
+            isEmailVerified: true,
+            lastLogin: new Date()
+        });
+
+        await Customer.create({
+            user: user._id,
+            email,
+            phone,
+            profile: {
+                firstName: given || nameFromGoogle,
+                lastName: family,
+                avatar: profile.picture || undefined
+            },
+            loyalty: { points: 0, tier: 'bronze', totalSpent: 0, totalOrders: 0 }
+        });
+    }
+
+    if (!user.isActive) {
+        return res.redirect(302, `${authPage}?google_error=disabled`);
+    }
+
+    if (user.role === 'admin' || user.role === 'moderator') {
+        return res.redirect(302, `${authPage}?google_error=admin_account`);
+    }
+
+    const token = user.generateAuthToken();
+    const refreshToken = user.generateRefreshToken();
+    const hash =
+        `#google=1&token=${encodeURIComponent(token)}&refresh=${encodeURIComponent(refreshToken)}`;
+    return res.redirect(302, `${authPage}${hash}`);
+});
+
 /**
  * تحديث Token باستخدام Refresh Token
  */
@@ -230,8 +449,6 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
     if (!refreshToken) {
         return next(new AppError('Refresh Token مطلوب', 400));
     }
-
-    const jwt = require('jsonwebtoken');
     
     try {
         // التحقق من Refresh Token

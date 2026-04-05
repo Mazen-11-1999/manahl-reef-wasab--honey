@@ -120,6 +120,8 @@ const ProductSchema = new mongoose.Schema({
 ProductSchema.index({ name: 'text', description: 'text' });
 ProductSchema.index({ category: 1 });
 ProductSchema.index({ status: 1 });
+/** استعلامات المتجر النشط — أداء أفضل */
+ProductSchema.index({ status: 1, isActive: 1 });
 ProductSchema.index({ featured: 1 });
 ProductSchema.index({ 'ratings.average': -1 });
 ProductSchema.index({ createdAt: -1 });

@@ -35,6 +35,8 @@ const requestLogger = require('./middleware/requestLogger');
 const globalErrorHandler = require('./middleware/errorHandler');
 const AppError = require('./utils/appError');
 
+const aiAssistantRoutes = require('./routes/aiAssistantRoutes');
+
 // Initialize Express app
 const app = express();
 
@@ -115,12 +117,8 @@ app.use('/api/', async (req, res, next) => {
     }
 });
 
-// Ensure uploads directory exists for logos and product images
-// التحقق من بيئة Vercel
-const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
-
-// في Vercel، لا نستخدم مجلد uploads
-if (!isVercel) {
+// مجلد uploads على السيرفر الذي يملك قرصاً دائماً (ليس Vercel serverless)
+if (process.env.VERCEL !== '1') {
     const uploadsDir = path.join(__dirname, 'uploads');
     if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
@@ -128,7 +126,13 @@ if (!isVercel) {
 }
 
 // Static files
-app.use('/uploads', express.static('uploads'));
+app.use(
+    '/uploads',
+    express.static('uploads', {
+        maxAge: config.nodeEnv === 'production' ? 7 * 24 * 60 * 60 * 1000 : 0,
+        etag: true
+    })
+);
 app.use(express.static(path.join(__dirname, 'frontend'))); // Serve static files from frontend directory
 // Removed dangerous express.static('.') that exposed all project files
 
@@ -161,24 +165,27 @@ app.get('/admin/', (req, res) => {
 // Serve pages routes correctly (must be before API routes to avoid conflicts)
 app.get('/pages/:page', (req, res) => {
     const page = req.params.page;
-    const pagePath = path.join(__dirname, 'frontend', 'pages', page);
 
-    // Security: Only allow HTML files
-    if (!page.endsWith('.html')) {
+    // Security: اسم ملف فقط — منع تجاوز المسار (path traversal)
+    if (!/^[a-z0-9][a-z0-9._-]*\.html$/i.test(page)) {
         return res.status(400).json({ success: false, message: 'Invalid page format' });
     }
 
-    // Check if file exists
+    const pagesRoot = path.resolve(__dirname, 'frontend', 'pages');
+    const pagePath = path.resolve(pagesRoot, page);
+    if (!pagePath.startsWith(pagesRoot + path.sep) && pagePath !== pagesRoot) {
+        return res.status(400).json({ success: false, message: 'Invalid page' });
+    }
+
     if (fs.existsSync(pagePath)) {
         res.sendFile(pagePath);
     } else {
-        // Fallback to index.html if page not found
         res.status(404).sendFile(path.join(__dirname, 'frontend', 'index.html'));
     }
 });
 
 // Admin Password-Only Login Route (قبل API routes)
-app.post('/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', security.adminLoginLimiter, async (req, res) => {
     try {
         const { password } = req.body;
 
@@ -290,26 +297,18 @@ app.use('/api/site-banner', require('./routes/siteBannerRoutes'));
 app.use('/api/site-settings', require('./routes/siteSettingsRoutes'));
 app.use('/api/map', require('./routes/mapRoutes'));
 app.use('/api/whatsapp', require('./routes/whatsappRoutes'));
-
-// AI Assistant Routes - Temporarily disabled for deployment
-// app.use('/api/ai', aiAssistantRoutes);
+app.use('/api/ai', aiAssistantRoutes);
 
 // ============================================
 // OLD ROUTES (للتوافق مع الكود الحالي)
 // ============================================
 
-// File upload configuration
+// File upload — على Vercel: ذاكرة ثم سحابة؛ على VPS: قرص محلي دائم
 const multer = require('multer');
-const storage = multer.diskStorage({
+const IS_VERCEL_SERVERLESS = process.env.VERCEL === '1';
+
+const diskUploadStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // التحقق من بيئة Vercel
-        const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
-
-        // في Vercel، لا نستخدم مجلد uploads
-        if (isVercel) {
-            return cb(new Error('File upload not available in production'));
-        }
-
         const uploadDir = 'uploads';
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
@@ -321,9 +320,6 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
-
-// Import AI Assistant routes
-const aiAssistantRoutes = require('./routes/aiAssistantRoutes');
 
 // Import models from separate files
 const Product = require('./models/Product');
@@ -365,7 +361,7 @@ cloudStorage.initCloudStorage().catch(error => {
 });
 
 const upload = multer({
-    storage: storage,
+    storage: IS_VERCEL_SERVERLESS ? multer.memoryStorage() : diskUploadStorage,
     limits: { fileSize: config.maxFileSize },
     fileFilter: (req, file, cb) => {
         const allowedTypes = /jpeg|jpg|png|gif|webp/;
@@ -380,17 +376,8 @@ const upload = multer({
     }
 });
 
-// Upload configuration for stories (images and videos)
-const storyStorage = multer.diskStorage({
+const storyDiskStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // التحقق من بيئة Vercel
-        const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
-
-        // في Vercel، لا نستخدم مجلد uploads
-        if (isVercel) {
-            return cb(new Error('File upload not available in production'));
-        }
-
         const uploadDir = 'uploads/stories';
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
@@ -404,7 +391,7 @@ const storyStorage = multer.diskStorage({
 });
 
 const uploadStory = multer({
-    storage: storyStorage,
+    storage: IS_VERCEL_SERVERLESS ? multer.memoryStorage() : storyDiskStorage,
     limits: { fileSize: 50 * 1024 * 1024 }, // 50MB for videos
     fileFilter: (req, file, cb) => {
         const allowedImageTypes = /jpeg|jpg|png|gif|webp/;
@@ -1297,8 +1284,36 @@ app.get('/api/stats', authenticateToken, async (req, res, next) => {
     }
 });
 
-app.post('/api/upload', authenticateToken, upload.single('file'), (req, res, next) => {
+app.post('/api/upload', authenticateToken, upload.single('file'), async (req, res, next) => {
     try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'لم يتم رفع أي ملف' });
+        }
+
+        if (IS_VERCEL_SERVERLESS) {
+            if (!cloudStorage.cloudStorageConfig.enabled) {
+                return res.status(503).json({
+                    success: false,
+                    code: 'CLOUD_STORAGE_REQUIRED',
+                    message:
+                        'على Vercel يلزم التخزين السحابي لحفظ الصور بشكل دائم. فعّل CLOUD_STORAGE_ENABLED واضبط Cloudinary أو S3 في متغيرات البيئة.'
+                });
+            }
+            await cloudStorage.initCloudStorage();
+            const result = await cloudStorage.uploadFile({
+                buffer: req.file.buffer,
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size
+            });
+            return res.json({
+                success: true,
+                filename: result.key || 'upload',
+                path: result.url,
+                url: result.url
+            });
+        }
+
         res.json({
             success: true,
             filename: req.file.filename,
@@ -1310,7 +1325,7 @@ app.post('/api/upload', authenticateToken, upload.single('file'), (req, res, nex
 });
 
 // Upload route for stories (images and videos)
-app.post('/api/upload/story', authenticateToken, uploadStory.single('media'), (req, res, next) => {
+app.post('/api/upload/story', authenticateToken, uploadStory.single('media'), async (req, res, next) => {
     try {
         if (!req.file) {
             return res.status(400).json({
@@ -1320,6 +1335,33 @@ app.post('/api/upload/story', authenticateToken, uploadStory.single('media'), (r
         }
 
         const isVideo = req.file.mimetype.startsWith('video/');
+
+        if (IS_VERCEL_SERVERLESS) {
+            if (!cloudStorage.cloudStorageConfig.enabled) {
+                return res.status(503).json({
+                    success: false,
+                    code: 'CLOUD_STORAGE_REQUIRED',
+                    message: 'على Vercel يلزم التخزين السحابي لرفع الوسائط وحفظها.'
+                });
+            }
+            await cloudStorage.initCloudStorage();
+            const result = await cloudStorage.uploadFile({
+                buffer: req.file.buffer,
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size
+            });
+            return res.json({
+                success: true,
+                filename: result.key || 'media',
+                path: result.url,
+                url: result.url,
+                type: isVideo ? 'video' : 'image',
+                size: req.file.size,
+                mimetype: req.file.mimetype
+            });
+        }
+
         const baseUrl = req.protocol + '://' + req.get('host');
         const fileUrl = baseUrl + '/uploads/stories/' + req.file.filename;
 
@@ -1338,12 +1380,35 @@ app.post('/api/upload/story', authenticateToken, uploadStory.single('media'), (r
 });
 
 // Upload route for prize images
-app.post('/api/upload/prize', authenticateToken, upload.single('image'), (req, res, next) => {
+app.post('/api/upload/prize', authenticateToken, upload.single('image'), async (req, res, next) => {
     try {
         if (!req.file) {
             return res.status(400).json({
                 success: false,
                 message: 'لم يتم رفع أي ملف'
+            });
+        }
+
+        if (IS_VERCEL_SERVERLESS) {
+            if (!cloudStorage.cloudStorageConfig.enabled) {
+                return res.status(503).json({
+                    success: false,
+                    code: 'CLOUD_STORAGE_REQUIRED',
+                    message: 'على Vercel يلزم التخزين السحابي لحفظ صور الجوائز.'
+                });
+            }
+            await cloudStorage.initCloudStorage();
+            const result = await cloudStorage.uploadFile({
+                buffer: req.file.buffer,
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size
+            });
+            return res.json({
+                success: true,
+                filename: result.key || 'prize',
+                path: result.url,
+                url: result.url
             });
         }
 

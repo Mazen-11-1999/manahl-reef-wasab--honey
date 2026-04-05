@@ -14,28 +14,41 @@ const config = require('../config/env');
  */
 exports.helmet = helmet({
     contentSecurityPolicy: {
+        useDefaults: true,
         directives: {
             defaultSrc: ["'self'"],
+            baseUri: ["'self'"],
+            objectSrc: ["'none'"],
+            frameSrc: ["'self'"],
             styleSrc: [
                 "'self'",
                 "'unsafe-inline'",
                 "https://cdnjs.cloudflare.com",
+                "https://cdn.jsdelivr.net",
                 "https://fonts.googleapis.com"
             ],
             scriptSrc: [
                 "'self'",
                 "'unsafe-inline'",
                 "'unsafe-hashes'",
-                "https://cdn.jsdelivr.net"
+                "https://cdn.jsdelivr.net",
+                "https://cdn.vercel-insights.com",
+                "https://vercel.live"
             ],
             scriptSrcAttr: ["'unsafe-inline'"],
             fontSrc: [
                 "'self'",
                 "https://cdnjs.cloudflare.com",
+                "https://cdn.jsdelivr.net",
                 "https://fonts.gstatic.com"
             ],
             imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'"],
+            connectSrc: [
+                "'self'",
+                "https://vercel-insights.com",
+                "https://cdn.vercel-insights.com",
+                "https://vercel.live"
+            ],
         },
     },
     crossOriginEmbedderPolicy: false,
@@ -72,6 +85,31 @@ exports.generalLimiter = rateLimit({
 });
 
 // Rate limiter للمصادقة (أكثر صرامة)
+/** نفس حد تسجيل الدخول العادي — لمسار دخول الأدمن المنفصل */
+exports.adminLoginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: {
+        success: false,
+        message: 'تم تجاوز عدد محاولات الدخول. يرجى المحاولة بعد 15 دقيقة'
+    },
+    skipSuccessfulRequests: true,
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+        const logger = require('../utils/logger');
+        logger.warn('Rate limit exceeded for admin login', {
+            ip: req.ip,
+            path: req.path,
+            timestamp: new Date().toISOString()
+        });
+        res.status(429).json({
+            success: false,
+            message: 'تم تجاوز عدد محاولات الدخول. يرجى المحاولة بعد 15 دقيقة'
+        });
+    }
+});
+
 exports.authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // 5 محاولات فقط
@@ -206,8 +244,10 @@ exports.corsOptions = {
         if (!origin) {
             return callback(null, true);
         }
+        const extra = (config.corsExtraOrigins || []).filter(Boolean);
         const allowedOrigins = [
             config.frontendUrl,
+            ...extra,
             'http://localhost:3000',
             'http://localhost:3001',
             'http://localhost:8080',

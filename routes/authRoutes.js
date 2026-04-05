@@ -105,6 +105,10 @@ const registerCustomerValidation = [
     body('password').notEmpty().withMessage('كلمة المرور مطلوبة').isLength({ min: 8 }).withMessage('كلمة المرور 8 أحرف على الأقل')
 ];
 
+// Google OAuth (عملاء — يجب أن يطابق المسار في Google Cloud)
+router.get('/google/callback', authController.googleAuthCallback);
+router.get('/google', authController.googleAuthStart);
+
 // Routes
 router.post('/register', registerValidation, validate, authController.register);
 router.post('/register-customer', registerCustomerValidation, validate, authController.registerCustomer);
