@@ -29,7 +29,8 @@ router.post('/chat', async (req, res) => {
             timestamp: new Date().toISOString()
         });
 
-        const response = await aiAssistant.analyzeUserMessage(message, userId || null);
+        const raw = await aiAssistant.analyzeUserMessage(message, userId || null);
+        const response = aiAssistant.sanitizeResponse(raw);
 
         logger.info('AI Assistant Response:', {
             success: response.success,
@@ -47,8 +48,7 @@ router.post('/chat', async (req, res) => {
         logger.error('AI Assistant Error:', error);
         res.status(500).json({
             success: false,
-            message: 'حدث خطأ في المساعد الذكي',
-            error: error.message
+            message: 'حدث خطأ في المساعد الذكي'
         });
     }
 });

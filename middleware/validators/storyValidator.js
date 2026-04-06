@@ -99,7 +99,12 @@ exports.addComment = [
     param('id')
         .isMongoId()
         .withMessage('معرف الحالة/الإعلان غير صحيح'),
-    
+
+    body('parentCommentId')
+        .optional()
+        .isMongoId()
+        .withMessage('معرف التعليق الأصل غير صحيح'),
+
     body('text')
         .trim()
         .notEmpty()

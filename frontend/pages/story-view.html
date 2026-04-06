@@ -115,9 +115,86 @@
             margin-bottom: 2px;
         }
 
-        .story-header-info span {
+        .story-header-info span.story-time {
             font-size: 0.85rem;
             color: var(--text-secondary);
+        }
+
+        /* شريط فاخر للمالك عند نشر الحالة */
+        .story-owner-bar {
+            margin-top: 6px;
+            display: inline-flex;
+            align-items: center;
+            max-width: 100%;
+        }
+
+        .story-owner-bar.hidden {
+            display: none;
+        }
+
+        .story-owner-bar .owner-bar-inner {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            color: #1a1408;
+            background: linear-gradient(
+                110deg,
+                #2a1810 0%,
+                #5c4018 18%,
+                #d4af37 40%,
+                #f9e498 50%,
+                #d4af37 62%,
+                #5c4018 85%,
+                #2a1810 100%
+            );
+            background-size: 200% 100%;
+            border: 1px solid rgba(249, 228, 152, 0.85);
+            box-shadow:
+                0 0 12px rgba(212, 175, 55, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            animation: ownerBarShine 4s ease infinite;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        .story-owner-bar .owner-bar-inner i {
+            color: #1a1408;
+            filter: drop-shadow(0 0 2px rgba(255, 215, 100, 0.9));
+        }
+
+        @keyframes ownerBarShine {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes rotateBorder {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        @keyframes vipShine {
+            0% {
+                left: -150%;
+            }
+
+            100% {
+                left: 150%;
+            }
         }
 
         .close-btn {
@@ -249,6 +326,77 @@
             margin-bottom: 15px;
             padding-bottom: 15px;
             border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .comment-item.is-reply {
+            margin-right: 18px;
+            padding-right: 12px;
+            border-right: 3px solid rgba(212, 175, 55, 0.45);
+        }
+
+        .comment-footer {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .comment-like-btn,
+        .comment-reply-btn {
+            background: transparent;
+            border: none;
+            color: var(--gold-primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 0;
+            font-family: inherit;
+        }
+
+        .comment-like-btn:hover,
+        .comment-reply-btn:hover {
+            opacity: 0.85;
+        }
+
+        .comment-like-btn.liked {
+            color: #ff6b8a;
+        }
+
+        .reply-hint {
+            font-size: 0.75rem;
+            color: var(--gold-primary);
+            padding: 0 20px 8px;
+            display: none;
+        }
+
+        .reply-hint.visible {
+            display: block;
+        }
+
+        .comment-badge.owner {
+            padding: 3px 10px;
+            border-radius: 14px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: #1a1408;
+            background: linear-gradient(
+                105deg,
+                #3d2a14,
+                #8a6426,
+                #f3cf7a,
+                #d4af37,
+                #8a6426,
+                #3d2a14
+            );
+            background-size: 180% 100%;
+            border: 1px solid rgba(249, 228, 152, 0.9);
+            box-shadow:
+                0 0 10px rgba(212, 175, 55, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            animation: ownerBarShine 5s ease infinite;
         }
 
         .comment-author {
@@ -449,11 +597,12 @@
         <div class="story-container" id="storyContainer" style="display: none;">
             <div class="story-header">
                 <div class="story-header-left">
-                    <img src="../assets/manahel.jpg" alt="مناحل ريف وصاب" class="story-avatar"
+                    <img src="../assets/manahel.jpg" alt="مناحل ريف وصاب" class="story-avatar" id="storyAvatar"
                         onerror="this.style.display='none'">
                     <div class="story-header-info">
-                        <h3>مناحل ريف وصاب</h3>
-                        <span id="storyTime"></span>
+                        <h3 id="storyAuthorName">مناحل ريف وصاب</h3>
+                        <div id="storyOwnerBar" class="story-owner-bar hidden" aria-hidden="true"></div>
+                        <span id="storyTime" class="story-time"></span>
                     </div>
                 </div>
                 <button class="close-btn" onclick="closeStory()">
@@ -500,9 +649,10 @@
                 <div class="comments-list" id="commentsList">
                     <!-- سيتم إضافة التعليقات هنا -->
                 </div>
+                <div id="replyHint" class="reply-hint"></div>
                 <div class="comment-form">
                     <input type="text" class="comment-input" id="commentInput" placeholder="اكتب تعليقك...">
-                    <button class="comment-submit" onclick="addComment()">
+                    <button type="button" class="comment-submit" onclick="addComment()">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -519,6 +669,47 @@
         let commentsOpen = false;
         let touchStartX = 0;
         let touchEndX = 0;
+        let currentUserId = null;
+        let replyToId = null;
+
+        function escapeHtml(s) {
+            if (s == null) return '';
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function cancelReply() {
+            replyToId = null;
+            const hint = document.getElementById('replyHint');
+            const input = document.getElementById('commentInput');
+            if (hint) {
+                hint.classList.remove('visible');
+                hint.innerHTML = '';
+            }
+            if (input) input.placeholder = 'اكتب تعليقك...';
+        }
+
+        function startReply(commentId) {
+            replyToId = commentId || null;
+            const hint = document.getElementById('replyHint');
+            const input = document.getElementById('commentInput');
+            if (!replyToId) {
+                cancelReply();
+                return;
+            }
+            if (hint) {
+                hint.classList.add('visible');
+                hint.innerHTML =
+                    '<span>ترد على هذا التعليق — </span><button type="button" class="comment-reply-btn" id="cancelReplyBtn">إلغاء الرد</button>';
+                const btn = document.getElementById('cancelReplyBtn');
+                if (btn) btn.addEventListener('click', cancelReply);
+            }
+            if (input) {
+                input.focus();
+                input.placeholder = 'اكتب ردك...';
+            }
+        }
 
         // تحميل الحالة
         async function loadStory() {
@@ -531,9 +722,20 @@
                     return;
                 }
 
+                try {
+                    const token = window.API && window.API.getAuthToken && window.API.getAuthToken();
+                    if (token && window.API.auth && window.API.auth.getMe) {
+                        const me = await window.API.auth.getMe();
+                        if (me && me.success && me.user) {
+                            currentUserId = String(me.user._id || me.user.id || '');
+                        }
+                    }
+                } catch (e) {
+                    currentUserId = null;
+                }
+
                 const response = await window.API.stories.getStory(storyId);
 
-                // التحقق من نجاح الطلب
                 if (!response.success || !response.story) {
                     showError('الحالة غير موجودة أو تم حذفها');
                     setTimeout(() => {
@@ -613,43 +815,138 @@
                 timeSpan.textContent = 'الآن';
             }
 
-            // تحديث الإحصائيات
+            const cb = story.createdBy;
+            const ownerBar = document.getElementById('storyOwnerBar');
+            const nameEl = document.getElementById('storyAuthorName');
+            if (nameEl) {
+                nameEl.textContent = 'مناحل ريف وصاب';
+            }
+            if (ownerBar) {
+                const isOwnerPost = cb && (cb.role === 'admin' || cb.badgeType === 'owner');
+                if (isOwnerPost) {
+                    ownerBar.classList.remove('hidden');
+                    ownerBar.setAttribute('aria-hidden', 'false');
+                    ownerBar.innerHTML =
+                        '<span class="owner-bar-inner"><i class="fas fa-crown"></i> منشور من المالك — مناحل ريف وصاب</span>';
+                } else {
+                    ownerBar.classList.add('hidden');
+                    ownerBar.innerHTML = '';
+                    ownerBar.setAttribute('aria-hidden', 'true');
+                }
+            }
+
             document.getElementById('likesCount').textContent = story.likesCount || story.likes?.length || 0;
             document.getElementById('commentsCount').textContent = story.commentsCount || story.comments?.length || 0;
 
-            // عرض التعليقات
             renderComments(story.comments || []);
         }
 
-        // عرض التعليقات
+        function getCommentAuthor(comment) {
+            if (comment.customer) {
+                const fn = comment.customer.profile?.firstName || '';
+                const ln = comment.customer.profile?.lastName || '';
+                const combined = `${fn} ${ln}`.trim();
+                return combined || comment.customer.email || 'عميل';
+            }
+            return comment.user?.username || 'مستخدم';
+        }
+
+        function buildCommentRow(comment, isReply) {
+            const author = getCommentAuthor(comment);
+            const date = new Date(comment.createdAt).toLocaleDateString('ar-YE', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const badgeForDisplay =
+                comment.user && comment.user.role === 'admin'
+                    ? 'owner'
+                    : comment.user?.badgeType || '';
+            const cid = String(comment._id || comment.id || '');
+            const likes = comment.likes || [];
+            const likeCount = likes.length;
+            let liked = false;
+            if (currentUserId) {
+                liked = likes.some(function (l) {
+                    const u = l.user && (l.user._id || l.user);
+                    return u && u.toString() === currentUserId;
+                });
+            }
+            const replyBtn = !isReply
+                ? '<button type="button" class="comment-reply-btn" data-reply-to="' +
+                  cid +
+                  '"><i class="fas fa-reply"></i> رد</button>'
+                : '';
+            return (
+                '<div class="comment-item ' +
+                (isReply ? 'is-reply' : '') +
+                '" data-comment-id="' +
+                cid +
+                '">' +
+                '<div class="comment-author">' +
+                escapeHtml(author) +
+                (badgeForDisplay
+                    ? '<span class="comment-badge ' +
+                      badgeForDisplay +
+                      '">' +
+                      getBadgeText(badgeForDisplay) +
+                      '</span>'
+                    : '') +
+                '</div>' +
+                '<div class="comment-text">' +
+                escapeHtml(comment.text) +
+                '</div>' +
+                '<div class="comment-footer">' +
+                '<span class="comment-date">' +
+                date +
+                '</span>' +
+                '<button type="button" class="comment-like-btn' +
+                (liked ? ' liked' : '') +
+                '" data-like-comment="' +
+                cid +
+                '">' +
+                '<i class="fas fa-heart"></i> <span class="like-count">' +
+                likeCount +
+                '</span></button>' +
+                replyBtn +
+                '</div></div>'
+            );
+        }
+
         function renderComments(comments) {
             const commentsList = document.getElementById('commentsList');
 
-            if (comments.length === 0) {
-                commentsList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">لا توجد تعليقات بعد</p>';
+            if (!comments || comments.length === 0) {
+                commentsList.innerHTML =
+                    '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">لا توجد تعليقات بعد</p>';
                 return;
             }
 
-            commentsList.innerHTML = comments.map(comment => {
-                const author = comment.customer
-                    ? `${comment.customer.profile?.firstName || ''} ${comment.customer.profile?.lastName || ''}`.trim() || comment.customer.email
-                    : comment.user?.username || 'مستخدم';
-                const date = new Date(comment.createdAt).toLocaleDateString('ar-YE', {
-                    hour: '2-digit',
-                    minute: '2-digit'
+            const arr = comments.slice();
+            const roots = arr
+                .filter(function (c) {
+                    return !c.parentComment;
+                })
+                .sort(function (a, b) {
+                    return new Date(a.createdAt) - new Date(b.createdAt);
                 });
-
-                return `
-                    <div class="comment-item">
-                        <div class="comment-author">
-                            ${author}
-                            ${comment.user?.badgeType ? `<span class="comment-badge ${comment.user.badgeType}">${getBadgeText(comment.user.badgeType)}</span>` : ''}
-                        </div>
-                        <div class="comment-text">${comment.text}</div>
-                        <div class="comment-date">${date}</div>
-                    </div>
-                `;
-            }).join('');
+            let html = '';
+            roots.forEach(function (root) {
+                const rid = String(root._id || root.id);
+                html += buildCommentRow(root, false);
+                const replies = arr
+                    .filter(function (c) {
+                        const p = c.parentComment;
+                        const pid = p && (p._id || p);
+                        return pid && String(pid) === rid;
+                    })
+                    .sort(function (a, b) {
+                        return new Date(a.createdAt) - new Date(b.createdAt);
+                    });
+                replies.forEach(function (r) {
+                    html += buildCommentRow(r, true);
+                });
+            });
+            commentsList.innerHTML = html;
         }
 
         // الحصول على نص الشارة
@@ -665,6 +962,30 @@
                 'owner': '🛡️ المالك'
             };
             return badges[badgeType] || '';
+        }
+
+        async function toggleCommentLike(commentId) {
+            if (!currentStory || !commentId) return;
+            const token = window.API ? window.API.getAuthToken() : null;
+            if (!token) {
+                alert('يرجى تسجيل الدخول أولاً');
+                return;
+            }
+            try {
+                const res = await window.API.stories.toggleCommentLike(currentStory._id, commentId);
+                if (res.success && res.comment) {
+                    const list = currentStory.comments || [];
+                    const idx = list.findIndex(function (c) {
+                        return String(c._id || c.id) === String(commentId);
+                    });
+                    if (idx >= 0) list[idx] = res.comment;
+                    else list.push(res.comment);
+                    renderComments(list);
+                }
+            } catch (error) {
+                console.error('Error toggling comment like:', error);
+                alert(error.message || 'تعذر تحديث الإعجاب');
+            }
         }
 
         // تبديل الإعجاب
@@ -732,45 +1053,24 @@
             }
 
             try {
-                const response = await window.API.stories.addComment(currentStory._id, text);
+                const parentId = replyToId || null;
+                const response = await window.API.stories.addComment(currentStory._id, text, parentId);
 
                 if (!response.success || !response.comment) {
                     throw new Error(response.message || 'فشل إضافة التعليق');
                 }
 
-                // إضافة التعليق للقائمة
-                const commentsList = document.getElementById('commentsList');
-                const comment = response.comment;
-                const author = comment.customer
-                    ? `${comment.customer.profile?.firstName || ''} ${comment.customer.profile?.lastName || ''}`.trim() || comment.customer.email
-                    : comment.user?.username || 'مستخدم';
-                const date = comment.createdAt
-                    ? new Date(comment.createdAt).toLocaleDateString('ar-YE', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })
-                    : 'الآن';
-
-                const commentHTML = `
-                    <div class="comment-item">
-                        <div class="comment-author">${author}</div>
-                        <div class="comment-text">${comment.text}</div>
-                        <div class="comment-date">${date}</div>
-                    </div>
-                `;
-
-                // إزالة رسالة "لا توجد تعليقات" إذا كانت موجودة
-                if (commentsList.querySelector('p')) {
-                    commentsList.innerHTML = '';
-                }
-
-                commentsList.insertAdjacentHTML('afterbegin', commentHTML);
+                cancelReply();
                 commentInput.value = '';
 
-                // تحديث عدد التعليقات
+                if (!currentStory.comments) currentStory.comments = [];
+                currentStory.comments.push(response.comment);
+                renderComments(currentStory.comments);
+
                 const commentsCount = document.getElementById('commentsCount');
-                const currentCount = parseInt(commentsCount.textContent) || 0;
-                commentsCount.textContent = currentCount + 1;
+                if (commentsCount) {
+                    commentsCount.textContent = currentStory.comments.length;
+                }
             } catch (error) {
                 console.error('Error adding comment:', error);
                 alert('حدث خطأ في إضافة التعليق: ' + (error.message || 'خطأ غير معروف'));
@@ -856,12 +1156,28 @@
 
         // تهيئة الصفحة
         document.addEventListener('DOMContentLoaded', function () {
-            // إضافة event listener للتعليقات بعد تحميل الصفحة
             const commentInput = document.getElementById('commentInput');
             if (commentInput) {
                 commentInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         addComment();
+                    }
+                });
+            }
+
+            const commentsList = document.getElementById('commentsList');
+            if (commentsList) {
+                commentsList.addEventListener('click', function (e) {
+                    const likeBtn = e.target.closest('.comment-like-btn');
+                    if (likeBtn) {
+                        e.preventDefault();
+                        toggleCommentLike(likeBtn.getAttribute('data-like-comment'));
+                        return;
+                    }
+                    const replyBtn = e.target.closest('.comment-reply-btn');
+                    if (replyBtn && replyBtn.getAttribute('data-reply-to')) {
+                        e.preventDefault();
+                        startReply(replyBtn.getAttribute('data-reply-to'));
                     }
                 });
             }

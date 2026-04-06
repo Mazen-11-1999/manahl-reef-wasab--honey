@@ -265,6 +265,8 @@
         /* محتوى التبويبات */
         .tab-content {
             padding: 20px 0;
+            max-width: 100%;
+            overflow-x: hidden;
         }
 
         /* ===== الإحصائيات ===== */
@@ -825,6 +827,102 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* ===== شبكات متجاوبة — لوحة التحكم على الجوال ===== */
+        .admin-tab-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            min-width: 0;
+            padding: 0 6px;
+            box-sizing: border-box;
+        }
+
+        .admin-grid-main-side {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .admin-grid-split {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .admin-grid-pair {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-grid-pair.tight {
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .admin-grid-templates {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-flex-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .admin-flex-actions > button {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .tabs-container {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        @media (max-width: 900px) {
+
+            .admin-grid-main-side,
+            .admin-grid-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .admin-grid-pair {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-grid-templates {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-flex-actions {
+                flex-direction: column;
+            }
+
+            .admin-flex-actions > button {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-dashboard .stats-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            body {
+                padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+            }
+        }
     </style>
 </head>
 
@@ -1075,7 +1173,7 @@
                     </div>
                     <div class="table-content" style="padding: 25px;">
                         <form id="addProductForm" onsubmit="addProductDirect(event)">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="admin-grid-split" style="margin-bottom: 20px;">
                                 <div>
                                     <label
                                         style="display: block; margin-bottom: 8px; color: var(--gold-primary); font-weight: 500;">📸
@@ -1149,7 +1247,7 @@
                                 </div>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                            <div class="admin-grid-pair">
                                 <div>
                                     <label
                                         style="display: block; margin-bottom: 8px; color: var(--gold-primary); font-weight: 500;">🌟
@@ -1701,7 +1799,7 @@
                     <h3 style="color: var(--gold-primary); margin-bottom: 20px; text-align: center;">
                         🔧 إعدادات النظام السريعة
                     </h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="admin-grid-split">
                         <div>
                             <div
                                 style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(212, 175, 55, 0.1); border-radius: 10px; margin-bottom: 10px;">
@@ -1740,7 +1838,7 @@
 
             <!-- التبويب: الصيدلية الطبيعية -->
             <div id="health-pharmacy" class="tab-content">
-                <div style="max-width: 1200px; margin: 0 auto;">
+                <div class="admin-tab-wrap">
                     <!-- الإحصائيات السريعة -->
                     <div class="stats-grid" style="margin-bottom: 30px;">
                         <div class="stat-card">
@@ -1766,7 +1864,7 @@
                     </div>
 
                     <!-- النموذج والبيانات -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                    <div class="admin-grid-split">
                         <!-- نموذج إضافة معلومة طبية -->
                         <div class="data-table">
                             <div class="table-header">
@@ -1787,8 +1885,7 @@
                                             placeholder="وصف تفصيلي للمعلومة الطبية..."></textarea>
                                     </div>
 
-                                    <div
-                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                                    <div class="admin-grid-pair tight">
                                         <div>
                                             <label class="form-label">الفئة الصحية *</label>
                                             <select id="healthInfoCategory" class="form-input" required>
@@ -2004,7 +2101,7 @@
 
             <!-- التبويب: هل تعلم -->
             <div id="did-you-know" class="tab-content">
-                <div style="max-width: 1200px; margin: 0 auto;">
+                <div class="admin-tab-wrap">
                     <!-- الإحصائيات السريعة -->
                     <div class="stats-grid" style="margin-bottom: 30px;">
                         <div class="stat-card">
@@ -2030,7 +2127,7 @@
                     </div>
 
                     <!-- المحتوى الرئيسي -->
-                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-bottom: 30px;">
+                    <div class="admin-grid-main-side">
                         <!-- نموذج إضافة معلومة -->
                         <div class="data-table">
                             <div class="table-header">
@@ -2053,8 +2150,7 @@
                                             0 / 300</div>
                                     </div>
 
-                                    <div
-                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                    <div class="admin-grid-pair">
                                         <div>
                                             <label
                                                 style="display: block; margin-bottom: 8px; color: var(--gold-primary); font-weight: 500;">الفئة</label>
@@ -2086,7 +2182,7 @@
                                             style="width: 100%; padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border-gold); color: var(--text-white); border-radius: 10px; font-size: 1rem; font-family: inherit;">
                                     </div>
 
-                                    <div style="display: flex; gap: 10px;">
+                                    <div class="admin-flex-actions">
                                         <button type="submit" class="btn-primary"
                                             style="flex: 1; padding: 15px 25px; background: linear-gradient(45deg, var(--gold-primary), var(--gold-light)); border: none; border-radius: 12px; color: var(--bg-primary); font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px;">
                                             <i class="fas fa-paper-plane"></i>
@@ -2164,7 +2260,7 @@
 
             <!-- التبويب: الشريط العلوي المتحرك -->
             <div id="site-banner" class="tab-content">
-                <div style="max-width: 800px; margin: 0 auto;">
+                <div class="admin-tab-wrap" style="max-width: 800px;">
                     <div class="data-table">
                         <div class="table-header">
                             <h3 class="table-title"><i class="fas fa-barcode"></i> إعدادات الشريط العلوي</h3>
@@ -2192,8 +2288,7 @@
                                     <input type="url" id="siteBannerLink" placeholder="https://..."
                                         style="width: 100%; padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border-gold); color: var(--text-white); border-radius: 10px; font-size: 1rem;">
                                 </div>
-                                <div
-                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div class="admin-grid-pair">
                                     <div>
                                         <label
                                             style="display: block; margin-bottom: 8px; color: var(--gold-primary); font-weight: 500;">الحالة</label>
@@ -2231,7 +2326,7 @@
 
             <!-- التبويب: الإشعارات -->
             <div id="notifications" class="tab-content">
-                <div style="max-width: 1200px; margin: 0 auto;">
+                <div class="admin-tab-wrap">
                     <!-- الإحصائيات السريعة -->
                     <div class="stats-grid fade-in" style="margin-bottom: 30px;">
                         <div class="stat-card">
@@ -2257,7 +2352,7 @@
                     </div>
 
                     <!-- المحتوى الرئيسي -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px;">
+                    <div class="admin-grid-split" style="gap: 25px;">
                         <!-- نموذج إرسال الإشعار -->
                         <div class="data-table fade-in">
                             <div class="table-header">
@@ -2280,8 +2375,7 @@
                                             id="notificationCharCount">0 / 200</div>
                                     </div>
 
-                                    <div
-                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                    <div class="admin-grid-pair">
                                         <div>
                                             <label class="form-label">نوع الإشعار</label>
                                             <select class="form-input" id="notificationType">
@@ -2306,8 +2400,7 @@
                                         </div>
                                     </div>
 
-                                    <div
-                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                    <div class="admin-grid-pair">
                                         <div>
                                             <label class="form-label">وقت الإرسال</label>
                                             <select class="form-input" id="sendTime">
@@ -2339,8 +2432,7 @@
                                 <h3 class="table-title"><i class="fas fa-file-alt"></i> قوالب سريعة</h3>
                             </div>
                             <div class="table-content" style="padding: 25px;">
-                                <div
-                                    style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                                <div class="admin-grid-templates">
                                     <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-gold); border-radius: 10px; padding: 15px; cursor: pointer; transition: all 0.3s ease; text-align: center;"
                                         onclick="useNotificationTemplate('promo')"
                                         onmouseover="this.style.borderColor='var(--gold-primary)'; this.style.transform='translateY(-3px)'"
@@ -2681,35 +2773,6 @@
             }
         }
 
-        // دوال الإعدادات
-        function backupData() {
-            switchTab('backup');
-        }
-
-        function clearCache() {
-            if (confirm('هل أنت متأكد من مسح التخزين المؤقت؟')) {
-                localStorage.clear();
-                sessionStorage.clear();
-                showNotification('تم مسح التخزين المؤقت بنجاح!', 'success');
-            }
-        }
-
-        function exportData() {
-            showNotification('جاري تصدير البيانات...', 'info');
-            // هنا سيتم استدعاء الـ API لتصدير البيانات
-            setTimeout(() => {
-                showNotification('تم تصدير البيانات بنجاح!', 'success');
-            }, 2000);
-        }
-
-        function systemStatus() {
-            showNotification('جاري فحص حالة النظام...', 'info');
-            // هنا سيتم استدعاء الـ API لفحص النظام
-            setTimeout(() => {
-                showNotification('النظام يعمل بشكل ممتاز!', 'success');
-            }, 2000);
-        }
-
         // نظام التبويبات
         function switchTab(tabId) {
             // إخفاء جميع التبويبات
@@ -2841,6 +2904,7 @@
                 'health-pharmacy': 'الصيدلية الطبيعية',
                 'notifications': 'الإشعارات',
                 'site-banner': 'الشريط العلوي',
+                'backup': 'النسخ الاحتياطي',
                 'settings': 'الإعدادات'
             };
             return tabNames[tabId] || tabId;
@@ -3723,51 +3787,6 @@
             if (publishedEl) publishedEl.textContent = published;
             if (draftEl) draftEl.textContent = drafts;
             if (viewsEl) viewsEl.textContent = '0'; // يمكن إضافة نظام المشاهدات لاحقاً
-        }
-
-        // تحميل قائمة "هل تعلم" عند فتح التبويب
-        function switchTab(tabId) {
-            // إخفاء جميع التبويبات
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-
-            // إزالة active من جميع الأزرار
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // إظهار التبويب المحدد
-            const selectedTab = document.getElementById(tabId);
-            if (selectedTab) {
-                selectedTab.classList.add('active');
-            }
-
-            // إضافة active للزر المحدد (يعمل عند النقر أو عند الاستدعاء البرمجي بدون event)
-            let selectedBtn = null;
-            if (typeof event !== 'undefined' && event && event.target && typeof event.target.closest === 'function') {
-                selectedBtn = event.target.closest('.tab-btn');
-            }
-            if (!selectedBtn) {
-                selectedBtn = document.querySelector(`[onclick="switchTab('${tabId}')"]`) || document.getElementById(tabId + 'Tab');
-            }
-            if (selectedBtn) {
-                selectedBtn.classList.add('active');
-            }
-
-            // تحميل البيانات عند فتح تبويب "هل تعلم"
-            if (tabId === 'did-you-know') {
-                loadDidYouKnowList();
-            }
-
-            if (tabId === 'site-banner') {
-                loadSiteBanner();
-            }
-
-            // حفظ التبويب النشط في LocalStorage
-            localStorage.setItem('activeTab', tabId);
-
-            showNotification(`تم التبديل إلى ${getTabName(tabId)}`);
         }
 
         // ===== حماية لوحة التحكم - فقط المالك =====

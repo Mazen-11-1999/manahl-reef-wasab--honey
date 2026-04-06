@@ -461,881 +461,882 @@
         .notification-stats span {
             display: flex;
             align-items: center;
+        }
 
-            /* تصميم حاوية الشارات الحالية */
-            .current-badge-container {
-                margin: 12px 0;
-                padding: 8px;
-                background: rgba(212, 175, 55, 0.05);
-                border-radius: 8px;
-                border: 1px solid rgba(212, 175, 55, 0.1);
-            }
+        /* تصميم حاوية الشارات الحالية */
+        .current-badge-container {
+            margin: 12px 0;
+            padding: 8px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
 
-            .current-badge {
-                position: relative;
-                display: inline-flex;
-                align-items: center;
-                padding: 8px 20px;
-                border-radius: 6px;
-                border: 1px solid #8a6d3b;
-                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-                overflow: hidden;
-                cursor: default;
-                user-select: none;
-                font-size: 14px;
-                font-weight: 800;
-                letter-spacing: 0.5px;
-                text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.3);
-                white-space: nowrap;
-                margin: 4px 0;
-            }
+        .current-badge {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: 1px solid #8a6d3b;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            cursor: default;
+            user-select: none;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.3);
+            white-space: nowrap;
+            margin: 4px 0;
+        }
 
-            .premium-badge-display {
-                background: linear-gradient(135deg,
-                        #a67c00 0%,
-                        #ffbf00 25%,
-                        #ffdc73 50%,
-                        #ffbf00 75%,
-                        #a67c00 100%);
-                color: #4a3701;
-            }
+        .premium-badge-display {
+            background: linear-gradient(135deg,
+                    #a67c00 0%,
+                    #ffbf00 25%,
+                    #ffdc73 50%,
+                    #ffbf00 75%,
+                    #a67c00 100%);
+            color: #4a3701;
+        }
 
-            .vip-badge.vip {
-                background: linear-gradient(135deg, #4a3701 0%, #8a6d3b 25%, #d4af37 50%, #8a6d3b 75%, #4a3701 100%);
-                color: #fff;
-                position: relative;
-                overflow: hidden;
-            }
+        .vip-badge.vip {
+            background: linear-gradient(135deg, #4a3701 0%, #8a6d3b 25%, #d4af37 50%, #8a6d3b 75%, #4a3701 100%);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
 
-            .vip-badge.owner {
-                background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%);
-                border: 1px solid rgba(166, 124, 0, 0.8);
-                color: #3e2e01;
-                position: relative;
-                overflow: hidden;
-                clip-path: polygon(0% 10%, 50% 0%, 100% 10%, 100% 85%, 50% 100%, 0% 85%);
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 2px 3px rgba(255, 255, 255, 0.6), inset 0 -2px 3px rgba(0, 0, 0, 0.3);
-            }
+        .vip-badge.owner {
+            background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 20%, #b38728 40%, #fbf5b7 60%, #aa771c 80%, #bf953f 100%);
+            border: 1px solid rgba(166, 124, 0, 0.8);
+            color: #3e2e01;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0% 10%, 50% 0%, 100% 10%, 100% 85%, 50% 100%, 0% 85%);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 2px 3px rgba(255, 255, 255, 0.6), inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+        }
 
-            .vip-badge.owner::before {
-                content: '';
-                position: absolute;
-                top: 0;
+        .vip-badge.owner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8) 50%, transparent 100%);
+            transform: skewX(-25deg);
+            animation: ownerShine 4s infinite ease-in-out;
+        }
+
+        @keyframes ownerShine {
+            0% {
                 left: -150%;
-                width: 60%;
-                height: 100%;
-                background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8) 50%, transparent 100%);
-                transform: skewX(-25deg);
-                animation: ownerShine 4s infinite ease-in-out;
             }
 
-            @keyframes ownerShine {
-                0% {
-                    left: -150%;
-                }
-
-                20% {
-                    left: 150%;
-                }
-
-                100% {
-                    left: 150%;
-                }
+            20% {
+                left: 150%;
             }
 
-            .vip-badge.vip::before {
-                content: '';
-                position: absolute;
-                top: 0;
+            100% {
+                left: 150%;
+            }
+        }
+
+        .vip-badge.vip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-30deg);
+            animation: vipShine 3s infinite;
+        }
+
+        @keyframes vipShine {
+            0% {
                 left: -150%;
-                width: 50%;
-                height: 100%;
-                background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
-                transform: skewX(-30deg);
-                animation: vipShine 3s infinite;
             }
 
-            @keyframes vipShine {
-                0% {
-                    left: -150%;
-                }
-
-                50% {
-                    left: 150%;
-                }
-
-                100% {
-                    left: 150%;
-                }
+            50% {
+                left: 150%;
             }
 
-            /* تصميم شارة VIP الماسية */
-            .vip-diamond-badge {
-                position: relative;
-                display: inline-flex;
-                align-items: center;
-                padding: 12px 35px;
-                background: linear-gradient(135deg, #a67c00 0%, #bf953f 25%, #fcf6ba 50%, #bf953f 75%, #a67c00 100%);
-                border-radius: 8px;
-                border: 2px solid #8a6d3b;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.5);
-                overflow: hidden;
-                cursor: pointer;
-                transition: transform 0.3s ease;
-                font-size: 16px;
-                font-weight: 800;
-                white-space: nowrap;
-                margin: 4px 0;
+            100% {
+                left: 150%;
             }
+        }
 
-            .vip-diamond-badge:hover {
-                transform: scale(1.05) translateY(-3px);
-                box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
-            }
+        /* تصميم شارة VIP الماسية */
+        .vip-diamond-badge {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 35px;
+            background: linear-gradient(135deg, #a67c00 0%, #bf953f 25%, #fcf6ba 50%, #bf953f 75%, #a67c00 100%);
+            border-radius: 8px;
+            border: 2px solid #8a6d3b;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            font-size: 16px;
+            font-weight: 800;
+            white-space: nowrap;
+            margin: 4px 0;
+        }
 
-            .diamond-dust-bg {
-                position: absolute;
-                top: 2px;
-                left: 2px;
-                right: 2px;
-                bottom: 2px;
-                background-color: #1a1a1a;
-                background-image:
-                    radial-gradient(white, rgba(255, 255, 255, .2) 2px, transparent 3px),
-                    radial-gradient(white, rgba(255, 255, 255, .15) 1px, transparent 2px),
-                    radial-gradient(white, rgba(255, 255, 255, .1) 2px, transparent 3px),
-                    radial-gradient(white, rgba(255, 255, 255, .05) 2px, transparent 3px);
-                background-size: 20px 20px, 15px 15px, 30px 30px;
-                background-position: 0 0, 5px 10px, 15px 5px;
-                border-radius: 6px;
-                z-index: 1;
-            }
+        .vip-diamond-badge:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
+        }
 
-            .diamond-sparkle {
-                position: absolute;
-                top: 0;
-                left: -150%;
-                width: 50%;
-                height: 100%;
-                background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
-                transform: skewX(-30deg);
-                animation: diamondSparkle 2s infinite;
+        .diamond-dust-bg {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background-color: #1a1a1a;
+            background-image:
+                radial-gradient(white, rgba(255, 255, 255, .2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255, 255, 255, .15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255, 255, 255, .1) 2px, transparent 3px),
+                radial-gradient(white, rgba(255, 255, 255, .05) 2px, transparent 3px);
+            background-size: 20px 20px, 15px 15px, 30px 30px;
+            background-position: 0 0, 5px 10px, 15px 5px;
+            border-radius: 6px;
+            z-index: 1;
+        }
+
+        .diamond-sparkle {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
+            transform: skewX(-30deg);
+            animation: diamondSparkle 2s infinite;
+            opacity: 0;
+            z-index: 3;
+        }
+
+        @keyframes diamondSparkle {
+
+            0%,
+            100% {
                 opacity: 0;
-                z-index: 3;
             }
 
-            @keyframes diamondSparkle {
-
-                0%,
-                100% {
-                    opacity: 0;
-                }
-
-                50% {
-                    opacity: 1;
-                }
+            50% {
+                opacity: 1;
             }
+        }
 
-            /* تصميم شارة سلطان العسل */
-            .sultan-badge {
-                position: relative;
-                display: inline-flex;
-                align-items: center;
-                padding: 15px 40px;
-                background: linear-gradient(135deg, #8a6426 0%, #d4af37 25%, #fcf6ba 50%, #d4af37 75%, #8a6426 100%);
-                clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%, 0% 50%);
-                border: 2px solid #7a5a1e;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 2px 3px rgba(255, 255, 255, 0.6);
-                overflow: hidden;
-                cursor: pointer;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-                font-size: 18px;
-                font-weight: 900;
-                white-space: nowrap;
-                margin: 4px 0;
-            }
+        /* تصميم شارة سلطان العسل */
+        .sultan-badge {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #8a6426 0%, #d4af37 25%, #fcf6ba 50%, #d4af37 75%, #8a6426 100%);
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%, 0% 50%);
+            border: 2px solid #7a5a1e;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 2px 3px rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 18px;
+            font-weight: 900;
+            white-space: nowrap;
+            margin: 4px 0;
+        }
 
-            .sultan-badge:hover {
-                transform: scale(1.08) translateY(-3px) rotate(-1deg);
-                box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
-            }
+        .sultan-badge:hover {
+            transform: scale(1.08) translateY(-3px) rotate(-1deg);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+        }
 
-            .royal-black-bg {
-                position: absolute;
-                top: 2px;
-                left: 2px;
-                right: 2px;
-                bottom: 2px;
-                background-color: #0f0f0f;
-                border-radius: 6px;
-                z-index: 1;
-            }
+        .royal-black-bg {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background-color: #0f0f0f;
+            border-radius: 6px;
+            z-index: 1;
+        }
 
-            .sultan-content {
-                position: relative;
-                display: flex;
-                align-items: center;
-                z-index: 2;
-            }
+        .sultan-content {
+            position: relative;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+        }
 
-            .sultan-icon {
-                width: 30px;
-                height: 30px;
-                margin-left: 18px;
-                fill: #c0392b;
-                filter: drop-shadow(0 0 8px #e74c3c);
-            }
+        .sultan-icon {
+            width: 30px;
+            height: 30px;
+            margin-left: 18px;
+            fill: #c0392b;
+            filter: drop-shadow(0 0 8px #e74c3c);
+        }
 
-            .sultan-text {
-                background: linear-gradient(to bottom, #fcf6ba 0%, #bf953f 100%);
-                background-clip: text;
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                font-size: 22px;
-                font-weight: 900;
-                letter-spacing: 1.5px;
-                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-                white-space: nowrap;
-                line-height: 1;
-            }
+        .sultan-text {
+            background: linear-gradient(to bottom, #fcf6ba 0%, #bf953f 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            white-space: nowrap;
+            line-height: 1;
+        }
 
-            .halo-pulse {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 100%;
-                height: 100%;
-                background: rgba(212, 175, 55, 0.3);
-                border-radius: 10px;
-                z-index: 0;
+        .halo-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            z-index: 0;
+            transform: translate(-50%, -50%) scale(1);
+            animation: haloPulse 3s infinite;
+            opacity: 0;
+        }
+
+        @keyframes haloPulse {
+            0% {
                 transform: translate(-50%, -50%) scale(1);
-                animation: haloPulse 3s infinite;
                 opacity: 0;
             }
 
-            @keyframes haloPulse {
-                0% {
-                    transform: translate(-50%, -50%) scale(1);
-                    opacity: 0;
-                }
-
-                50% {
-                    transform: translate(-50%, -50%) scale(1.1);
-                    opacity: 0.6;
-                }
-
-                100% {
-                    transform: translate(-50%, -50%) scale(1.2);
-                    opacity: 0;
-                }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.6;
             }
 
-            .gold-glint {
-                position: absolute;
-                top: 0;
+            100% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .gold-glint {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.6), transparent);
+            transform: skewX(-30deg);
+            animation: goldGlintMove 6s infinite;
+            z-index: 3;
+        }
+
+        @keyframes goldGlintMove {
+            0% {
                 left: -150%;
-                width: 50%;
-                height: 100%;
-                background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.6), transparent);
-                transform: skewX(-30deg);
-                animation: goldGlintMove 6s infinite;
-                z-index: 3;
             }
 
-            @keyframes goldGlintMove {
-                0% {
-                    left: -150%;
-                }
-
-                15% {
-                    left: 150%;
-                }
-
-                100% {
-                    left: 150%;
-                }
+            15% {
+                left: 150%;
             }
 
-            .honey-friend-badge {
-                position: relative;
-                display: inline-flex;
-                align-items: center;
-                padding: 8px 30px;
-                background: linear-gradient(135deg,
-                        #8a6426 0%,
-                        #d4af37 20%,
-                        #f9e498 50%,
-                        #d4af37 80%,
-                        #8a6426 100%);
-                clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
-                border: none;
-                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
-                cursor: pointer;
-                transition: all 0.3s ease;
-                font-size: 14px;
-                font-weight: 900;
-                color: #2d2101;
-                text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.3);
-                white-space: nowrap;
+            100% {
+                left: 150%;
+            }
+        }
+
+        .honey-friend-badge {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 30px;
+            background: linear-gradient(135deg,
+                    #8a6426 0%,
+                    #d4af37 20%,
+                    #f9e498 50%,
+                    #d4af37 80%,
+                    #8a6426 100%);
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+            border: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 900;
+            color: #2d2101;
+            text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.3);
+            white-space: nowrap;
+        }
+
+        .honey-friend-badge:hover {
+            transform: scale(1.1) rotate(1deg);
+            filter: brightness(1.1);
+        }
+
+        .icon-holder {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .bee-svg {
+            width: 18px;
+            height: 18px;
+            fill: #b38728;
+        }
+
+        .glass-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* تصميم شارة عضو فعال */
+        .active-member-badge {
+            position: relative;
+            padding: 3px;
+            background: linear-gradient(90deg, #8a6426, #f9e498, #8a6426);
+            border-radius: 12px;
+            overflow: hidden;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .active-member-badge::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: conic-gradient(#f9e498, transparent, transparent, #f9e498);
+            animation: rotateBorder 4s linear infinite;
+        }
+
+        .active-member-inner {
+            position: relative;
+            background: #1a1a1a;
+            padding: 8px 25px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .active-member-text {
+            background: linear-gradient(to bottom, #fcf6ba 0%, #bf953f 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 16px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .active-icon {
+            width: 22px;
+            height: 22px;
+            margin-left: 12px;
+            fill: #f9e498;
+            filter: drop-shadow(0 0 5px #d4af37);
+        }
+
+        .text-shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.5s;
+            animation: textGlow 3s infinite;
+        }
+
+        @keyframes rotateBorder {
+            from {
+                transform: rotate(0deg);
             }
 
-            .honey-friend-badge:hover {
-                transform: scale(1.1) rotate(1deg);
-                filter: brightness(1.1);
+            to {
+                transform: rotate(360deg);
             }
+        }
 
-            .icon-holder {
-                background: rgba(255, 255, 255, 0.9);
-                border-radius: 50%;
-                width: 28px;
-                height: 28px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-left: 15px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            }
-
-            .bee-svg {
-                width: 18px;
-                height: 18px;
-                fill: #b38728;
-            }
-
-            .glass-top {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 50%;
-                background: rgba(255, 255, 255, 0.15);
-            }
-
-            /* تصميم شارة عضو فعال */
-            .active-member-badge {
-                position: relative;
-                padding: 3px;
-                background: linear-gradient(90deg, #8a6426, #f9e498, #8a6426);
-                border-radius: 12px;
-                overflow: hidden;
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 14px;
-                font-weight: 900;
-                white-space: nowrap;
-            }
-
-            .active-member-badge::before {
-                content: '';
-                position: absolute;
-                width: 150%;
-                height: 150%;
-                background: conic-gradient(#f9e498, transparent, transparent, #f9e498);
-                animation: rotateBorder 4s linear infinite;
-            }
-
-            .active-member-inner {
-                position: relative;
-                background: #1a1a1a;
-                padding: 8px 25px;
-                border-radius: 10px;
-                display: flex;
-                align-items: center;
-                z-index: 2;
-            }
-
-            .active-member-text {
-                background: linear-gradient(to bottom, #fcf6ba 0%, #bf953f 100%);
-                background-clip: text;
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                font-size: 16px;
-                font-weight: 900;
-                white-space: nowrap;
-            }
-
-            .active-icon {
-                width: 22px;
-                height: 22px;
-                margin-left: 12px;
-                fill: #f9e498;
-                filter: drop-shadow(0 0 5px #d4af37);
-            }
-
-            .text-shine {
-                position: absolute;
-                top: 0;
+        @keyframes textGlow {
+            0% {
                 left: -100%;
-                width: 50%;
-                height: 100%;
-                background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-                transition: all 0.5s;
-                animation: textGlow 3s infinite;
             }
 
-            @keyframes rotateBorder {
-                from {
-                    transform: rotate(0deg);
-                }
-
-                to {
-                    transform: rotate(360deg);
-                }
+            50% {
+                left: 100%;
             }
 
-            @keyframes textGlow {
-                0% {
-                    left: -100%;
-                }
+            100% {
+                left: 100%;
+            }
+        }
 
-                50% {
-                    left: 100%;
-                }
+        /* تصميم شارة شريك موثوق */
+        .trusted-partner-wrapper {
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-                100% {
-                    left: 100%;
-                }
+        .trusted-partner-wrapper::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            background: rgba(212, 175, 55, 0.4);
+            z-index: -1;
+            animation: pulse-gold 2s infinite;
+        }
+
+        .partner-badge {
+            position: relative;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 2px solid #d4af37;
+            padding: 10px 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+            font-size: 14px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .shield-icon {
+            width: 24px;
+            height: 24px;
+            margin-left: 15px;
+            fill: #f9e498;
+            filter: drop-shadow(0 0 3px #bf953f);
+        }
+
+        .partner-text {
+            color: #f9e498;
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            white-space: nowrap;
+        }
+
+        .fast-glint {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.6), transparent);
+            transform: skewX(-20deg);
+            animation: move-glint 3.5s infinite linear;
+        }
+
+        @keyframes pulse-gold {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
             }
 
-            /* تصميم شارة شريك موثوق */
-            .trusted-partner-wrapper {
-                position: relative;
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
+            70% {
+                transform: scale(1.15);
+                opacity: 0;
             }
 
-            .trusted-partner-wrapper::after {
-                content: '';
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                border-radius: 8px;
-                background: rgba(212, 175, 55, 0.4);
-                z-index: -1;
-                animation: pulse-gold 2s infinite;
+            100% {
+                transform: scale(1);
+                opacity: 0;
             }
+        }
 
-            .partner-badge {
-                position: relative;
-                background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-                border: 2px solid #d4af37;
-                padding: 10px 28px;
-                border-radius: 6px;
-                display: flex;
-                align-items: center;
-                overflow: hidden;
-                box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-                font-size: 14px;
-                font-weight: 900;
-                white-space: nowrap;
-            }
-
-            .shield-icon {
-                width: 24px;
-                height: 24px;
-                margin-left: 15px;
-                fill: #f9e498;
-                filter: drop-shadow(0 0 3px #bf953f);
-            }
-
-            .partner-text {
-                color: #f9e498;
-                font-size: 16px;
-                font-weight: 900;
-                letter-spacing: 0.5px;
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-                white-space: nowrap;
-            }
-
-            .fast-glint {
-                position: absolute;
-                top: 0;
+        @keyframes move-glint {
+            0% {
                 left: -150%;
-                width: 30%;
-                height: 100%;
-                background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.6), transparent);
-                transform: skewX(-20deg);
-                animation: move-glint 3.5s infinite linear;
             }
 
-            @keyframes pulse-gold {
-                0% {
-                    transform: scale(1);
-                    opacity: 0.7;
-                }
-
-                70% {
-                    transform: scale(1.15);
-                    opacity: 0;
-                }
-
-                100% {
-                    transform: scale(1);
-                    opacity: 0;
-                }
+            20% {
+                left: 150%;
             }
 
-            @keyframes move-glint {
-                0% {
-                    left: -150%;
-                }
+            100% {
+                left: 150%;
+            }
+        }
 
-                20% {
-                    left: 150%;
-                }
+        .partner-badge:hover {
+            border-color: #fcf6ba;
+            transform: translateY(-2px);
+            transition: 0.3s;
+        }
 
-                100% {
-                    left: 150%;
-                }
+        /* تصميم شارة عميل جديد */
+        .new-client-badge {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 24px;
+            background: linear-gradient(135deg, #bdc3c7 0%, #ecf0f1 50%, #bdc3c7 100%);
+            border-radius: 50px;
+            border: 1px solid #95a5a6;
+            box-shadow: 0 3px 12px rgba(255, 255, 255, 0.15);
+            overflow: hidden;
+            cursor: default;
+            font-size: 16px;
+            font-weight: 800;
+            white-space: nowrap;
+            margin: 4px 0;
+        }
+
+        .new-icon {
+            width: 20px;
+            height: 20px;
+            margin-left: 12px;
+            fill: #2c3e50;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .new-text {
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .twinkle {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+            opacity: 0;
+            animation: twinkle-move 4s infinite;
+        }
+
+        @keyframes twinkle-move {
+            0% {
+                left: -100%;
+                opacity: 0;
             }
 
-            .partner-badge:hover {
-                border-color: #fcf6ba;
+            50% {
+                left: 0%;
+                opacity: 0.5;
+            }
+
+            100% {
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
                 transform: translateY(-2px);
-                transition: 0.3s;
+            }
+        }
+
+        /* تصميم اقتراحات الترقية */
+        .upgrade-suggestion {
+            background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
+            color: var(--bg-primary);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 8px;
+            text-align: center;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upgrade-suggestion:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.8;
             }
 
-            /* تصميم شارة عميل جديد */
-            .new-client-badge {
-                position: relative;
-                display: inline-flex;
-                align-items: center;
-                padding: 8px 24px;
-                background: linear-gradient(135deg, #bdc3c7 0%, #ecf0f1 50%, #bdc3c7 100%);
-                border-radius: 50px;
-                border: 1px solid #95a5a6;
-                box-shadow: 0 3px 12px rgba(255, 255, 255, 0.15);
-                overflow: hidden;
-                cursor: default;
-                font-size: 16px;
-                font-weight: 800;
-                white-space: nowrap;
-                margin: 4px 0;
+            50% {
+                opacity: 1;
             }
+        }
 
-            .new-icon {
-                width: 20px;
-                height: 20px;
-                margin-left: 12px;
-                fill: #2c3e50;
-                animation: bounce 2s infinite ease-in-out;
-            }
+        /* تأثير اللمعان المتحرك */
+        .current-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.7) 50%,
+                    transparent 100%);
+            transform: skewX(-30deg);
+            animation: shine 3.5s infinite;
+        }
 
-            .new-text {
-                color: #2c3e50;
-                font-size: 16px;
-                font-weight: 800;
-                white-space: nowrap;
-            }
-
-            .twinkle {
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
-                opacity: 0;
-                animation: twinkle-move 4s infinite;
-            }
-
-            @keyframes twinkle-move {
-                0% {
-                    left: -100%;
-                    opacity: 0;
-                }
-
-                50% {
-                    left: 0%;
-                    opacity: 0.5;
-                }
-
-                100% {
-                    left: 100%;
-                    opacity: 0;
-                }
-            }
-
-            @keyframes bounce {
-
-                0%,
-                100% {
-                    transform: translateY(0);
-                }
-
-                50% {
-                    transform: translateY(-2px);
-                }
-            }
-
-            /* تصميم اقتراحات الترقية */
-            .upgrade-suggestion {
-                background: linear-gradient(45deg, var(--gold-primary), var(--gold-light));
-                color: var(--bg-primary);
-                padding: 6px 12px;
-                border-radius: 15px;
-                font-size: 0.75rem;
-                font-weight: bold;
-                margin-top: 8px;
-                text-align: center;
-                animation: pulse 2s infinite;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .upgrade-suggestion:hover {
-                transform: scale(1.05);
-                box-shadow: 0 5px 15px var(--shadow-gold);
-            }
-
-            @keyframes pulse {
-
-                0%,
-                100% {
-                    opacity: 0.8;
-                }
-
-                50% {
-                    opacity: 1;
-                }
-            }
-
-            /* تأثير اللمعان المتحرك */
-            .current-badge::before {
-                content: '';
-                position: absolute;
-                top: 0;
+        @keyframes shine {
+            0% {
                 left: -150%;
-                width: 50%;
-                height: 100%;
-                background: linear-gradient(to right,
-                        transparent 0%,
-                        rgba(255, 255, 255, 0.7) 50%,
-                        transparent 100%);
-                transform: skewX(-30deg);
-                animation: shine 3.5s infinite;
             }
 
-            @keyframes shine {
-                0% {
-                    left: -150%;
-                }
-
-                20% {
-                    left: 150%;
-                }
-
-                100% {
-                    left: 150%;
-                }
+            20% {
+                left: 150%;
             }
 
-            /* نافذة اختيار الشارات */
-            .badge-modal {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.8);
-                z-index: 1000;
-                justify-content: center;
-                align-items: center;
+            100% {
+                left: 150%;
+            }
+        }
+
+        /* نافذة اختيار الشارات */
+        .badge-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .badge-modal-content {
+            background: var(--bg-card);
+            border: 2px solid var(--gold-primary);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .badge-modal-title {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .badge-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .badge-option {
+            padding: 10px;
+            border: 1px solid var(--border-gold);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+        }
+
+        .badge-option:hover {
+            border-color: var(--gold-primary);
+            background: var(--bg-accent);
+            color: var(--text-primary);
+        }
+
+        .badge-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .badge-modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .badge-modal-btn.primary {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+        }
+
+        .badge-modal-btn.secondary {
+            background: var(--bg-accent);
+            color: var(--text-secondary);
+        }
+
+        .badge-option.selected {
+            border-color: var(--gold-primary);
+            background: var(--bg-accent);
+            color: var(--text-primary);
+        }
+
+        .floating-badge {
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 20px var(--shadow-gold);
+            z-index: 50;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
             }
 
-            .badge-modal-content {
-                background: var(--bg-card);
-                border: 2px solid var(--gold-primary);
-                border-radius: 15px;
-                padding: 30px;
-                max-width: 400px;
-                width: 90%;
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filter-tabs {
+                flex-wrap: wrap;
+            }
+
+            .filter-tab {
+                min-width: calc(50% - 5px);
+            }
+
+            .notifications-header {
+                flex-direction: column;
+                gap: 15px;
                 text-align: center;
             }
 
-            .badge-modal-title {
-                color: var(--gold-primary);
-                font-size: 1.2rem;
-                margin-bottom: 20px;
-            }
-
-            .badge-options {
-                display: flex;
-                flex-direction: column;
+            .notification-content {
                 gap: 10px;
-                margin-bottom: 20px;
             }
 
-            .badge-option {
-                padding: 10px;
-                border: 1px solid var(--border-gold);
-                border-radius: 8px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                background: var(--bg-primary);
-                color: var(--text-secondary);
+            .notification-icon {
+                font-size: 1.5rem;
+                min-width: 40px;
             }
 
-            .badge-option:hover {
-                border-color: var(--gold-primary);
-                background: var(--bg-accent);
-                color: var(--text-primary);
+            .notification-title {
+                font-size: 1rem;
             }
 
-            .badge-modal-actions {
-                display: flex;
-                gap: 10px;
-                justify-content: center;
-            }
-
-            .badge-modal-btn {
-                padding: 10px 20px;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: bold;
-                transition: all 0.3s ease;
-            }
-
-            .badge-modal-btn.primary {
-                background: var(--gold-primary);
-                color: var(--bg-primary);
-            }
-
-            .badge-modal-btn.secondary {
-                background: var(--bg-accent);
-                color: var(--text-secondary);
-            }
-
-            .badge-option.selected {
-                border-color: var(--gold-primary);
-                background: var(--bg-accent);
-                color: var(--text-primary);
+            .notification-message {
+                font-size: 0.85rem;
             }
 
             .floating-badge {
-                font-weight: bold;
-                font-size: 0.9rem;
-                box-shadow: 0 5px 20px var(--shadow-gold);
-                z-index: 50;
-                animation: slideIn 0.5s ease-out;
+                top: auto;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-bar {
+                grid-template-columns: 1fr;
             }
 
-            @keyframes slideIn {
-                from {
-                    transform: translateX(-100%);
-                    opacity: 0;
-                }
-
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
+            .filter-tab {
+                min-width: 100%;
             }
 
-            @media (max-width: 768px) {
-                .container {
-                    padding: 15px 10px;
-                }
-
-                .stats-bar {
-                    grid-template-columns: repeat(2, 1fr);
-                }
-
-                .filter-tabs {
-                    flex-wrap: wrap;
-                }
-
-                .filter-tab {
-                    min-width: calc(50% - 5px);
-                }
-
-                .notifications-header {
-                    flex-direction: column;
-                    gap: 15px;
-                    text-align: center;
-                }
-
-                .notification-content {
-                    gap: 10px;
-                }
-
-                .notification-icon {
-                    font-size: 1.5rem;
-                    min-width: 40px;
-                }
-
-                .notification-title {
-                    font-size: 1rem;
-                }
-
-                .notification-message {
-                    font-size: 0.85rem;
-                }
-
-                .floating-badge {
-                    top: auto;
-                    bottom: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                }
+            .notification-meta {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
             }
 
-            @media (max-width: 480px) {
-                .stats-bar {
-                    grid-template-columns: 1fr;
-                }
+            .notification-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
 
-                .filter-tab {
-                    min-width: 100%;
-                }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
 
-                .notification-meta {
-                    flex-direction: column;
-                    gap: 10px;
-                    align-items: flex-start;
-                }
-
-                .notification-actions {
-                    width: 100%;
-                    justify-content: space-between;
-                }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
 
-            .fade-in {
-                animation: fadeIn 0.6s ease-out;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
             }
 
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
+            to {
+                transform: translateY(0);
+                opacity: 1;
             }
-
-            .slide-up {
-                animation: slideUp 0.5s ease-out;
-            }
-
-            @keyframes slideUp {
-                from {
-                    transform: translateY(50px);
-                    opacity: 0;
-                }
-
-                to {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
-            }
+        }
     </style>
 </head>
 
@@ -1444,9 +1445,9 @@
 
                 // تحديث الإحصائيات
                 const total = users.length;
-                const active = users.filter(u => u.status === 'active').length;
-                const vip = users.filter(u => u.isVIP).length;
-                const agents = users.filter(u => u.role === 'agent').length;
+                const active = users.filter(u => u.isActive !== false).length;
+                const vip = users.filter(u => u.user && u.user.badgeType === 'vip').length;
+                const agents = users.filter(u => u.user && u.user.role === 'agent').length;
 
                 document.getElementById('totalCount').textContent = total;
                 document.getElementById('activeCount').textContent = active;
@@ -1476,23 +1477,24 @@
             }
 
             list.innerHTML = users.map(user => {
+                const badgeType = (user.user && user.user.badgeType) ? user.user.badgeType : 'none';
                 const name = user.profile?.firstName && user.profile?.lastName
                     ? `${user.profile.firstName} ${user.profile.lastName}`
-                    : user.username || user.email || 'مستخدم';
+                    : (user.user && user.user.username) || user.username || user.email || 'مستخدم';
                 const phone = user.profile?.phone || user.phone || 'غير متوفر';
                 const orderCount = user.orderCount || 0;
-                const totalSpent = user.totalSpent || 0;
+                const totalSpent = user.totalSpent || user.loyalty?.totalSpent || user.stats?.totalSpent || 0;
 
                 // عرض الشارة الحالية
                 let currentBadge = '';
                 let upgradeSuggestion = '';
 
-                if (user.badgeType === 'vip') {
+                if (badgeType === 'vip') {
                     currentBadge = '<div class="current-badge vip-badge-display">👑 VIP مناحل ريف وصاب</div>';
-                } else if (user.badgeType === 'premium') {
+                } else if (badgeType === 'premium') {
                     currentBadge = '<div class="current-badge premium-badge-display">🍯 عميل مميز - ريف وصاب</div>';
                     upgradeSuggestion = '<div class="upgrade-suggestion">هل تريد ترقيته إلى صديق العسل؟</div>';
-                } else if (user.badgeType === 'honey-friend') {
+                } else if (badgeType === 'honey-friend') {
                     currentBadge = `<div class="honey-friend-badge">
                         <div class="glass-top"></div>
                         <div class="glint"></div>
@@ -1504,7 +1506,7 @@
                         <span>صديق العسل - لمناحل ريف وصاب</span>
                     </div>`;
                     upgradeSuggestion = '<div class="upgrade-suggestion">هل تريد ترقيته إلى عضو فعال؟</div>';
-                } else if (user.badgeType === 'active-member') {
+                } else if (badgeType === 'active-member') {
                     currentBadge = `<div class="active-member-badge">
                         <div class="active-member-inner">
                             <svg class="active-icon" viewBox="0 0 24 24">
@@ -1515,7 +1517,14 @@
                         </div>
                     </div>`;
                     upgradeSuggestion = '<div class="upgrade-suggestion">هل تريد ترقيته إلى شريك موثوق؟</div>';
-                } else if (user.badgeType === 'sultan') {
+                } else if (badgeType === 'trusted-partner') {
+                    currentBadge = `<div class="trusted-partner-wrapper">
+                        <div class="partner-badge">
+                            <span class="partner-text">شريك موثوق — مناحل ريف وصاب</span>
+                        </div>
+                    </div>`;
+                    upgradeSuggestion = '<div class="upgrade-suggestion">هل تريد ترقيته إلى سلطان العسل؟</div>';
+                } else if (badgeType === 'sultan') {
                     currentBadge = `<div class="trusted-partner-wrapper">
                         <div class="partner-badge">
                             <div class="fast-glint"></div>
@@ -1526,14 +1535,14 @@
                         </div>
                     </div>`;
                     upgradeSuggestion = '<div class="upgrade-suggestion">هل تريد ترقيته إلى VIP؟</div>';
-                } else if (user.badgeType === 'owner') {
+                } else if (badgeType === 'owner') {
                     currentBadge = `<div class="vip-badge owner">
                         <div class="shield-icon" viewBox="0 0 24 24">
                             <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V18H19V19Z" />
                         </div>
                         <span class="partner-text">الــمــالـك</span>
                     </div>`;
-                } else if (user.badgeType === 'new-client') {
+                } else if (badgeType === 'new-client') {
                     currentBadge = `<div class="new-client-badge">
                         <div class="twinkle"></div>
                         <svg class="new-icon" viewBox="0 0 24 24">
@@ -1576,7 +1585,7 @@
                             <button class="action-btn" onclick="viewUser('${user._id}')">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="action-btn" onclick="showBadgeOptions('${user._id}', '${name.replace(/'/g, "\\'")}', '${user.badgeType || 'none'}')">
+                            <button class="action-btn" onclick="showBadgeOptions('${user._id}', '${name.replace(/'/g, "\\'")}', '${badgeType}')">
                                 <i class="fas fa-crown"></i>
                             </button>
                         </div>

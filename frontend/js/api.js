@@ -706,10 +706,18 @@ const storiesAPI = {
         });
     },
     
-    addComment: async (id, text) => {
+    addComment: async (id, text, parentCommentId = null) => {
+        const body = { text };
+        if (parentCommentId) body.parentCommentId = parentCommentId;
         return await apiRequest(`/api/stories/${id}/comment`, {
             method: 'POST',
-            body: JSON.stringify({ text })
+            body: JSON.stringify(body)
+        });
+    },
+
+    toggleCommentLike: async (storyId, commentId) => {
+        return await apiRequest(`/api/stories/${storyId}/comment/${commentId}/like`, {
+            method: 'POST'
         });
     },
     

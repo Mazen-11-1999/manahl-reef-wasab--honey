@@ -5,6 +5,24 @@
 
 const mongoose = require('mongoose');
 
+const CommentLikeSchema = new mongoose.Schema(
+    {
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        customer: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Customer'
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    },
+    { _id: false }
+);
+
 const CommentSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -15,11 +33,20 @@ const CommentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Customer'
     },
+    /** رد على تعليق رئيسي فقط (لا رد على رد) */
+    parentComment: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null
+    },
     text: {
         type: String,
         required: [true, 'نص التعليق مطلوب'],
         trim: true,
         maxlength: [500, 'التعليق لا يمكن أن يكون أطول من 500 حرف']
+    },
+    likes: {
+        type: [CommentLikeSchema],
+        default: []
     },
     createdAt: {
         type: Date,
@@ -217,22 +244,67 @@ StorySchema.methods.removeLike = function(userId, customerId) {
     return this.save();
 };
 
-// Method to add comment
-StorySchema.methods.addComment = function(userId, customerId, text) {
-    this.comments.push({
+// Method to add comment (اختياري: رد على تعليق رئيسي)
+StorySchema.methods.addComment = function(userId, customerId, text, parentCommentId) {
+    const payload = {
         user: userId,
         customer: customerId,
-        text: text,
-        createdAt: new Date()
-    });
+        text: String(text).trim(),
+        createdAt: new Date(),
+        likes: []
+    };
+
+    if (parentCommentId) {
+        const parent = this.comments.id(parentCommentId);
+        if (!parent) {
+            return Promise.reject(new Error('التعليق الأصل غير موجود'));
+        }
+        if (parent.parentComment) {
+            return Promise.reject(new Error('يمكن الرد فقط على التعليق الرئيسي'));
+        }
+        payload.parentComment = parent._id;
+    }
+
+    this.comments.push(payload);
     return this.save();
 };
 
-// Method to remove comment
+/** تبديل إعجاب على تعليق */
+StorySchema.methods.toggleCommentLike = function(commentId, userId, customerId) {
+    const comment = this.comments.id(commentId);
+    if (!comment) {
+        return Promise.reject(new Error('التعليق غير موجود'));
+    }
+    if (!comment.likes) comment.likes = [];
+    const uid = userId && userId.toString();
+    const cid = customerId && customerId.toString();
+    const idx = comment.likes.findIndex((l) => {
+        if (uid && l.user && l.user.toString() === uid) return true;
+        if (cid && l.customer && l.customer.toString() === cid) return true;
+        return false;
+    });
+    if (idx >= 0) {
+        comment.likes.splice(idx, 1);
+    } else {
+        comment.likes.push({
+            user: userId,
+            customer: customerId || undefined,
+            createdAt: new Date()
+        });
+    }
+    return this.save();
+};
+
+// Method to remove comment (يحذف الردود المرتبطة)
 StorySchema.methods.removeComment = function(commentId) {
-    this.comments = this.comments.filter(comment => 
-        comment._id.toString() !== commentId.toString()
-    );
+    const idStr = commentId.toString();
+    const toRemove = new Set([idStr]);
+    this.comments.forEach((c) => {
+        if (c.parentComment && c.parentComment.toString() === idStr) {
+            toRemove.add(c._id.toString());
+        }
+    });
+    this.comments = this.comments.filter((c) => !toRemove.has(c._id.toString()));
     return this.save();
 };
 
@@ -252,11 +324,17 @@ StorySchema.statics.getActiveStories = function() {
             { expiresAt: null }
         ]
     })
-    .populate('createdBy', 'username')
+    .populate('createdBy', 'username badgeType role')
     .populate('likes.user', 'username')
     .populate('likes.customer', 'profile.firstName profile.lastName')
-    .populate('comments.user', 'username')
-    .populate('comments.customer', 'profile.firstName profile.lastName')
+    .populate({
+        path: 'comments',
+        populate: [
+            { path: 'user', select: 'username badgeType role' },
+            { path: 'customer', select: 'profile.firstName profile.lastName' },
+            { path: 'likes.user', select: 'username' }
+        ]
+    })
     .sort({ createdAt: -1 });
 };
 

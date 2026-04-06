@@ -8,8 +8,8 @@ const logger = require('../utils/logger');
 
 class AIAssistant {
     constructor() {
-        this.name = "مساعد ريف";
-        this.greeting = "مرحباً! أنا مساعد ريف، كيف يمكنني مساعدتك اليوم؟ 🍯";
+        this.name = 'مساعد مناحل ريف وصاب';
+        this.greeting = 'مرحباً! أنا مساعد مناحل ريف وصاب، كيف يمكنني مساعدتك اليوم؟ 🍯';
         this.conversationState = new Map();
         this.gameState = new Map();
         
@@ -142,6 +142,44 @@ class AIAssistant {
             if (userId) {
                 this.updateConversationState(userId, message);
             }
+
+            const chipReply = this.matchSuggestionChip(message);
+            if (chipReply) {
+                return chipReply;
+            }
+
+            if (this.isKnowMeQuestion(lowerMessage)) {
+                return this.getKnowMeResponse();
+            }
+
+            if (this.isHoneyBenefitsForAllConditionsRequest(lowerMessage)) {
+                return {
+                    success: true,
+                    message: this.getHoneyBenefitsOverviewMessage(),
+                    suggestions: [
+                        'عندي سعال جاف',
+                        'إرهاق وضعف',
+                        'مشاكل في الهضم',
+                        'صف حالتك لأقترح منتجاً من المتجر'
+                    ]
+                };
+            }
+
+            if (userId) {
+                const gs = this.gameState.get(userId);
+                if (gs && gs.currentGame === 'quiz' && this.shouldExitQuizForChat(message)) {
+                    this.gameState.delete(userId);
+                } else {
+                    const gs2 = this.gameState.get(userId);
+                    if (gs2 && gs2.currentGame) {
+                        const low = String(message).toLowerCase();
+                        if (gs2.currentGame === 'quiz' && (low === 'اختبار' || low === 'quiz' || low === 'اختبار جديد')) {
+                            return this.startQuizGame(userId);
+                        }
+                        return this.continueGame(message, userId);
+                    }
+                }
+            }
             
             // التحقق من نوع الاستفسار
             const inquiryType = this.detectInquiryType(lowerMessage);
@@ -160,6 +198,10 @@ class AIAssistant {
             
             if (inquiryType === 'general') {
                 return this.getGeneralResponse(message);
+            }
+
+            if (inquiryType === 'question') {
+                return this.getQuestionResponse(lowerMessage, message);
             }
             
             // التحقق من الاستفسارات المتقدمة
@@ -188,6 +230,63 @@ class AIAssistant {
                 suggestions: ['هل يمكنك توضيح حالتك أكثر؟', 'يمكنك التواصل معنا مباشرة للمساعدة']
             };
         }
+    }
+
+    /** إزالة أي شكل من أشكال الأكواد أو المقتطفات البرمجية من النص المعروض للمستخدم */
+    stripTechnicalContent(s) {
+        if (s == null || typeof s !== 'string') return s;
+        let t = s;
+        t = t.replace(/```[\w-]*\n?[\s\S]*?```/g, ' ');
+        t = t.replace(/`([^`\n]+)`/g, '$1');
+        t = t.replace(/\n{3,}/g, '\n\n');
+        return t.trim();
+    }
+
+    /** تنظيف عميق لكل السلاسل في استجابة الـ API (رسائل، اقتراحات، نصائح، أسماء منتجات إن لزم) */
+    sanitizeResponse(data) {
+        if (data == null) return data;
+        if (typeof data === 'string') return this.stripTechnicalContent(data);
+        if (Array.isArray(data)) {
+            return data.map((item) => this.sanitizeResponse(item));
+        }
+        if (typeof data !== 'object') return data;
+        const out = {};
+        for (const [k, v] of Object.entries(data)) {
+            out[k] = this.sanitizeResponse(v);
+        }
+        return out;
+    }
+
+    isKnowMeQuestion(lowerMessage) {
+        const t = String(lowerMessage || '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        if (t.length > 80) return false;
+        if (
+            /هل\s*تعرف(ني|يني)|هل\s*تعرفيني|^تعرفني$|^بتعرفني$|تعرف\s+عليّ|do you know me/i.test(
+                t
+            )
+        ) {
+            return true;
+        }
+        if ((t.includes('تعرفني') || t.includes('تعرفيني')) && t.length < 50) return true;
+        return false;
+    }
+
+    getKnowMeResponse() {
+        return {
+            success: true,
+            message:
+                'نعم — أنت ضيفنا العزيز في **مناحل ريف وصاب** 🍯\n\n' +
+                'نسعد بوجودك معنا، ونتمنى أن تستمتع بعسلنا الطبيعي. تفضّل بزيارة المتجر واختيار ما يناسبك وذوقك.\n\n' +
+                '✨ **هل تعلم؟** يمكنك أن تصبح **عضواً مميزاً** لدينا: عروض ومزايا خاصة للأعضاء. اسأل فريقنا عن التفاصيل، أو راجع صفحات العضوية والمتجر عند توفرها.',
+            suggestions: [
+                'أريد توصية عسل لحالتي',
+                'ما مزايا العضوية المميزة؟',
+                'عرض منتجات العسل',
+                'لعب لعبة'
+            ]
+        };
     }
 
     /**
@@ -389,11 +488,63 @@ class AIAssistant {
         };
     }
 
+    /** بذرة عشوائية قابلة للتكرار (لخلط مختلف لكل مستخدم/جلسة) */
+    mulberry32(seed) {
+        let a = seed >>> 0;
+        return function next() {
+            let t = (a += 0x6d2b79f5);
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+    }
+
+    hashString(s) {
+        let h = 2166136261;
+        const str = String(s);
+        for (let i = 0; i < str.length; i++) {
+            h ^= str.charCodeAt(i);
+            h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+    }
+
+    shuffleArray(arr, rng) {
+        const a = arr.slice();
+        const rand = typeof rng === 'function' ? rng : Math.random;
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(rand() * (i + 1));
+            const t = a[i];
+            a[i] = a[j];
+            a[j] = t;
+        }
+        return a;
+    }
+
     /**
-     * بدء لعبة الاختبار
+     * يعيد نسخة من السؤال بترتيب خيارات عشوائي ومؤشر الإجابة الصحيحة محدّث
      */
-    startQuizGame(userId) {
-        const questions = [
+    shuffleQuestionOptions(raw, rng) {
+        const n = raw.options.length;
+        const order = this.shuffleArray(
+            Array.from({ length: n }, (_, i) => i),
+            rng
+        );
+        const newOptions = order.map((i) => raw.options[i]);
+        const newCorrect = order.indexOf(raw.correct);
+        return {
+            question: raw.question,
+            options: newOptions,
+            correct: newCorrect,
+            explanation: raw.explanation
+        };
+    }
+
+    /**
+     * بنك أسئلة الاختبار — تُخلط ترتيب الأسئلة والخيارات في كل جلسة/إعادة
+     */
+    getQuizQuestions() {
+        return [
             {
                 question: 'أي نوع من العسل أفضل لعلاج السعال؟',
                 options: ['عسل السدر', 'عسل السمر', 'عسل الزهور'],
@@ -411,25 +562,445 @@ class AIAssistant {
                 options: ['عسل السمر', 'عسل الزهور', 'عسل السدر'],
                 correct: 1,
                 explanation: 'عسل الزهور ممتاز للهضم وصحة المعدة'
+            },
+            {
+                question: 'أي عسل يُذكر غالباً لدعم المناعة والحيوية العامة؟',
+                options: ['عسل السمر فقط', 'عسل السدر', 'عسل صناعي'],
+                correct: 1,
+                explanation: 'عسل السدر شائع كخيار غني ومذكور في السياقات التقليدية للتغذية العامة.'
+            },
+            {
+                question: 'للاسترخاء وتهدئة الحلق مع مشروب دافئ، ما الخيار الأنسب غالباً؟',
+                options: ['عسل بارد مباشرة من الثلاجة', 'عسل طبيعي معتدل مع ماء دافئ', 'تجنب العسل تماماً'],
+                correct: 1,
+                explanation: 'العسل الطبيعي مع سوائل دافئة يُستخدم تقليدياً لراحة الحلق — باعتدال.'
+            },
+            {
+                question: 'كم يُنصح عادة بتخزين العسل الطبيعي في المنزل؟',
+                options: ['في مكان رطب وساخن', 'في مكان جاف وبارد بعيداً عن الشمس المباشرة', 'في الفريزر فقط'],
+                correct: 1,
+                explanation: 'البرودة المعتدلة والجفاف يحافظان على جودة العسل أطول فترة.'
+            },
+            {
+                question: 'ما الذي يميّز العسل الطبيعي غالباً عن المغشوش؟',
+                options: ['رائحة كيميائية قوية جداً دائماً', 'تنوع بسيط في الذوق واللزوجة حسب النبات والمنطقة', 'لون واحد مطابق لكل الدفعات دائماً'],
+                correct: 1,
+                explanation: 'العسل الطبيعي يختلف قليلاً بين المواسم والمناطق، بعكس المنتج الموحّد تماماً.'
+            },
+            {
+                question: 'متى يُفضّل استشارة مختص قبل الاعتماد على العسل كمساعد غذائي؟',
+                options: ['فقط عند السفر', 'عند الحمل أو الرضاعة أو مرض السكري أو حساسية معروفة', 'لا حاجة أبداً'],
+                correct: 1,
+                explanation: 'بعض الحالات تحتاج مراجعة مهنية قبل زيادة السكريات أو المنتجات الطبيعية.'
+            },
+            {
+                question: 'ما فائدة العسل مع الليمون الدافئ غالباً في الأعراض الخفيفة للحلق؟',
+                options: ['يزيد الجفاف دائماً', 'قد يساعد على الراحة الموضعية مع السوائل — باعتدال', 'يستبدل الدواء دائماً'],
+                correct: 1,
+                explanation: 'المشروبات الدافئة المعتدلة تُستخدم تقليدياً للراحة — وليست بديلاً عن العلاج عند الحاجة.'
+            },
+            {
+                question: 'أي عبارة تصف أفضل طريقة لاستخدام العسل مع الشاي؟',
+                options: ['إضافته للماء المغلي مباشرة فور الغليان', 'إضافته بعد تبريد المشروب قليلاً حتى لا تُفقد بعض الخصائص', 'يُمنع مع أي مشروب ساخن'],
+                correct: 1,
+                explanation: 'الحرارة الشديدة جداً قد تؤثر على بعض مكونات العسل؛ التبريد الخفيف أفضل غالباً.'
+            },
+            {
+                question: 'ما دور العسل في وصفات الطاقة التقليدية غالباً؟',
+                options: ['مصدر سكريات سريعة مع مذاق طبيعي — باعتدال', 'بديل بروتين كامل', 'خالي من السعرات'],
+                correct: 0,
+                explanation: 'العسل يمدّ بالطاقة السريعة ويُستخدم بحصص معتدلة ضمن نظام متوازن.'
             }
         ];
-        
-        const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-        
+    }
+
+    /**
+     * السؤال التالي: ترتيب مختلف في كل جولة، وبذرة تختلف بمستخدم الجلسة وعدد الإجابات
+     */
+    drawNextQuizQuestion(userId, previousQ) {
+        const state = this.gameState.get(userId);
+        const pool = this.getQuizQuestions();
+        const uidKey = userId != null ? userId : 'anon';
+
+        if (!state.quizDeck || !state.quizDeck.length) {
+            const quizSalt = (this.hashString(String(uidKey)) ^ (Date.now() >>> 0)) >>> 0;
+            state.quizSalt = quizSalt;
+            state.quizDeck = this.shuffleArray([...pool], this.mulberry32(quizSalt));
+            const cur = state.currentQuestion;
+            if (cur && cur.question) {
+                const idx = state.quizDeck.findIndex((r) => r.question === cur.question);
+                state.quizDeckPos = idx >= 0 ? idx : 0;
+            } else {
+                state.quizDeckPos = 0;
+            }
+        }
+
+        let deck = state.quizDeck;
+        const len = deck.length;
+
+        let pos = state.quizDeckPos + 1;
+        if (pos >= len) {
+            pos = 0;
+            const wrapSeed =
+                (state.quizSalt ^
+                    (state.questionsAnswered * 31) ^
+                    (Date.now() & 0xffffff) ^
+                    this.hashString(String(uidKey) + '-round')) >>>
+                0;
+            deck = this.shuffleArray([...pool], this.mulberry32(wrapSeed));
+            state.quizDeck = deck;
+        }
+        state.quizDeckPos = pos;
+
+        let raw = deck[pos];
+        let guard = 0;
+        while (len > 1 && raw.question === previousQ.question && guard < len) {
+            pos = (pos + 1) % len;
+            if (pos === 0) {
+                const wrapSeed =
+                    (state.quizSalt ^ state.questionsAnswered ^ 0x9e3779b9) >>> 0;
+                deck = this.shuffleArray([...pool], this.mulberry32(wrapSeed));
+                state.quizDeck = deck;
+            }
+            state.quizDeckPos = pos;
+            raw = deck[pos];
+            guard += 1;
+        }
+
+        const optSeed =
+            (state.quizSalt ^ pos ^ state.questionsAnswered * 7919 ^ this.hashString(String(uidKey))) >>> 0;
+        const out = this.shuffleQuestionOptions(raw, this.mulberry32(optSeed));
+        this.gameState.set(userId, state);
+        return out;
+    }
+
+    /**
+     * تشجيع مخصص حسب الأداء والخيار
+     */
+    buildQuizEncouragement(isCorrect, streak, chosenLabel, q, choiceIdx) {
+        const rightLabel = q.options[q.correct];
+        if (isCorrect) {
+            if (streak >= 5) {
+                return `🏆 أسطورة العسل! ${streak} إجابات صحيحة متتالية — أنت تتقن الموضوع فعلاً!`;
+            }
+            if (streak >= 3) {
+                return `⭐ ممتاز جداً! سلسلة ${streak} إجابات صحيحة — واصل!`;
+            }
+            if (streak === 2) {
+                return `🔥 أحسنت! إجابتان صحيحتان على التوالي — ذكاء وتركيز!`;
+            }
+            return `✅ أحسنت! اختيارك «${chosenLabel}» صحيح — أحسنت التمييز بين أنواع العسل.`;
+        }
+        if (choiceIdx < 0) {
+            return '💡 لم أتعرّف على إجابة واضحة. جرّب كتابة 1 أو 2 أو 3، أو انسخ اسم الخيار.';
+        }
+        return `💪 لا بأس — التعلم يأتي بالمحاولة! اخترت «${chosenLabel}» بينما الإجابة الأدق لهذا السؤال غالباً «${rightLabel}». في المرة القادمة ستكون أقرب!`;
+    }
+
+    /**
+     * بدء لعبة الاختبار
+     */
+    startQuizGame(userId) {
+        const uidKey = userId != null ? userId : 'anon';
+        const quizSalt = (this.hashString(String(uidKey)) ^ (Date.now() >>> 0)) >>> 0;
+        const deck = this.shuffleArray([...this.getQuizQuestions()], this.mulberry32(quizSalt));
+        const optSeed = (quizSalt ^ 0xa5a5a5a5) >>> 0;
+        const randomQuestion = this.shuffleQuestionOptions(deck[0], this.mulberry32(optSeed));
+
         this.gameState.set(userId, {
             currentGame: 'quiz',
             currentQuestion: randomQuestion,
+            quizDeck: deck,
+            quizDeckPos: 0,
+            quizSalt,
             score: 0,
-            questionsAnswered: 0
+            streak: 0,
+            correctCount: 0,
+            wrongCount: 0,
+            questionsAnswered: 0,
+            mode: 'quiz'
         });
-        
+
         return {
             success: true,
-            message: '🧠 **اختبار العسل**',
+            message: 'اختبار العسل',
             gameType: 'quiz',
             question: randomQuestion.question,
             options: randomQuestion.options,
-            suggestions: randomQuestion.options
+            suggestions: randomQuestion.options,
+            gameStats: { score: 0, streak: 0, correctCount: 0, label: 'بداية اللعب' }
+        };
+    }
+
+    /**
+     * متابعة لعبة الاختبار (اختيار إجابة)
+     */
+    continueGame(message, userId) {
+        const state = this.gameState.get(userId);
+        if (!state || !state.currentGame) {
+            return this.getGameMenu();
+        }
+        if (state.currentGame === 'quiz' || state.currentGame === 'challenge' || state.currentGame === 'collector') {
+            return this.continueQuizGame(message, userId);
+        }
+        this.gameState.delete(userId);
+        return this.getGameMenu();
+    }
+
+    /**
+     * الخروج من الاختبار عندما يصف المستخدم أعراضاً بدل الإجابة
+     */
+    shouldExitQuizForChat(message) {
+        const t = String(message).trim();
+        if (t.length < 8) return false;
+        if (/^[123١٢٣]\s*$/.test(t)) return false;
+        if (/عندي|لدي|أعاني|ألم |سعال|هضم|تعب|إرهاق|لا أنام|منذ |يومين|أسبوع|شهور|صف حالتي|توصية منتج/.test(t)) {
+            return true;
+        }
+        if (t.length > 55) return true;
+        return false;
+    }
+
+    continueQuizGame(message, userId) {
+        let state = this.gameState.get(userId);
+        const q = state && state.currentQuestion;
+        if (!q || !Array.isArray(q.options)) {
+            this.gameState.delete(userId);
+            return this.startQuizGame(userId);
+        }
+
+        const trimmed = String(message).trim();
+        let choice = -1;
+        const first = trimmed.charAt(0);
+        if (first === '1' || first === '١') choice = 0;
+        else if (first === '2' || first === '٢') choice = 1;
+        else if (first === '3' || first === '٣') choice = 2;
+
+        if (choice < 0) {
+            for (let i = 0; i < q.options.length; i++) {
+                if (trimmed.includes(q.options[i]) || q.options[i].includes(trimmed)) {
+                    choice = i;
+                    break;
+                }
+            }
+        }
+
+        const correctIdx = q.correct;
+        const isCorrect = choice >= 0 && choice === correctIdx;
+        const chosenLabel = choice >= 0 ? q.options[choice] : '';
+        const explain = q.explanation || '';
+
+        state.streak = state.streak || 0;
+        state.score = state.score || 0;
+        state.correctCount = state.correctCount || 0;
+        state.wrongCount = state.wrongCount || 0;
+        state.questionsAnswered = (state.questionsAnswered || 0) + 1;
+
+        const nextQ = this.drawNextQuizQuestion(userId, q);
+
+        if (isCorrect) {
+            state.streak += 1;
+            const bonus = Math.min(state.streak - 1, 6) * 5;
+            const points = 10 + bonus;
+            state.score += points;
+            state.correctCount += 1;
+            state.currentQuestion = nextQ;
+            this.gameState.set(userId, state);
+
+            const enc = this.buildQuizEncouragement(true, state.streak, chosenLabel, q, choice);
+            const celebrate = state.streak >= 2 || state.score >= 25;
+            const modeNote = state.mode === 'challenge' ? '\n\n🏆 وضع التحدي: كل إجابة صحيحة تقربك من لقب «خبير العسل»!' : '';
+
+            return {
+                success: true,
+                message:
+                    `${enc}${modeNote}\n\n+${points} نقطة — المجموع: **${state.score}** — سلسلة نجاح: **${state.streak}** 🔥\n\n📚 تذكير: ${explain}\n\n⬇️ سؤال جديد`,
+                gameType: 'quiz',
+                question: nextQ.question,
+                options: nextQ.options,
+                suggestions: nextQ.options.concat(['عندي سؤال عن حالتي', 'توقف عن الاختبار']),
+                gameStats: {
+                    score: state.score,
+                    streak: state.streak,
+                    correctCount: state.correctCount,
+                    lastResult: 'correct',
+                    label: `+${points} نقطة`
+                },
+                celebrate
+            };
+        }
+
+        state.streak = 0;
+        state.wrongCount += 1;
+        state.currentQuestion = nextQ;
+        this.gameState.set(userId, state);
+
+        const enc = this.buildQuizEncouragement(false, 0, chosenLabel || 'غير واضح', q, choice);
+        const gentle = state.wrongCount >= 2;
+
+        return {
+            success: true,
+            message:
+                `${enc}\n\n📚 ${explain}\n\nالمجموع ما زال: **${state.score}** نقطة — لا تيأس، السؤال التالي فرصة جديدة!\n\n⬇️ سؤال جديد`,
+            gameType: 'quiz',
+            question: nextQ.question,
+            options: nextQ.options,
+            suggestions: nextQ.options.concat(['مساعدتي في اختيار عسل', 'لعبة']),
+            gameStats: {
+                score: state.score,
+                streak: 0,
+                wrongCount: state.wrongCount,
+                lastResult: 'wrong',
+                label: 'حاول مجدداً'
+            },
+            celebrate: false,
+            gentleEncourage: gentle
+        };
+    }
+
+    startChallengeGame(userId) {
+        const base = this.startQuizGame(userId);
+        const st = this.gameState.get(userId);
+        if (st) {
+            st.mode = 'challenge';
+            st.streak = 0;
+            this.gameState.set(userId, st);
+        }
+        base.message = '🏆 **تحدي سريع!** جاوب بأسرع ما يمكن — النقاط والسلسلة تُحسب!\n\n' + base.message;
+        if (base.gameStats) base.gameStats.label = 'تحدي';
+        return base;
+    }
+
+    startHoneyCollectorGame(userId) {
+        const base = this.startQuizGame(userId);
+        const st = this.gameState.get(userId);
+        if (st) {
+            st.mode = 'collector';
+            this.gameState.set(userId, st);
+        }
+        base.message = '🍯 **جامع العسل:** نفس أسئلة الاختبار مع تتبع نقاطك — اجمع أكبر عدد من الإجابات الصحيحة!\n\n' + base.message;
+        if (base.gameStats) base.gameStats.label = 'جامع العسل';
+        return base;
+    }
+
+    /**
+     * أزرار الإرشاد السريعة من واجهة المحادثة
+     */
+    matchSuggestionChip(message) {
+        const t = String(message).trim();
+        const n = t.toLowerCase();
+
+        if (/صف أعراضك|بالتفصيل/.test(n) && t.length < 120) {
+            return {
+                success: true,
+                message:
+                    'حسناً. اكتب باختصار: ماذا تشعر الآن، منذ متى، وهل تتناول أدوية أو لديك مرض مزمن؟\n\nمثال: «سعال جاف منذ أسبوع مع تعب خفيف».\n\nيمكنك أيضاً اختيار حالة من القائمة أعلى الصفحة ثم الضغط على «احصل على توصية».',
+                suggestions: ['عندي سعال جاف', 'إرهاق وضعف', 'مشاكل في الهضم', 'اختبار']
+            };
+        }
+
+        if (/اذكر المشكلة|المشكلة الرئيسية/.test(n) && t.length < 120) {
+            return {
+                success: true,
+                message:
+                    'ابدأ بجملة واحدة تصف أكثر ما يزعجك الآن، ثم أضف التفاصيل (الشدة، المدة، ما يخففها أو يزيدها).',
+                suggestions: ['صداع متكرر', 'ألم معدة بعد الأكل', 'لا أنام جيداً', 'لعب لعبة']
+            };
+        }
+
+        if (/اسأل عن منتج|منتج معين|سعر منتج/.test(n) && t.length < 120) {
+            return {
+                success: true,
+                message:
+                    'اكتب اسم المنتج أو نوع العسل (مثل: سدر، سمر، زهور، حبة سوداء). يمكنني توجيهك حسب ما هو متوفر في المتجر.',
+                suggestions: ['عسل السدر', 'عسل السمر', 'عسل الزهور', 'عندي سعال وأريد اقتراحاً']
+            };
+        }
+
+        if (/العودة للمساعدة|العودة للرئيسية/.test(n)) {
+            return {
+                success: true,
+                message: `${this.greeting} صف حالتك بحرية أو اختر من القائمة أعلى الصفحة.`,
+                suggestions: ['عندي إرهاق وضعف', 'سعال جاف', 'اختبار', 'لعبة']
+            };
+        }
+
+        return null;
+    }
+
+    /**
+     * طلب ملخص فوائد العسل حسب الحالات (سؤال عام)
+     */
+    isHoneyBenefitsForAllConditionsRequest(lowerMessage) {
+        const n = String(lowerMessage || '');
+        if (n.length > 220) return false;
+        if (/فائدة العسل لعلاج كل حالة|فوائد العسل لكل حالة|فائدة العسل لكل الأمراض|فائدة العسل لكل الحالات/.test(n)) {
+            return true;
+        }
+        if (/فائدة.*عسل.*(كل|جميع).*(حالة|حالات|أمراض|الحالات)/.test(n)) return true;
+        if (/(ما|ما هي|اذكر|اعطني).*(فائدة|فوائد).*عسل.*(حالة|كل|شامل|مختلف)/.test(n)) return true;
+        return false;
+    }
+
+    /**
+     * ملخص إرشادي تعليمي — ليس تشخيصاً ولا وصف علاج
+     */
+    getHoneyBenefitsOverviewMessage() {
+        return (
+            '**تنبيه:** المعلومات تعليمية وتراعي الاستخدام التقليدي والشائع؛ لا تغني عن تشخيص أو علاج يحدده مختص. لا يُعطى العسل لرضع دون سنة تقريباً. مرضى السكري والحساسية من العسل يحتاجون توجيهاً طبياً.\n\n' +
+            '**أنواع العسل وما يُذكر حولها غالباً (باختصار):**\n' +
+            '• **عسل السدر:** يُذكر كدعم للطاقة والتغذية العامة؛ يُطابق كثيراً مع الإرهاق و«الحيوية» ضمن نظام متوازن.\n' +
+            '• **عسل السمر:** يُذكر تقليدياً مع السعال ومشاكل الحلق والصدر — كدعم للراحة وليس بديلاً عن علاج.\n' +
+            '• **عسل الزهور:** يُذكر غالباً مع الهضم الخفيف والانتفاخ كجزء من وجبات معتدلة.\n' +
+            '• **عسل الحبة السوداء / المخلوط:** يُستخدم أحياناً كخيار غذائي داعم حسب المنتج ووصفه في المتجر.\n\n' +
+            '**حسب نوع الشكوى (إرشاد عام):**\n' +
+            '• **ألم / صداع / مفاصل:** دعم عام للراحة والالتهاب الخفيف — مع متابعة طبية إن استمر الألم.\n' +
+            '• **نوم وأرق:** مشروب دافئ معتدل قد يساعد على الاسترخاء؛ ثبّت النوم والروتين.\n' +
+            '• **هضم:** اعتدال في الوجبات؛ العسل كتحلية طبيعية قد يناسب بعض الأشخاص.\n' +
+            '• **سعال وصدر:** سائل دافئ وتهوية؛ العسل يساعد أحياناً على راحة الحلق — راجع طبيباً عند حمى أو ضيق تنفس.\n' +
+            '• **بشرة:** استخدامات موضعية أو غذائية عامة بحذر من الحساسية.\n' +
+            '• **نساء / حمل / رضاعة:** يحتاج تقييماً فردياً مع مختص.\n' +
+            '• **أطفال:** تجنب العسل للرضع؛ للأكبر سناً بحسب العمر والحالة.\n' +
+            '• **أمراض مزمنة (سكري، ضغط، قلب، كلى):** الاعتدال إلزامي وأي تغيير يكون مع طبيبك.\n\n' +
+            'للحصول على **اقتراح منتج** يناسب وصفك من متجرنا، اكتب أعراضك بجملة واضحة أو اختر من القائمة أعلى صفحة المساعد.'
+        );
+    }
+
+    /**
+     * أسئلة عامة (كيف، ما، هل) — ليست أعراضاً محددة
+     */
+    getQuestionResponse(lowerMessage, originalMessage) {
+        if (this.isHoneyBenefitsForAllConditionsRequest(lowerMessage)) {
+            return {
+                success: true,
+                message: this.getHoneyBenefitsOverviewMessage(),
+                suggestions: ['عندي سعال جاف', 'إرهاق وضعف', 'مشاكل في الهضم', 'اختبار']
+            };
+        }
+
+        if (/ما فائدة|فائدة العسل|لماذا العسل|هل العسل مفيد/.test(lowerMessage)) {
+            return {
+                success: true,
+                message:
+                    'العسل الطبيعي غذاء تقليدي غني بالسكريات البسيطة ومضادات أكسدة؛ يُستخدم أحياناً لتهدئة الحلق أو كجزء من نمط حياة متوازن. لا يعالج الأمراض وحده، والجرعة تعتمد على حالتك (مثلاً السكري يحتاج حذراً).\n\nصف عرضاً محدداً (سعال، إرهاق، هضم…) لأقترح نوعاً يناسب وصفك من منتجاتنا.',
+                suggestions: ['عندي سعال جاف', 'إرهاق وضعف', 'مشاكل في الهضم', 'اختبار']
+            };
+        }
+
+        if (/كيف أطلب|كيف الطلب|الشحن|التوصيل|الدفع/.test(lowerMessage)) {
+            return {
+                success: true,
+                message:
+                    'للطلب: تصفّح المنتجات، أضف للسلة، وأكمل من صفحة الدفع. لأي استفسار عن توفر أو توصيل، راجع صفحة المتجر أو تواصل معنا عبر واتساب إن وُجد.',
+                suggestions: ['عندي سؤال عن منتج', 'عندي سعال جاف', 'لعب لعبة']
+            };
+        }
+
+        return {
+            success: true,
+            message:
+                'يمكنني مساعدتك عندما تصف أعراضك أو حالتك (مثلاً: سعال، أرق، إرهاق، اضطراب هضم)، أو تذكر منتجاً تريد معلومات عنه. جرّب أحد الخيارات أدناه.',
+            suggestions: ['صف أعراضك بالتفصيل', 'عندي سعال جاف', 'اسأل عن منتج معين', 'اختبار']
         };
     }
 

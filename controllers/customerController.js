@@ -17,7 +17,7 @@ exports.getProfile = catchAsync(async (req, res, next) => {
     let customer;
     try {
         customer = await Customer.findOne({ user: userId })
-            .populate('user', 'username email role')
+            .populate('user', 'username email role badgeType')
             .populate('wishlist.product', 'name image price')
             .lean();
     } catch (populateErr) {
@@ -25,7 +25,7 @@ exports.getProfile = catchAsync(async (req, res, next) => {
         logger.warn('getProfile: populate wishlist failed, falling back', { message: populateErr.message });
         customer = await Customer.findOne({ user: userId }).lean();
         if (customer) {
-            const u = await User.findById(userId).select('username email role').lean();
+            const u = await User.findById(userId).select('username email role badgeType').lean();
             if (u) customer.user = u;
         }
     }
@@ -341,7 +341,7 @@ exports.updateBadge = catchAsync(async (req, res, next) => {
     res.status(200).json({
         success: true,
         message: 'تم تحديث الشارة بنجاح',
-        badgeType: user.badgeType
+        badgeType: updatedUser.badgeType
     });
 });
 

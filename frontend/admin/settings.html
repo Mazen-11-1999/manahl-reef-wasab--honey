@@ -719,8 +719,9 @@
                 </div>
 
                 <div id="fingerprintSection">
-                    <p style="color: var(--text-muted); margin-bottom: 15px;">
-                        يمكنك تسجيل بصمة واحدة أو أكثر لتسجيل الدخول بسهولة وأمان
+                    <p style="color: var(--text-muted); margin-bottom: 15px; line-height: 1.7;">
+                        سجّل بصمة أو أكثر بعد تسجيل الدخول بكلمة المرور أولاً. الدخول لاحقاً يكون بالبصمة <strong>أو</strong>
+                        بكلمة المرور — الاثنان يعملان معاً كخيارين وليس أحدهما بديلاً للآخر.
                     </p>
 
                     <!-- قائمة البصمات المسجلة -->
@@ -759,6 +760,15 @@
                         <input type="password" class="form-input" id="confirmPassword">
                     </div>
                 </div>
+                <p class="security-hint"
+                    style="margin-top: 14px; font-size: 0.88rem; line-height: 1.75; color: rgba(255,244,209,0.82); border-top: 1px solid var(--gold-15); padding-top: 14px;">
+                    <strong>كلمة المرور والبصمة:</strong> تسجيل البصمة <em>لا يحذف</em> كلمة المرور ولا يستبدلها في
+                    قاعدة البيانات — التقنية (WebAuthn) تعطيك طريقة دخول إضافية آمنة. يمكنك دائماً الدخول بـ<strong>كلمة
+                        المرور</strong> من صفحة الدخول؛ وإذا تعذّر المستشعر أو المتصفح، استخدم كلمة المرور فقط.
+                    لتغيير كلمة المرور: املأ الحقول أعلاه ثم اضغط <strong>حفظ كافة التغييرات</strong> في الأسفل.
+                    إن نسيت كلمة المرور وكان لحساب المشرف <strong>بريد إلكتروني حقيقي</strong> مسجّل لدينا، يمكن استخدام
+                    استعادة كلمة المرور من صفحة الدخول (رابط في أسفل صفحة دخول الإدارة).
+                </p>
             </div>
 
         </div>
@@ -854,6 +864,13 @@
 
         <!-- قسم الحفظ -->
         <div class="save-section fade-in">
+            <p style="font-size: 0.88rem; line-height: 1.75; color: rgba(255,244,209,0.85); margin-bottom: 16px; max-width: 900px;">
+                <strong>حفظ الإعدادات:</strong> يحفظ زر «حفظ كافة التغييرات» إعدادات المتجر (عنوان، وسائل التواصل،
+                الشريط، إلخ) و<strong>تغيير كلمة المرور</strong> إن أدخلت حقول كلمة المرور. للنسخ الاحتياطي الكامل
+                لقاعدة البيانات والملفات استخدم تبويب <strong>النسخ الاحتياطي</strong> في <strong>لوحة التحكم
+                    الرئيسية</strong>. للفواتير: من صفحة الفاتورة يمكن <strong>الطباعة</strong> أو اختيار <strong>حفظ
+                    كـ PDF</strong> من نافذة الطباعة في المتصفح.
+            </p>
             <button class="save-btn" onclick="saveAllSettings()">
                 <span>✨</span>
                 <span>حفظ كافة التغييرات</span>

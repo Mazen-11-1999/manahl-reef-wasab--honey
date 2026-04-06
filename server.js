@@ -231,7 +231,7 @@ app.post('/api/admin/login', security.adminLoginLimiter, async (req, res) => {
     }
 });
 
-// Admin Change Password Route
+// Admin Change Password Route — يحدّث كلمة مرور **المسجّل دخوله** (مشرف فقط)
 app.put('/api/admin/change-password', authenticateToken, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
@@ -244,26 +244,27 @@ app.put('/api/admin/change-password', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, message: 'كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل' });
         }
 
-        // البحث عن admin user
         const User = require('./models/User');
-        const admin = await User.findOne({ role: 'admin' }).select('+password');
+
+        if (!req.user || req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'غير مصرح — للمشرفين فقط' });
+        }
+
+        const admin = await User.findById(req.user.id).select('+password');
 
         if (!admin) {
             return res.status(401).json({ success: false, message: 'حساب المشرف غير موجود' });
         }
 
-        // التحقق من كلمة المرور الحالية
         const isPasswordValid = await admin.comparePassword(currentPassword);
 
         if (!isPasswordValid) {
             return res.status(401).json({ success: false, message: 'كلمة المرور الحالية غير صحيحة' });
         }
 
-        // تحديث كلمة المرور
         admin.password = newPassword;
         await admin.save();
 
-        // إنشاء Token جديد
         const token = admin.generateAuthToken();
 
         res.status(200).json({

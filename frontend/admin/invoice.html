@@ -822,6 +822,10 @@
                 <i class="fas fa-print"></i>
                 <span>طباعة الفاتورة</span>
             </button>
+            <button class="action-btn btn-print" type="button" onclick="saveInvoiceAsPdf()" title="يستخدم نافذة الطباعة في المتصفح">
+                <i class="fas fa-file-pdf"></i>
+                <span>حفظ PDF</span>
+            </button>
             <button class="action-btn btn-whatsapp" onclick="sendWhatsApp()">
                 <i class="fab fa-whatsapp"></i>
                 <span>إرسال للعميل</span>
@@ -1120,6 +1124,14 @@
             setTimeout(() => {
                 window.print();
             }, 500);
+        }
+
+        /** حفظ كملف PDF عبر محرك الطباعة في المتصفح (اختر «حفظ كـ PDF» أو Microsoft Print to PDF) */
+        function saveInvoiceAsPdf() {
+            showNotification('افتح الوجهة: «حفظ كـ PDF» أو «Microsoft Print to PDF» ثم احفظ الملف.');
+            setTimeout(() => {
+                window.print();
+            }, 400);
         }
 
         // ===== إرسال عبر واتساب =====

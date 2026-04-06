@@ -57,6 +57,7 @@ router.use(authenticateToken);
 router.post('/:id/like', storyController.likeStory);
 router.delete('/:id/like', storyController.unlikeStory);
 router.post('/:id/comment', sanitize, validators.addComment, validate, storyController.addComment);
+router.post('/:id/comment/:commentId/like', storyController.toggleCommentLike);
 router.delete('/:id/comment/:commentId', storyController.deleteComment);
 
 // Admin routes

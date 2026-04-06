@@ -53,11 +53,17 @@ exports.getAds = catchAsync(async (req, res, next) => {
  */
 exports.getStory = catchAsync(async (req, res, next) => {
     const story = await Story.findById(req.params.id)
-        .populate('createdBy', 'username')
+        .populate('createdBy', 'username badgeType role')
         .populate('likes.user', 'username')
         .populate('likes.customer', 'profile.firstName profile.lastName')
-        .populate('comments.user', 'username')
-        .populate('comments.customer', 'profile.firstName profile.lastName');
+        .populate({
+            path: 'comments',
+            populate: [
+                { path: 'user', select: 'username badgeType role' },
+                { path: 'customer', select: 'profile.firstName profile.lastName' },
+                { path: 'likes.user', select: 'username' }
+            ]
+        });
 
     if (!story) {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
@@ -223,7 +229,7 @@ exports.unlikeStory = catchAsync(async (req, res, next) => {
  * إضافة تعليق
  */
 exports.addComment = catchAsync(async (req, res, next) => {
-    const { text } = req.body;
+    const { text, parentCommentId } = req.body;
 
     if (!text || text.trim().length === 0) {
         return next(new AppError('نص التعليق مطلوب', 400));
@@ -235,23 +241,73 @@ exports.addComment = catchAsync(async (req, res, next) => {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
     }
 
-    // الحصول على customer إذا كان موجود
     let customerId = null;
     if (req.user) {
         const customer = await Customer.findOne({ user: req.user.id });
         if (customer) customerId = customer._id;
     }
 
-    await story.addComment(req.user?.id, customerId, text);
+    try {
+        await story.addComment(req.user?.id, customerId, text, parentCommentId || null);
+    } catch (e) {
+        return next(new AppError(e.message || 'تعذر إضافة التعليق', 400));
+    }
 
-    // إعادة جلب القصة مع التعليقات المحدثة
-    await story.populate('comments.user', 'username');
-    await story.populate('comments.customer', 'profile.firstName profile.lastName');
+    await story.populate({
+        path: 'comments',
+        populate: [
+            { path: 'user', select: 'username badgeType role' },
+            { path: 'customer', select: 'profile.firstName profile.lastName' },
+            { path: 'likes.user', select: 'username' }
+        ]
+    });
 
     res.status(200).json({
         success: true,
         message: 'تم إضافة التعليق',
         comment: story.comments[story.comments.length - 1]
+    });
+});
+
+/**
+ * تبديل إعجاب على تعليق
+ */
+exports.toggleCommentLike = catchAsync(async (req, res, next) => {
+    const story = await Story.findById(req.params.id);
+
+    if (!story) {
+        return next(new AppError('الحالة/الإعلان غير موجود', 404));
+    }
+
+    let customerId = null;
+    if (req.user) {
+        const customer = await Customer.findOne({ user: req.user.id });
+        if (customer) customerId = customer._id;
+    }
+
+    try {
+        await story.toggleCommentLike(req.params.commentId, req.user?.id, customerId);
+    } catch (e) {
+        return next(new AppError(e.message || 'تعذر تحديث الإعجاب', 400));
+    }
+
+    await story.populate({
+        path: 'comments',
+        populate: [
+            { path: 'user', select: 'username badgeType role' },
+            { path: 'customer', select: 'profile.firstName profile.lastName' },
+            { path: 'likes.user', select: 'username' }
+        ]
+    });
+
+    const c = story.comments.id(req.params.commentId);
+    const likesCount = c && c.likes ? c.likes.length : 0;
+
+    res.status(200).json({
+        success: true,
+        message: 'تم تحديث الإعجاب',
+        likesCount,
+        comment: c
     });
 });
 
@@ -272,10 +328,9 @@ exports.deleteComment = catchAsync(async (req, res, next) => {
         return next(new AppError('التعليق غير موجود', 404));
     }
 
-    // التحقق من الصلاحيات (المشرف أو صاحب التعليق)
     const isAdmin = req.user?.role === 'admin';
-    const isCommentOwner = comment.user?.toString() === req.user?.id?.toString() ||
-        comment.customer?.user?.toString() === req.user?.id?.toString();
+    const commentUserId = comment.user && comment.user._id ? comment.user._id.toString() : comment.user?.toString();
+    const isCommentOwner = commentUserId === req.user?.id?.toString();
 
     // إذا كان المشرف، استخدم شارة المالك
     const userBadgeType = isAdmin ? 'owner' : (req.user?.badgeType || 'none');

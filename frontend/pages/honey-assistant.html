@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مساعد مناحل ريف - الذكاء الاصطناعي للعسل</title>
+    <title>مساعد مناحل ريف وصاب — الذكاء الاصطناعي للعسل</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/modern-design.css">
     <link rel="stylesheet" href="../assets/css/realistic-honey-drips.css">
@@ -259,6 +259,102 @@
             color: var(--white);
             text-align: center;
             max-width: 90%;
+        }
+
+        .message.ai.message-celebrate {
+            animation: celebratePop 0.85s ease;
+            box-shadow: 0 0 0 3px rgba(244, 192, 37, 0.55);
+        }
+
+        @keyframes celebratePop {
+            0% {
+                transform: scale(1);
+            }
+
+            35% {
+                transform: scale(1.02);
+            }
+
+            60% {
+                transform: scale(0.99);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .game-stats-bar {
+            font-size: 0.88rem;
+            opacity: 0.95;
+            margin: 8px 0 12px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .message.game.game--celebrate {
+            animation: gameCardGlow 1s ease;
+            box-shadow: 0 0 24px rgba(244, 192, 37, 0.45);
+        }
+
+        @keyframes gameCardGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 12px rgba(244, 192, 37, 0.25);
+            }
+
+            50% {
+                box-shadow: 0 0 28px rgba(244, 192, 37, 0.55);
+            }
+        }
+
+        .chat-messages.gentle-encourage-pulse {
+            animation: gentlePulse 1.1s ease;
+        }
+
+        @keyframes gentlePulse {
+
+            0%,
+            100% {
+                box-shadow: inset 0 0 0 0 rgba(244, 192, 37, 0);
+            }
+
+            50% {
+                box-shadow: inset 0 0 0 3px rgba(244, 192, 37, 0.35);
+            }
+        }
+
+        .celebrate-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -12px;
+            width: 8px;
+            height: 12px;
+            border-radius: 2px;
+            opacity: 0.95;
+            animation: confettiFall 2.2s ease-in forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0.3;
+            }
         }
 
         .message-content {
@@ -1049,7 +1145,7 @@
                 <div class="chat-messages" id="chatMessages">
                     <div class="message ai">
                         <div class="message-content">
-                            مرحباً! أنا مساعد مناحل ريف 🍯 اختر حالة من القائمة أعلاه أو اكتب بحرية (مثال: «عندي إرهاق وضعف» أو «سعال جاف»). سأقترح منتجات من متجرنا إن وُجدت مطابقة.<br><br>
+                            مرحباً! أنا مساعد مناحل ريف وصاب 🍯 اختر حالة من القائمة أعلاه أو اكتب بحرية (مثال: «عندي إرهاق وضعف» أو «سعال جاف»). سأقترح منتجات من متجرنا إن وُجدت مطابقة.<br><br>
                             يمكنك أيضاً كتابة <strong>لعبة</strong> أو <strong>اختبار</strong> للترفيه التعليمي.
                         </div>
                         <div class="message-time">الآن</div>
@@ -1089,6 +1185,9 @@
                         <div class="suggestion-chip" onclick="sendQuickMessage('اختبار')">
                             <i class="fas fa-question-circle"></i> اختبار
                         </div>
+                        <div class="suggestion-chip" onclick="sendQuickMessage('فائدة العسل لعلاج كل حالة')">
+                            <i class="fas fa-book-medical"></i> فائدة العسل لكل حالة
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1096,7 +1195,7 @@
 
         <!-- Features Section -->
         <section class="features-section">
-            <h2><i class="fas fa-star"></i> مميزات مساعد مناحل ريف</h2>
+            <h2><i class="fas fa-star"></i> مميزات مساعد مناحل ريف وصاب</h2>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -1209,6 +1308,21 @@
             return d.innerHTML;
         }
 
+        /** إزالة وسوم HTML وأي مقتطفات شبه برمجية (markdown) ثم تنسيق **غامق** وأسطر */
+        function formatAssistantMessageHtml(raw) {
+            let s = String(raw == null ? '' : raw);
+            s = s.replace(/```[\w-]*\n?[\s\S]*?```/g, ' ');
+            s = s.replace(/`([^`\n]+)`/g, '$1');
+            s = s.replace(/<[^>]+>/g, '');
+            const parts = s.split(/(\*\*[^*]+\*\*)/g);
+            let html = parts.map(function (part) {
+                const m = part.match(/^\*\*([^*]+)\*\*$/);
+                if (m) return '<strong>' + escapeHtml(m[1]) + '</strong>';
+                return escapeHtml(part);
+            }).join('');
+            return html.replace(/\n/g, '<br>');
+        }
+
         // Global variables
         let conversationId = 'user_' + Date.now();
         let isTyping = false;
@@ -1293,6 +1407,20 @@
                     const payload = data.data;
                     if (payload.message) {
                         addMessage(payload.message, 'ai');
+                        if (payload.celebrate) {
+                            playCelebrateEffect();
+                            const msgs = chatMessages.querySelectorAll('.message.ai');
+                            const lastAi = msgs[msgs.length - 1];
+                            if (lastAi) {
+                                lastAi.classList.add('message-celebrate');
+                                setTimeout(function () {
+                                    lastAi.classList.remove('message-celebrate');
+                                }, 900);
+                            }
+                        }
+                        if (payload.gentleEncourage) {
+                            playGentleEncourageEffect();
+                        }
                     }
 
                     if (payload.healthTips && payload.healthTips.length > 0) {
@@ -1348,14 +1476,14 @@
         // Add message to chat
         function addMessage(content, type) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
+            messageDiv.className = 'message ' + type;
 
             const messageContent = document.createElement('div');
             messageContent.className = 'message-content';
             if (type === 'user') {
                 messageContent.innerHTML = escapeHtml(String(content));
             } else {
-                messageContent.innerHTML = escapeHtml(String(content)).replace(/\n/g, '<br>');
+                messageContent.innerHTML = formatAssistantMessageHtml(content);
             }
 
             const messageTime = document.createElement('div');
@@ -1369,21 +1497,107 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Add game message
-        function addGameMessage(gameData) {
-            let content = '';
+        function stripQuizTitle(raw) {
+            return String(raw || '')
+                .replace(/\*\*/g, '')
+                .replace(/^🧠\s*/, '')
+                .trim() || 'اختبار العسل';
+        }
 
-            if (gameData.gameType === 'quiz') {
-                content = `
-                    <strong>🧠 ${gameData.message}</strong><br><br>
-                    ${gameData.question}<br><br>
-                `;
-                gameData.options.forEach((option, index) => {
-                    content += `${index + 1}. ${option}<br>`;
-                });
+        function playCelebrateEffect() {
+            const overlay = document.createElement('div');
+            overlay.className = 'celebrate-overlay';
+            overlay.setAttribute('aria-hidden', 'true');
+            var colors = ['#f4c025', '#ffd700', '#fff8e7', '#e8b923', '#c9a227'];
+            for (var i = 0; i < 42; i++) {
+                var p = document.createElement('span');
+                p.className = 'confetti-piece';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 0.4 + 's';
+                p.style.background = colors[i % colors.length];
+                overlay.appendChild(p);
+            }
+            document.body.appendChild(overlay);
+            setTimeout(function () {
+                overlay.remove();
+            }, 2400);
+        }
+
+        function playGentleEncourageEffect() {
+            if (!chatMessages) return;
+            chatMessages.classList.add('gentle-encourage-pulse');
+            setTimeout(function () {
+                chatMessages.classList.remove('gentle-encourage-pulse');
+            }, 1150);
+        }
+
+        function formatGameStatsBar(stats) {
+            if (!stats || typeof stats !== 'object') return '';
+            var parts = [];
+            if (typeof stats.score === 'number') {
+                parts.push('المجموع: ' + stats.score);
+            }
+            if (typeof stats.streak === 'number' && stats.streak > 0) {
+                parts.push('سلسلة: ' + stats.streak + ' 🔥');
+            }
+            if (stats.label) {
+                parts.push(String(stats.label));
+            }
+            return parts.length ? parts.join(' · ') : '';
+        }
+
+        // Add game message (بنود DOM آمنة — لا تمرير HTML خام كسلسلة ثم escape)
+        function addGameMessage(gameData) {
+            if (gameData.gameType !== 'quiz') return;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message game';
+            if (gameData.celebrate) {
+                messageDiv.classList.add('game--celebrate');
             }
 
-            addMessage(content, 'game');
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+
+            const title = document.createElement('div');
+            title.style.fontWeight = '700';
+            title.style.marginBottom = '10px';
+            title.appendChild(document.createTextNode('🧠 ' + stripQuizTitle(gameData.message)));
+
+            const statsText = formatGameStatsBar(gameData.gameStats);
+            const statsEl = document.createElement('div');
+            if (statsText) {
+                statsEl.className = 'game-stats-bar';
+                statsEl.appendChild(document.createTextNode(statsText));
+            }
+
+            const qEl = document.createElement('div');
+            qEl.style.marginBottom = '12px';
+            qEl.appendChild(document.createTextNode(gameData.question || ''));
+
+            const opts = document.createElement('div');
+            (gameData.options || []).forEach(function (option, index) {
+                const line = document.createElement('div');
+                line.style.marginTop = '6px';
+                line.appendChild(document.createTextNode((index + 1) + '. ' + String(option)));
+                opts.appendChild(line);
+            });
+
+            messageContent.appendChild(title);
+            if (statsText) {
+                messageContent.appendChild(statsEl);
+            }
+            messageContent.appendChild(qEl);
+            messageContent.appendChild(opts);
+
+            const messageTime = document.createElement('div');
+            messageTime.className = 'message-time';
+            messageTime.textContent = new Date().toLocaleTimeString('ar-SA');
+
+            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(messageTime);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         // Show game menu
