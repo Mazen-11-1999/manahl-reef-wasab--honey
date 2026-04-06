@@ -165,8 +165,8 @@ exports.getOrders = [
     
     query('limit')
         .optional()
-        .isInt({ min: 1, max: 100 })
-        .withMessage('عدد العناصر يجب أن يكون بين 1 و 100'),
+        .isInt({ min: 1, max: 1000 })
+        .withMessage('عدد العناصر يجب أن يكون بين 1 و 1000'),
     
     query('sort')
         .optional()

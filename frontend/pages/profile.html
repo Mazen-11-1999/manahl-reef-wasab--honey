@@ -781,91 +781,6 @@
                     </div>
                 </div>
 
-                <!-- قسم إعدادات الإشعارات -->
-                <div class="settings-section shimmer-border fade-in"
-                    style="background: linear-gradient(145deg, var(--bg-card), var(--bg-accent)); border-radius: 15px; padding: 20px; margin-top: 20px; border: 1px solid var(--border-gold);">
-                    <h3
-                        style="color: var(--gold-primary); font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-family: 'Tajawal', sans-serif; font-weight: 600;">
-                        <i class="fas fa-cog"></i>
-                        <span>إعدادات الإشعارات</span>
-                    </h3>
-
-                    <div class="setting-item"
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-gold);">
-                        <div>
-                            <div style="color: var(--text-primary); font-weight: 500; margin-bottom: 5px;">إشعارات
-                                الطلبات</div>
-                            <div style="color: var(--text-secondary); font-size: 0.85rem;">تحديثات الطلب، الشحن، التسليم
-                            </div>
-                        </div>
-                        <div class="toggle-switch" id="toggleOrders" onclick="toggleNotificationSetting('orders')"
-                            style="position: relative; width: 50px; height: 25px; background: rgba(212, 175, 55, 0.2); border-radius: 25px; cursor: pointer; transition: background 0.3s ease;">
-                        </div>
-                    </div>
-
-                    <div class="setting-item"
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-gold);">
-                        <div>
-                            <div style="color: var(--text-primary); font-weight: 500; margin-bottom: 5px;">إشعارات
-                                المنتجات</div>
-                            <div style="color: var(--text-secondary); font-size: 0.85rem;">عروض، منتجات جديدة</div>
-                        </div>
-                        <div class="toggle-switch" id="toggleProducts" onclick="toggleNotificationSetting('products')"
-                            style="position: relative; width: 50px; height: 25px; background: rgba(212, 175, 55, 0.2); border-radius: 25px; cursor: pointer; transition: background 0.3s ease;">
-                        </div>
-                    </div>
-
-                    <div class="setting-item"
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-gold);">
-                        <div>
-                            <div style="color: var(--text-primary); font-weight: 500; margin-bottom: 5px;">إشعارات
-                                المسابقات</div>
-                            <div style="color: var(--text-secondary); font-size: 0.85rem;">فائزون، مسابقات جديدة</div>
-                        </div>
-                        <div class="toggle-switch" id="toggleContests" onclick="toggleNotificationSetting('contests')"
-                            style="position: relative; width: 50px; height: 25px; background: rgba(212, 175, 55, 0.2); border-radius: 25px; cursor: pointer; transition: background 0.3s ease;">
-                        </div>
-                    </div>
-
-                    <div class="setting-item"
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-gold);">
-                        <div>
-                            <div style="color: var(--text-primary); font-weight: 500; margin-bottom: 5px;">إشعارات
-                                النظام</div>
-                            <div style="color: var(--text-secondary); font-size: 0.85rem;">إعلانات عامة</div>
-                        </div>
-                        <div class="toggle-switch" id="toggleSystem" onclick="toggleNotificationSetting('system')"
-                            style="position: relative; width: 50px; height: 25px; background: rgba(212, 175, 55, 0.2); border-radius: 25px; cursor: pointer; transition: background 0.3s ease;">
-                        </div>
-                    </div>
-
-                    <div class="setting-item"
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-gold);">
-                        <div>
-                            <div style="color: var(--text-primary); font-weight: 500; margin-bottom: 5px;">Push
-                                Notifications</div>
-                            <div style="color: var(--text-secondary); font-size: 0.85rem;">إشعارات فورية على الجهاز
-                            </div>
-                        </div>
-                        <div class="toggle-switch" id="togglePush" onclick="toggleNotificationSetting('push')"
-                            style="position: relative; width: 50px; height: 25px; background: rgba(212, 175, 55, 0.2); border-radius: 25px; cursor: pointer; transition: background 0.3s ease;">
-                        </div>
-                    </div>
-
-                    <div class="setting-item"
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-gold);">
-                        <div>
-                            <div style="color: var(--text-primary); font-weight: 500; margin-bottom: 5px;">Email
-                                Notifications</div>
-                            <div style="color: var(--text-secondary); font-size: 0.85rem;">إشعارات عبر البريد الإلكتروني
-                            </div>
-                        </div>
-                        <div class="toggle-switch" id="toggleEmail" onclick="toggleNotificationSetting('email')"
-                            style="position: relative; width: 50px; height: 25px; background: rgba(212, 175, 55, 0.2); border-radius: 25px; cursor: pointer; transition: background 0.3s ease;">
-                        </div>
-                    </div>
-                </div>
-
                 <!-- أزرار التحكم -->
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button onclick="markAllAsRead()"
@@ -1082,28 +997,6 @@
             font-weight: 600 !important;
         }
 
-        /* أنماط Toggle Switch */
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 21px;
-            height: 21px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .toggle-switch.active {
-            background: var(--gold-primary) !important;
-        }
-
-        .toggle-switch.active::after {
-            transform: translateX(25px);
-        }
-
         /* أنماط بطاقات الإشعارات */
         .notification-card {
             background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
@@ -1236,7 +1129,6 @@
             // تحميل البيانات عند فتح تبويب الإشعارات
             if (tabName === 'notifications') {
                 loadNotifications();
-                loadNotificationSettings();
             }
         }
 
@@ -1342,7 +1234,11 @@
                     first = (customer.profile.firstName || '').trim();
                     last = (customer.profile.lastName || '').trim();
                 }
-                const fullName = (first + (last ? ' ' + last : '')).trim() || user.username || user.email || 'مستخدم';
+                const combined = (first + (last ? ' ' + last : '')).trim();
+                const emailLocal = (user.email && String(user.email).includes('@'))
+                    ? String(user.email).split('@')[0]
+                    : '';
+                const fullName = combined || emailLocal || user.username || user.email || 'مستخدم';
                 nameElement.textContent = fullName;
             }
 
@@ -1515,14 +1411,6 @@
         // ===== دوال الإشعارات =====
         let allNotifications = [];
         let currentNotificationFilter = 'all';
-        let notificationSettings = {
-            orders: true,
-            products: true,
-            contests: false,
-            system: false,
-            push: true,
-            email: true
-        };
 
         // تحميل الإشعارات
         async function loadNotifications() {
@@ -1695,86 +1583,6 @@
             }
         }
 
-        // تحميل إعدادات الإشعارات من قاعدة البيانات (حقيقي)
-        async function loadNotificationSettings() {
-            try {
-                if (!window.API || !window.API.customers) return;
-                const response = await window.API.customers.getProfile();
-                if (!response.success || !response.customer) return;
-                const prefs = (response.customer.preferences && response.customer.preferences.notifications) ? response.customer.preferences.notifications : {};
-                notificationSettings = {
-                    orders: prefs.orders !== undefined ? prefs.orders : true,
-                    products: prefs.products !== undefined ? prefs.products : true,
-                    contests: prefs.contests !== undefined ? prefs.contests : false,
-                    system: prefs.system !== undefined ? prefs.system : false,
-                    push: prefs.push !== undefined ? prefs.push : true,
-                    email: prefs.email !== undefined ? prefs.email : true
-                };
-                updateSettingsUI();
-            } catch (error) {
-                console.error('Error loading notification settings:', error);
-            }
-        }
-
-        // تحديث واجهة الإعدادات
-        function updateSettingsUI() {
-            document.getElementById('toggleOrders').classList.toggle('active', notificationSettings.orders);
-            document.getElementById('toggleProducts').classList.toggle('active', notificationSettings.products);
-            document.getElementById('toggleContests').classList.toggle('active', notificationSettings.contests);
-            document.getElementById('toggleSystem').classList.toggle('active', notificationSettings.system);
-            document.getElementById('togglePush').classList.toggle('active', notificationSettings.push);
-            document.getElementById('toggleEmail').classList.toggle('active', notificationSettings.email);
-        }
-
-        // تبديل إعداد الإشعارات — يحفظ فعلياً في قاعدة البيانات
-        async function toggleNotificationSetting(setting) {
-            const idMap = { orders: 'Orders', products: 'Products', contests: 'Contests', system: 'System', push: 'Push', email: 'Email' };
-            const toggle = document.getElementById('toggle' + (idMap[setting] || setting));
-            if (!toggle) return;
-
-            const isActive = toggle.classList.contains('active');
-            const newValue = !isActive;
-
-            toggle.classList.toggle('active', newValue);
-            notificationSettings[setting] = newValue;
-
-            try {
-                if (!window.API || !window.API.customers) {
-                    toggle.classList.toggle('active', isActive);
-                    notificationSettings[setting] = isActive;
-                    return;
-                }
-                const response = await window.API.customers.updateProfile({
-                    preferences: { notifications: { ...notificationSettings } }
-                });
-                if (response.success) {
-                    showNotification(newValue ? '✅ تم تفعيل ' + getSettingName(setting) : 'تم إيقاف ' + getSettingName(setting), newValue ? 'success' : 'info');
-                } else {
-                    toggle.classList.toggle('active', isActive);
-                    notificationSettings[setting] = isActive;
-                    showNotification('❌ حدث خطأ في حفظ الإعدادات', 'error');
-                }
-            } catch (error) {
-                console.error('Error updating notification settings:', error);
-                toggle.classList.toggle('active', isActive);
-                notificationSettings[setting] = isActive;
-                showNotification('❌ حدث خطأ في حفظ الإعدادات', 'error');
-            }
-        }
-
-        // الحصول على اسم الإعداد
-        function getSettingName(setting) {
-            const names = {
-                'orders': 'إشعارات الطلبات',
-                'products': 'إشعارات المنتجات',
-                'contests': 'إشعارات المسابقات',
-                'system': 'إشعارات النظام',
-                'push': 'Push Notifications',
-                'email': 'Email Notifications'
-            };
-            return names[setting] || setting;
-        }
-
         // عرض إشعار مؤقت
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
@@ -1835,7 +1643,6 @@
             const notificationsTab = document.getElementById('notificationsTab');
             if (notificationsTab && notificationsTab.classList.contains('active')) {
                 loadNotifications();
-                loadNotificationSettings();
             }
         });
 

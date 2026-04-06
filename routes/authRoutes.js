@@ -77,12 +77,20 @@ const changePasswordValidation = [
 
 const forgotPasswordValidation = [
     body('email')
+        .optional({ checkFalsy: true })
         .trim()
-        .notEmpty()
-        .withMessage('البريد الإلكتروني مطلوب')
         .isEmail()
         .withMessage('البريد الإلكتروني غير صحيح')
-        .normalizeEmail()
+        .normalizeEmail(),
+    body('phone').optional({ checkFalsy: true }).trim(),
+    body().custom((_, { req }) => {
+        const hasEmail = req.body.email && String(req.body.email).trim();
+        const hasPhone = req.body.phone && String(req.body.phone).trim();
+        if (!hasEmail && !hasPhone) {
+            throw new Error('يرجى إدخال البريد الإلكتروني أو رقم الهاتف');
+        }
+        return true;
+    })
 ];
 
 const resetPasswordValidation = [
@@ -94,8 +102,6 @@ const resetPasswordValidation = [
         .withMessage('كلمة المرور مطلوبة')
         .isLength({ min: 8 })
         .withMessage('كلمة المرور يجب أن تكون 8 أحرف على الأقل')
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-        .withMessage('كلمة المرور يجب أن تحتوي على حرف صغير، حرف كبير، ورقم')
 ];
 
 // تسجيل عميل (هاتف + اسم + كلمة مرور فقط)

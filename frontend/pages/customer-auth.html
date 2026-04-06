@@ -917,6 +917,27 @@
             padding-left: 14px;
         }
 
+        /* عند ربط القائمة بـ body (dropdownContainer) — طبقة منسدلة وليست قائمة طويلة داخل البطاقة */
+        body .iti__country-list {
+            direction: ltr;
+            z-index: 10050 !important;
+            max-height: min(280px, 50dvh) !important;
+            overflow-y: auto !important;
+            background: var(--bg-card, #151008) !important;
+            border: 1px solid rgba(212, 175, 55, 0.35) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55) !important;
+        }
+
+        body .iti__country-name,
+        body .iti__dial-code {
+            color: var(--text, #e8e0d4);
+        }
+
+        body .iti__country.iti__highlight {
+            background: rgba(212, 175, 55, 0.18) !important;
+        }
+
         .submit-btn {
             width: 100%;
             padding: 16px;
@@ -1281,6 +1302,12 @@
                             <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
                             المتابعة مع Google
                         </a>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="button" class="link-btn forgot-password-link" onclick="showForgotPassword()"
+                                style="background: none; border: none; color: var(--gold-light); text-decoration: underline; cursor: pointer; font-size: 14px;">
+                                نسيت كلمة المرور؟
+                            </button>
+                        </div>
                     </form>
                 </div>
 
@@ -1315,38 +1342,26 @@
                         </h3>
 
                         <div id="forgotStep1">
+                            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px; line-height: 1.5;">
+                                أدخل <strong>البريد الإلكتروني</strong> أو <strong>رقم الهاتف</strong> المسجّل لدينا.
+                                سيصلك رابط إعادة التعيين عبر البريد، أو عبر واتساب إذا كان حسابك بالهاتف فقط وخدمة الواتساب مفعّلة لدى المتجر.
+                            </p>
                             <div class="form-group">
-                                <label for="forgotPhone">
-                                    <i class="fas fa-phone" style="margin-left: 6px;"></i>رقم الهاتف
+                                <label for="forgotContact">
+                                    <i class="fas fa-user" style="margin-left: 6px;"></i>البريد أو رقم الهاتف
                                 </label>
-                                <div class="phone-field-wrap">
-                                    <input type="tel" id="forgotPhone" autocomplete="tel" required>
-                                </div>
+                                <input type="text" id="forgotContact" autocomplete="username"
+                                    placeholder="example@mail.com أو رقم الهاتف مع رمز الدولة" required>
                             </div>
                             <button type="button" class="submit-btn" onclick="sendResetCode()" id="btnSendCode">
-                                إرسال رمز الاستعادة
+                                إرسال رابط الاستعادة
                             </button>
                         </div>
 
                         <div id="forgotStep2" style="display: none;">
-                            <div class="reset-code-display">
-                                <h4 style="color: var(--gold-light); text-align: center;">
-                                    <i class="fas fa-shield-alt" style="margin-left: 8px;"></i>رمز الاستعادة
-                                </h4>
-                                <div class="code-box" id="resetTokenDisplay"></div>
-                                <p
-                                    style="text-align: center; color: var(--text-muted); font-size: 14px; margin-top: 10px;">
-                                    انسخ الرمز أعلاه وأدخله في الحقل التالي:
-                                </p>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="resetTokenInput">
-                                    <i class="fas fa-key" style="margin-left: 6px;"></i>رمز الاستعادة
-                                </label>
-                                <input type="text" id="resetTokenInput" placeholder="أدخل الرمز المكون من 6 أحرف"
-                                    maxlength="6" style="text-align: center; font-size: 18px; letter-spacing: 2px;">
-                            </div>
+                            <p id="resetStep2Hint" style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">
+                                أدخل كلمة المرور الجديدة لحسابك.
+                            </p>
 
                             <div class="form-group">
                                 <label for="newPassword">
@@ -1377,7 +1392,7 @@
                     </div>
 
                     <div style="text-align: center; margin-top: 15px;">
-                        <button type="button" class="link-btn" onclick="showForgotPassword()"
+                        <button type="button" class="link-btn forgot-password-link" onclick="showForgotPassword()"
                             style="background: none; border: none; color: var(--gold-light); text-decoration: underline; cursor: pointer; font-size: 14px;">
                             نسيت كلمة المرور؟
                         </button>
@@ -1523,7 +1538,8 @@
 
         var itiLogin = null;
         var itiReg = null;
-        var itiForgot = null;
+        /** رمز إعادة التعيين من رابط البريد/واتساب (?reset=) */
+        var pwResetTokenFromUrl = null;
 
         (function initIntlTel() {
             var intl = window.intlTelInput;
@@ -1542,12 +1558,13 @@
                 separateDialCode: true,
                 utilsScript: utilsPath,
                 formatOnDisplay: true,
-                countrySearch: true
+                countrySearch: true,
+                /* يمنع توسّع قائمة الدول داخل البطاقة على الموبايل وتعرضها كمنسدلة فوق الصفحة */
+                dropdownContainer: document.body
             };
             var el;
             if ((el = document.getElementById('loginPhone'))) itiLogin = intl(el, opts);
             if ((el = document.getElementById('regPhone'))) itiReg = intl(el, opts);
-            if ((el = document.getElementById('forgotPhone'))) itiForgot = intl(el, opts);
         })();
 
         function phoneDigitsForBackend(iti, inputEl) {
@@ -1623,6 +1640,13 @@
                 panelLogin.classList.toggle('active', tab === 'login');
                 panelRegister.classList.toggle('active', tab === 'register');
                 hideMsg();
+                var forgotSec = document.getElementById('forgotPasswordSection');
+                if (forgotSec) forgotSec.style.display = 'none';
+                var formReg = document.getElementById('formRegister');
+                if (formReg) formReg.style.display = 'block';
+                document.querySelectorAll('.forgot-password-link').forEach(function (el) {
+                    el.style.display = 'inline-block';
+                });
             });
         });
 
@@ -1770,91 +1794,97 @@
             }, { passive: true });
         })();
 
-        // إظهار قسم استعادة كلمة المرور
+        function setActiveAuthTab(tabName) {
+            var tabs = document.querySelectorAll('.tab');
+            tabs.forEach(function (t) {
+                t.classList.toggle('active', t.getAttribute('data-tab') === tabName);
+            });
+            var panelLogin = document.getElementById('panel-login');
+            var panelReg = document.getElementById('panel-register');
+            if (panelLogin) panelLogin.classList.toggle('active', tabName === 'login');
+            if (panelReg) panelReg.classList.toggle('active', tabName === 'register');
+        }
+
+        // إظهار قسم استعادة كلمة المرور (داخل تبويب إنشاء حساب حيث يوجد القسم)
         function showForgotPassword() {
             hideMsg();
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'none';
+            setActiveAuthTab('register');
+            var formReg = document.getElementById('formRegister');
+            if (formReg) formReg.style.display = 'none';
             document.getElementById('forgotPasswordSection').style.display = 'block';
             document.getElementById('forgotStep1').style.display = 'block';
             document.getElementById('forgotStep2').style.display = 'none';
 
-            // إخفاء زر "نسيت كلمة المرور؟"
-            document.querySelector('.link-btn').style.display = 'none';
+            document.querySelectorAll('.forgot-password-link').forEach(function (el) {
+                el.style.display = 'none';
+            });
         }
 
         // العودة لتسجيل الدخول
         function backToLogin() {
             hideMsg();
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
             document.getElementById('forgotPasswordSection').style.display = 'none';
+            var formReg = document.getElementById('formRegister');
+            if (formReg) formReg.style.display = 'block';
+            setActiveAuthTab('login');
 
-            // إظهار زر "نسيت كلمة المرور؟"
-            document.querySelector('.link-btn').style.display = 'inline-block';
+            document.querySelectorAll('.forgot-password-link').forEach(function (el) {
+                el.style.display = 'inline-block';
+            });
         }
 
-        // إرسال رمز الاستعادة
+        // طلب رابط الاستعادة (بريد أو هاتف) — الإرسال الفعلي من الخادم
         async function sendResetCode() {
             hideMsg();
-            const forgotPhoneEl = document.getElementById('forgotPhone');
-            const phone = validatePhoneOrShow(itiForgot, forgotPhoneEl);
-            if (!phone) return;
+            const raw = document.getElementById('forgotContact');
+            const val = raw && raw.value ? raw.value.trim() : '';
+            if (!val) {
+                showMsg('أدخل البريد الإلكتروني أو رقم الهاتف', 'error');
+                return;
+            }
+
+            var payload = {};
+            if (val.indexOf('@') !== -1) {
+                payload.email = val;
+            } else {
+                payload.phone = val;
+            }
 
             const btnSendCode = document.getElementById('btnSendCode');
             btnSendCode.disabled = true;
             btnSendCode.textContent = 'جاري الإرسال...';
 
             try {
-                // إنشاء رمز استعادة عشوائي
-                const resetToken = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-                // حفظ الرمز والهاتف في localStorage
-                localStorage.setItem('resetToken', resetToken);
-                localStorage.setItem('resetPhone', phone);
-                localStorage.setItem('resetTokenTime', Date.now().toString());
-
-                // عرض الرمز للمستخدم
-                document.getElementById('resetTokenDisplay').textContent = resetToken;
-                document.getElementById('forgotStep1').style.display = 'none';
-                document.getElementById('forgotStep2').style.display = 'block';
-
-                showMsg('تم إرسال رمز الاستعادة. انسخ الرمز وأدخله في الحقل التالي', 'success');
-
+                if (!window.API || !window.API.auth || !window.API.auth.forgotPassword) {
+                    showMsg('تعذر تحميل واجهة الطلب. حدّث الصفحة.', 'error');
+                    return;
+                }
+                const data = await window.API.auth.forgotPassword(payload);
+                if (data.success) {
+                    showMsg(data.message || 'تم الطلب بنجاح', 'success');
+                }
             } catch (error) {
-                console.error('Send reset code error:', error);
-                showMsg('حدث خطأ في إرسال الرمز. حاول مرة أخرى', 'error');
+                console.error('Forgot password error:', error);
+                showMsg(error.message || 'حدث خطأ. تحقق من البيانات وحاول مرة أخرى', 'error');
+            } finally {
                 btnSendCode.disabled = false;
-                btnSendCode.textContent = 'إرسال رمز الاستعادة';
+                btnSendCode.textContent = 'إرسال رابط الاستعادة';
             }
         }
 
-        // استعادة كلمة المرور
+        // تعيين كلمة مرور جديدة (الرمز يأتي من ?reset= في الرابط)
         async function resetPassword() {
             hideMsg();
 
-            const phone = localStorage.getItem('resetPhone');
-            const storedToken = localStorage.getItem('resetToken');
-            const tokenTime = localStorage.getItem('resetTokenTime');
+            var token = pwResetTokenFromUrl;
+            var newPassword = document.getElementById('newPassword').value;
+            var confirmNewPassword = document.getElementById('confirmNewPassword').value;
 
-            const inputToken = document.getElementById('resetTokenInput').value.trim().toUpperCase();
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-
-            // التحقق من صلاحية الرمز (10 دقائق)
-            if (Date.now() - parseInt(tokenTime) > 10 * 60 * 1000) {
-                showMsg('انتهت صلاحية الرمز. اطلب رمزاً جديداً', 'error');
-                backToLogin();
+            if (!token) {
+                showMsg('افتح رابط إعادة التعيين من البريد أو واتساب أولاً.', 'error');
                 return;
             }
 
-            // التحقق من الرمز
-            if (inputToken !== storedToken) {
-                showMsg('الرمز غير صحيح', 'error');
-                return;
-            }
-
-            // التحقق من كلمة المرور
             if (!newPassword || newPassword.length < 8) {
                 showMsg('كلمة المرور يجب أن تكون 8 أحرف على الأقل', 'error');
                 return;
@@ -1865,49 +1895,66 @@
                 return;
             }
 
-            const btnResetPassword = document.getElementById('btnResetPassword');
+            var btnResetPassword = document.getElementById('btnResetPassword');
             btnResetPassword.disabled = true;
             btnResetPassword.textContent = 'جاري الاستعادة...';
 
             try {
-                // استدعاء API استعادة كلمة المرور
-                const response = await fetch('/api/auth/reset-password', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        phone: phone,
-                        token: storedToken,
-                        password: newPassword
-                    })
-                });
-
-                const data = await response.json();
+                if (!window.API || !window.API.auth || !window.API.auth.resetPassword) {
+                    showMsg('تعذر تحميل واجهة الطلب. حدّث الصفحة.', 'error');
+                    return;
+                }
+                var data = await window.API.auth.resetPassword(token, newPassword);
 
                 if (data.success) {
-                    showMsg('تم استعادة كلمة المرور بنجاح. جاري التوجيه...', 'success');
-
-                    // حذف بيانات الاستعادة
-                    localStorage.removeItem('resetToken');
-                    localStorage.removeItem('resetPhone');
-                    localStorage.removeItem('resetTokenTime');
-
-                    // العودة لتسجيل الدخول بعد 3 ثواني
-                    setTimeout(() => {
+                    showMsg('تم استعادة كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.', 'success');
+                    pwResetTokenFromUrl = null;
+                    try {
+                        var u = new URL(window.location.href);
+                        u.searchParams.delete('reset');
+                        history.replaceState(null, '', u.pathname + u.search);
+                    } catch (e) { /* ignore */ }
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmNewPassword').value = '';
+                    setTimeout(function () {
                         backToLogin();
-                    }, 3000);
+                    }, 2000);
                 } else {
                     showMsg(data.message || 'فشل استعادة كلمة المرور', 'error');
                 }
             } catch (error) {
                 console.error('Reset password error:', error);
-                showMsg('حدث خطأ في استعادة كلمة المرور', 'error');
+                showMsg(error.message || 'حدث خطأ. حاول مرة أخرى أو اطلب رابطاً جديداً', 'error');
             } finally {
                 btnResetPassword.disabled = false;
                 btnResetPassword.textContent = 'استعادة كلمة المرور';
             }
         }
+
+        (function initPasswordResetFromUrl() {
+            try {
+                var u = new URL(window.location.href);
+                var t = u.searchParams.get('reset');
+                if (!t) return;
+                pwResetTokenFromUrl = t;
+                setActiveAuthTab('register');
+                var regForm = document.getElementById('formRegister');
+                if (regForm) regForm.style.display = 'none';
+                var forgotSec = document.getElementById('forgotPasswordSection');
+                if (forgotSec) forgotSec.style.display = 'block';
+                var s1 = document.getElementById('forgotStep1');
+                var s2 = document.getElementById('forgotStep2');
+                if (s1) s1.style.display = 'none';
+                if (s2) s2.style.display = 'block';
+                document.querySelectorAll('.forgot-password-link').forEach(function (el) {
+                    el.style.display = 'none';
+                });
+                var hint = document.getElementById('resetStep2Hint');
+                if (hint) {
+                    hint.textContent = 'أدخل كلمة المرور الجديدة. الرابط صالح لمدة 10 دقائق.';
+                }
+            } catch (e) { /* ignore */ }
+        })();
 
     </script>
 </body>

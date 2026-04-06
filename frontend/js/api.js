@@ -135,6 +135,22 @@ const authAPI = {
 
     getMe: async () => {
         return await apiRequest('/api/auth/me');
+    },
+
+    /** طلب رابط استعادة كلمة المرور: { email } أو { phone } */
+    forgotPassword: async (payload) => {
+        return await apiRequest('/api/auth/forgot-password', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+    },
+
+    /** إعادة التعيين برمز من الرابط */
+    resetPassword: async (token, password) => {
+        return await apiRequest('/api/auth/reset-password', {
+            method: 'POST',
+            body: JSON.stringify({ token, password })
+        });
     }
 };
 

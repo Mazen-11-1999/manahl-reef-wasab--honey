@@ -110,13 +110,13 @@ const CustomerSchema = new mongoose.Schema({
             trim: true
         }],
         notifications: {
+            /* افتراضي: البريد + القنوات داخل التطبيق مفعّلة؛ لا SMS (غير مستخدم) */
             email: { type: Boolean, default: true },
-            sms: { type: Boolean, default: false },
             push: { type: Boolean, default: true },
             orders: { type: Boolean, default: true },
             products: { type: Boolean, default: true },
-            contests: { type: Boolean, default: false },
-            system: { type: Boolean, default: false }
+            contests: { type: Boolean, default: true },
+            system: { type: Boolean, default: true }
         }
     },
     
@@ -335,6 +335,10 @@ CustomerSchema.pre('save', function(next) {
     // تحديث الرصيد المتاح تلقائياً
     if (this.trusted && this.trusted.enabled) {
         this.trusted.creditAvailable = Math.max(0, this.trusted.creditLimit - this.trusted.creditUsed);
+    }
+
+    if (this.preferences && this.preferences.notifications && this.preferences.notifications.sms !== undefined) {
+        delete this.preferences.notifications.sms;
     }
     
     next();

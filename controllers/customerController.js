@@ -13,9 +13,22 @@ const catchAsync = require('../utils/catchAsync');
  * الحصول على ملف العميل
  */
 exports.getProfile = catchAsync(async (req, res, next) => {
-    const customer = await Customer.findOne({ user: req.user.id })
-        .populate('user', 'username email')
-        .populate('wishlist.product', 'name image price');
+    const userId = req.user._id || req.user.id;
+    let customer;
+    try {
+        customer = await Customer.findOne({ user: userId })
+            .populate('user', 'username email role')
+            .populate('wishlist.product', 'name image price')
+            .lean();
+    } catch (populateErr) {
+        const logger = require('../utils/logger');
+        logger.warn('getProfile: populate wishlist failed, falling back', { message: populateErr.message });
+        customer = await Customer.findOne({ user: userId }).lean();
+        if (customer) {
+            const u = await User.findById(userId).select('username email role').lean();
+            if (u) customer.user = u;
+        }
+    }
 
     if (!customer) {
         return next(new AppError('العميل غير موجود', 404));
@@ -79,10 +92,12 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
     if (preferences) {
         customer.preferences = customer.preferences || {};
         if (preferences.notifications && typeof preferences.notifications === 'object') {
-            customer.preferences.notifications = {
+            const merged = {
                 ...(customer.preferences.notifications || {}),
                 ...preferences.notifications
             };
+            delete merged.sms;
+            customer.preferences.notifications = merged;
         }
         if (preferences.categories !== undefined) customer.preferences.categories = preferences.categories;
         if (preferences.allergies !== undefined) customer.preferences.allergies = preferences.allergies;

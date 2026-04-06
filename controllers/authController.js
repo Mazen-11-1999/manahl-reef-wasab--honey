@@ -13,6 +13,18 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const config = require('../config/env');
 const logger = require('../utils/logger');
+const emailService = require('../services/emailService');
+const whatsappService = require('../services/whatsappService');
+
+/** تفضيلات إشعارات العميل الافتراضية (تُستخدم عند إنشاء الحساب) */
+const DEFAULT_CUSTOMER_NOTIFICATION_PREFS = {
+    orders: true,
+    products: true,
+    contests: true,
+    system: true,
+    push: true,
+    email: true
+};
 
 /** تطبيع رقم الهاتف للمقارنة (يمني محلي أو دولي E.164 بدون +) */
 function normalizePhone(input) {
@@ -203,6 +215,7 @@ exports.registerCustomer = catchAsync(async (req, res, next) => {
         email: internalEmail,
         phone: normalized,
         profile: { firstName: nameTrim, lastName: '' },
+        preferences: { notifications: { ...DEFAULT_CUSTOMER_NOTIFICATION_PREFS } },
         loyalty: { points: 0, tier: 'bronze', totalSpent: 0, totalOrders: 0 }
     });
 
@@ -369,27 +382,57 @@ exports.googleAuthCallback = catchAsync(async (req, res, next) => {
     const family = (profile.family_name || '').trim();
     const nameFromGoogle = [given, family].filter(Boolean).join(' ') || (profile.name || '').trim() || 'عميل';
 
+    /** تقسيم الاسم من Google لعرضه في الملف الشخصي */
+    const splitGoogleDisplayName = () => {
+        if (given || family) {
+            return {
+                first: given || nameFromGoogle,
+                last: family || ''
+            };
+        }
+        const full = (profile.name || '').trim() || nameFromGoogle;
+        const parts = full.split(/\s+/).filter(Boolean);
+        if (parts.length === 0) return { first: 'عميل', last: '' };
+        if (parts.length === 1) return { first: parts[0], last: '' };
+        return { first: parts[0], last: parts.slice(1).join(' ') };
+    };
+
     let user = await User.findOne({ googleId: sub });
     if (!user) {
         user = await User.findOne({ email });
     }
 
     if (user) {
+        const firstGoogleLink = !user.googleId;
         if (!user.googleId) {
             user.googleId = sub;
         }
         user.lastLogin = new Date();
-        if (profile.picture && !user.profile?.avatar) {
-            user.profile = user.profile || {};
+        const { first: gFirst, last: gLast } = splitGoogleDisplayName();
+        user.profile = user.profile || {};
+        const nameEmpty = !String(user.profile.firstName || '').trim();
+        /* أول ربط بـ Google أو لا يوجد اسم محفوظ — نملأ من Google؛ وإلا نحافظ على الاسم المعدّل يدوياً */
+        if (firstGoogleLink || nameEmpty) {
+            user.profile.firstName = gFirst;
+            user.profile.lastName = gLast;
+        }
+        if (profile.picture) {
             user.profile.avatar = profile.picture;
         }
         user.isEmailVerified = true;
         await user.save({ validateBeforeSave: false });
 
         const cust = await Customer.findOne({ user: user._id });
-        if (cust && profile.picture && !cust.profile?.avatar) {
+        if (cust) {
             cust.profile = cust.profile || {};
-            cust.profile.avatar = profile.picture;
+            const custNameEmpty = !String(cust.profile.firstName || '').trim();
+            if (firstGoogleLink || nameEmpty || custNameEmpty) {
+                cust.profile.firstName = user.profile.firstName;
+                cust.profile.lastName = user.profile.lastName;
+            }
+            if (profile.picture) {
+                cust.profile.avatar = profile.picture;
+            }
             await cust.save({ validateBeforeSave: false });
         }
     } else {
@@ -421,6 +464,7 @@ exports.googleAuthCallback = catchAsync(async (req, res, next) => {
                 lastName: family,
                 avatar: profile.picture || undefined
             },
+            preferences: { notifications: { ...DEFAULT_CUSTOMER_NOTIFICATION_PREFS } },
             loyalty: { points: 0, tier: 'bronze', totalSpent: 0, totalOrders: 0 }
         });
     }
@@ -549,38 +593,68 @@ exports.changePassword = catchAsync(async (req, res, next) => {
 });
 
 /**
- * طلب إعادة تعيين كلمة المرور
+ * طلب إعادة تعيين كلمة المرور (بريد حقيقي أو حساب مسجّل بالهاتف — واتساب عند توفره)
  */
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-    const { email } = req.body;
+    const rawEmail = req.body.email && String(req.body.email).trim();
+    const rawPhone = req.body.phone && String(req.body.phone).trim();
 
-    if (!email) {
-        return next(new AppError('يرجى إدخال البريد الإلكتروني', 400));
+    const genericResponse = {
+        success: true,
+        message:
+            'إذا كان البريد أو الرقم مسجلاً لدينا، ستصلك رسالة تحتوي على رابط إعادة تعيين كلمة المرور.'
+    };
+
+    let user;
+    if (rawEmail) {
+        user = await User.findOne({ email: rawEmail.toLowerCase() });
+    } else if (rawPhone) {
+        const normalized = normalizePhone(rawPhone);
+        if (normalized.length < 10) {
+            return next(new AppError('رقم الهاتف غير صحيح', 400));
+        }
+        user = await User.findOne({ 'profile.phone': normalized });
+    } else {
+        return next(new AppError('يرجى إدخال البريد الإلكتروني أو رقم الهاتف', 400));
     }
-
-    const user = await User.findOne({ email });
 
     if (!user) {
-        // لا نكشف عن وجود المستخدم أم لا لأسباب أمنية
-        return res.status(200).json({
-            success: true,
-            message: 'إذا كان البريد الإلكتروني موجوداً، سيتم إرسال رابط إعادة التعيين'
-        });
+        return res.status(200).json(genericResponse);
     }
 
-    // إنشاء Reset Token
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
 
-    // TODO: إرسال البريد الإلكتروني مع رابط إعادة التعيين
-    // const resetURL = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${resetToken}`;
-    // await sendEmail(user.email, 'إعادة تعيين كلمة المرور', resetURL);
+    const base = (config.frontendUrl || '').replace(/\/$/, '');
+    const resetUrl = `${base}/pages/customer-auth.html?reset=${encodeURIComponent(resetToken)}`;
 
-    res.status(200).json({
-        success: true,
-        message: 'تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني',
-        resetToken // في الإنتاج، لا ترسل هذا في الاستجابة!
-    });
+    const internalEmail =
+        user.email && String(user.email).toLowerCase().endsWith('@customer.manahl.local');
+
+    let delivered = false;
+
+    if (!internalEmail) {
+        const result = await emailService.sendPasswordResetEmail(user.email, resetUrl);
+        delivered = !!(result && result.success);
+    } else {
+        const phone = user.profile && user.profile.phone;
+        if (phone && whatsappService.isReady()) {
+            const wa = await whatsappService.sendWhatsAppMessage(
+                phone,
+                `🔐 *استعادة كلمة المرور — مناحل ريف وصاب*\n\nاضغط على الرابط لإعادة التعيين (صالح 10 دقائق):\n${resetUrl}`
+            );
+            delivered = !!(wa && wa.success);
+        }
+    }
+
+    if (!delivered) {
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+        logger.warn(`Password reset: delivery failed for user ${user._id} (email=${user.email})`);
+    }
+
+    return res.status(200).json(genericResponse);
 });
 
 /**
@@ -593,8 +667,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
         return next(new AppError('Token وكلمة المرور مطلوبان', 400));
     }
 
-    const crypto = require('crypto');
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const hashedToken = crypto.createHash('sha256').update(String(token)).digest('hex');
 
     const user = await User.findOne({
         passwordResetToken: hashedToken,

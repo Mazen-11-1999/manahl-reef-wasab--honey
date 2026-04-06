@@ -19,7 +19,8 @@ exports.helmet = helmet({
             defaultSrc: ["'self'"],
             baseUri: ["'self'"],
             objectSrc: ["'none'"],
-            frameSrc: ["'self'"],
+            /* أدوات معاينة Vercel (vercel.live) تستخدم iframe — بدونها تظهر أخطاء CSP في وحدة التحكم */
+            frameSrc: ["'self'", 'https://vercel.live'],
             styleSrc: [
                 "'self'",
                 "'unsafe-inline'",

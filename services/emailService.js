@@ -244,6 +244,40 @@ const sendShippingReceipt = async (order, customer, receiptUrl) => {
     return await sendEmail(customer.email || customer.phone + '@temp.com', subject, html);
 };
 
+/**
+ * رابط إعادة تعيين كلمة المرور (يُرسل للمستخدم)
+ */
+const sendPasswordResetEmail = async (to, resetUrl) => {
+    const subject = 'إعادة تعيين كلمة المرور — مناحل ريف وصاب';
+    const html = `
+    <!DOCTYPE html>
+    <html dir="rtl" lang="ar">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; direction: rtl; background: #f5f5f5; }
+            .wrap { max-width: 560px; margin: 24px auto; padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+            .btn { display: inline-block; margin-top: 20px; padding: 14px 28px; background: linear-gradient(135deg, #d4af37, #f3cf7a); color: #120a00; text-decoration: none; border-radius: 8px; font-weight: bold; }
+            .muted { color: #666; font-size: 13px; margin-top: 24px; }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <h1 style="color: #120a00; font-size: 20px;">🍯 استعادة كلمة المرور</h1>
+            <p>طلبت إعادة تعيين كلمة المرور لحسابك في <strong>مناحل ريف وصاب</strong>.</p>
+            <p>اضغط الزر أدناه لإكمال العملية. الرابط صالح لمدة <strong>10 دقائق</strong> فقط.</p>
+            <a class="btn" href="${resetUrl.replace(/"/g, '&quot;')}" target="_blank" rel="noopener">إعادة تعيين كلمة المرور</a>
+            <p class="muted">إذا لم تطلب هذا، تجاهل الرسالة. لن يُغيّر أحد كلمة مرورك بدون فتح الرابط من بريدك.</p>
+            <p class="muted" style="word-break: break-all;">إن لم يعمل الزر، انسخ هذا الرابط إلى المتصفح:<br>${resetUrl.replace(/</g, '&lt;')}</p>
+        </div>
+    </body>
+    </html>
+    `;
+    const result = await sendEmail(to, subject, html);
+    return result;
+};
+
 // Helper functions
 const getPaymentMethodText = (method) => {
     const methods = {
@@ -292,7 +326,8 @@ module.exports = {
     sendEmail,
     sendOrderConfirmation,
     sendOrderStatusUpdate,
-    sendShippingReceipt
+    sendShippingReceipt,
+    sendPasswordResetEmail
 };
 
 
