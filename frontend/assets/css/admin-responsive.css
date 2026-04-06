@@ -1,0 +1,152 @@
+/**
+ * Admin panel — mobile / small-screen layout
+ * صفحات لوحة التحكم: تجاوب الجوال والشاشات الضيقة
+ */
+
+html {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+img,
+video,
+iframe,
+svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* جداول وبطاقات بيانات: تمرير أفقي عند الحاجة */
+.data-table,
+.table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.data-table table,
+.table-responsive table {
+    min-width: 0;
+}
+
+/* شبكات مساعدة (dashboard وغيره) */
+.admin-tab-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    min-width: 0;
+    padding: 0 6px;
+    box-sizing: border-box;
+}
+
+.admin-grid-main-side {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.admin-grid-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.admin-grid-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.admin-grid-pair.tight {
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.admin-grid-templates {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.admin-flex-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.admin-flex-actions > button {
+    flex: 1;
+    min-width: 140px;
+}
+
+.tabs-container {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+@media (max-width: 900px) {
+
+    .admin-grid-main-side,
+    .admin-grid-split {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-grid-pair {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-grid-templates {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-flex-actions {
+        flex-direction: column;
+    }
+
+    .admin-flex-actions > button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* صفوف نماذج شائعة في contests / categories / غيرها */
+    .form-row:not(.no-mobile-stack) {
+        grid-template-columns: 1fr !important;
+    }
+
+    .quantity-price {
+        grid-template-columns: 1fr !important;
+    }
+
+    .settings-section {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .admin-dashboard .stats-grid,
+    .stats-grid,
+    .stats-bar {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* مساحة آمنة فوق الشريط السفلي الثابت */
+@supports selector(body:has(nav.bottom-nav)) {
+    @media (max-width: 768px) {
+        body:has(nav.bottom-nav) {
+            padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+        }
+    }
+}

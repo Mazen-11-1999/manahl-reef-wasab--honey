@@ -3,6 +3,8 @@
  * أنماط مشتركة لصفحات الإدارة
  */
 
+@import url('../assets/css/admin-responsive.css');
+
 :root {
     --bg-primary: #120a00;
     --bg-secondary: #1a0f00;
@@ -68,11 +70,3 @@
     transform: scale(1.1);
     color: var(--gold-light);
 }
-
-
-
-
-
-
-
-
