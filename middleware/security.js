@@ -8,11 +8,12 @@ const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const config = require('../config/env');
+const logger = require('../utils/logger');
 
 /**
  * Helmet - حماية Headers (لا يكشف معلومات الخادم للمستخدم)
  */
-exports.helmet = helmet({
+const helmetMiddleware = helmet({
     contentSecurityPolicy: {
         useDefaults: true,
         directives: {
@@ -63,6 +64,13 @@ exports.helmet = helmet({
     xssFilter: true,
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 });
+
+exports.helmet = (req, res, next) => {
+    if (config.helmetEnabled === false) {
+        return next();
+    }
+    return helmetMiddleware(req, res, next);
+};
 
 /**
  * Rate Limiting - تحديد معدل الطلبات
@@ -238,30 +246,44 @@ exports.xssClean = xss();
 
 /**
  * CORS Configuration
- * في الإنتاج: فقط FRONTEND_URL مسموح. في التطوير: localhost مسموح.
+ * CORS_ORIGIN: فارغ = الاعتماد على FRONTEND_URL وCORS_EXTRA_ORIGINS وlocalhost في التطوير.
+ * * أو all = جميع الأصول. غير ذلك = عناوين إضافية مفصولة بفواصل تُدمج مع القائمة.
  */
 exports.corsOptions = {
     origin: function (origin, callback) {
         if (!origin) {
             return callback(null, true);
         }
+        const raw = (config.corsOrigin || '').trim();
+        const allowAllToken = raw && ['*', 'all'].includes(raw.toLowerCase());
+        if (allowAllToken) {
+            if (config.nodeEnv === 'production') {
+                logger.warn('CORS: CORS_ORIGIN يسمح بجميع الأصول — غير مفضل في الإنتاج');
+            }
+            return callback(null, true);
+        }
         const extra = (config.corsExtraOrigins || []).filter(Boolean);
+        const fromCorsOrigin = raw
+            ? raw.split(',').map((s) => s.trim()).filter(Boolean)
+            : [];
         const allowedOrigins = [
             config.frontendUrl,
             ...extra,
+            ...fromCorsOrigin,
             'http://localhost:3000',
             'http://localhost:3001',
             'http://localhost:8080',
             'http://127.0.0.1:3000',
             'http://127.0.0.1:3001'
         ].filter(Boolean);
+        const unique = [...new Set(allowedOrigins)];
         if (config.nodeEnv === 'production') {
-            if (allowedOrigins.indexOf(origin) !== -1) {
+            if (unique.indexOf(origin) !== -1) {
                 return callback(null, true);
             }
             return callback(new Error('غير مسموح بهذا الأصل من CORS'));
         }
-        if (allowedOrigins.indexOf(origin) !== -1) {
+        if (unique.indexOf(origin) !== -1) {
             return callback(null, true);
         }
         callback(new Error('غير مسموح بهذا الأصل من CORS'));

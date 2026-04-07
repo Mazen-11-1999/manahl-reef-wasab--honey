@@ -32,6 +32,27 @@ const config = {
         .map((s) => s.trim())
         .filter(Boolean),
 
+    /**
+     * CORS_ORIGIN: *, أو all = السماح لجميع الأصول (غير مفضل في الإنتاج)
+     * أو عناوين مفصولة بفواصل تُدمج مع القائمة المسموحة
+     */
+    corsOrigin: (process.env.CORS_ORIGIN || '').trim(),
+
+    /** ضغط الاستجابات (gzip) — المعطّل بـ COMPRESSION_ENABLED=false */
+    compressionEnabled: process.env.COMPRESSION_ENABLED !== 'false',
+
+    /** رؤوس Helmet — المعطّل بـ HELMET_ENABLED=false */
+    helmetEnabled: process.env.HELMET_ENABLED !== 'false',
+
+    /** صيغة Morgan: combined, common, dev, short, tiny */
+    morganFormat: (process.env.MORGAN_FORMAT || '').trim().toLowerCase(),
+
+    /**
+     * عدد عمليات cluster (0 = تعطيل). يُتجاهل على Vercel.
+     * يُنصح بعدد نوى مناسب، ليس أكثر من os.cpus().length
+     */
+    clusterWorkers: Math.max(0, parseInt(process.env.CLUSTER_WORKERS, 10) || 0),
+
     // WhatsApp Settings
     enableWhatsApp: process.env.ENABLE_WHATSAPP === 'true',
     whatsappTimeout: process.env.WHATSAPP_TIMEOUT || 30000,

@@ -23,12 +23,15 @@ const compression = require('compression');
 const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
+const cluster = require('cluster');
 
 // Security middleware
 const security = require('./middleware/security');
 
 // Logging
 const logger = require('./utils/logger');
+const { cleanupExpiredStories } = require('./utils/storyMediaCleanup');
 const requestLogger = require('./middleware/requestLogger');
 
 // Error handling
@@ -65,8 +68,10 @@ app.use(security.mongoSanitize);
 app.use(security.xssClean);
 app.use(security.sanitizeResponse);
 
-// Compression
-app.use(compression());
+// Compression (معطّل عند COMPRESSION_ENABLED=false)
+if (config.compressionEnabled) {
+    app.use(compression());
+}
 
 // Body parser
 app.use(express.json({ limit: '10mb' }));
@@ -78,14 +83,21 @@ app.use(cors(security.corsOptions));
 // Request logging
 app.use(requestLogger);
 
-// Morgan logging (complementary to requestLogger)
+// Morgan logging (complementary to requestLogger) — صيغة عبر MORGAN_FORMAT عند صحتها
+const MORGAN_FORMATS = new Set(['combined', 'common', 'dev', 'short', 'tiny']);
+function resolveMorganFormat() {
+    const f = config.morganFormat;
+    if (f && MORGAN_FORMATS.has(f)) {
+        return f;
+    }
+    return config.nodeEnv === 'development' ? 'dev' : 'combined';
+}
 if (config.nodeEnv === 'development') {
-    app.use(morgan('dev'));
+    app.use(morgan(resolveMorganFormat()));
 } else {
-    // التحقق من بيئة Vercel
-    const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+    const isVercel = process.env.VERCEL === '1';
 
-    // في Vercel، لا نستخدم ملفات السجلات
+    // على Vercel: بدون ملف access.log (requestLogger إلى stdout يكفي)
     if (!isVercel) {
         const logsDir = path.join(__dirname, 'logs');
         if (!fs.existsSync(logsDir)) {
@@ -95,7 +107,7 @@ if (config.nodeEnv === 'development') {
             path.join(logsDir, 'access.log'),
             { flags: 'a' }
         );
-        app.use(morgan('combined', { stream: accessLogStream }));
+        app.use(morgan(resolveMorganFormat(), { stream: accessLogStream }));
     }
 }
 
@@ -148,6 +160,24 @@ app.get('/health', (req, res) => {
         timestamp: new Date().toISOString()
     });
 });
+
+// تنظيف وسائط الحالات المنتهية (مناسب لـ Vercel Cron حيث لا يعمل setInterval بثبات)
+if (process.env.CRON_SECRET) {
+    app.post('/api/internal/cleanup-expired-stories', async (req, res) => {
+        const auth = req.headers.authorization || '';
+        const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : (req.headers['x-cron-secret'] || '').trim();
+        if (token !== process.env.CRON_SECRET) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+        try {
+            await cleanupExpiredStories();
+            return res.json({ success: true, message: 'cleanup ran' });
+        } catch (e) {
+            logger.error('cleanup-expired-stories', e);
+            return res.status(500).json({ success: false, message: e.message });
+        }
+    });
+}
 
 // Serve index.html for root route
 app.get('/', (req, res) => {
@@ -1611,6 +1641,17 @@ const startServer = async () => {
             }
             console.log(`📝 السجلات: logs/`);
             console.log('============================================\n');
+
+            // تنظيف دوري لوسائط الحالات المنتهية (24 ساعة) — لا يمس المنتجات
+            if (dbConnection) {
+                const storyCleanupMs = parseInt(process.env.STORY_CLEANUP_INTERVAL_MS, 10) || 60 * 60 * 1000;
+                setInterval(() => {
+                    cleanupExpiredStories().catch((e) => logger.error('تنظيف الحالات المنتهية', e));
+                }, storyCleanupMs);
+                setTimeout(() => {
+                    cleanupExpiredStories().catch((e) => logger.error('تنظيف الحالات المنتهية (أول تشغيل)', e));
+                }, 45_000);
+            }
         });
 
         // معالجة أخطاء الخادم
@@ -1638,55 +1679,73 @@ const startServer = async () => {
     }
 };
 
-// Start the server
-console.log('🔍 بدء تشغيل الخادم...');
-console.log('📁 المسار الحالي:', __dirname);
-console.log('📄 ملف index.html:', path.join(__dirname, 'frontend', 'index.html'));
-console.log('✅ Express app initialized');
-console.log('🔄 استدعاء startServer()...');
-console.log('⏱️  سيتم محاولة الاتصال بقاعدة البيانات...');
-console.log('📝 سيتم تشغيل السيرفر حتى لو فشل الاتصال (وضع التطوير)');
+// Start the server (CLUSTER_WORKERS>0 على غير Vercel يفعّل cluster)
+function launchServerProcess() {
+    console.log('🔍 بدء تشغيل الخادم...');
+    console.log('📁 المسار الحالي:', __dirname);
+    console.log('📄 ملف index.html:', path.join(__dirname, 'frontend', 'index.html'));
+    console.log('✅ Express app initialized');
+    console.log('🔄 استدعاء startServer()...');
+    console.log('⏱️  سيتم محاولة الاتصال بقاعدة البيانات...');
+    console.log('📝 سيتم تشغيل السيرفر حتى لو فشل الاتصال (وضع التطوير)');
 
-try {
-    startServer().then(() => {
-        console.log('✅ startServer() اكتمل بنجاح');
-    }).catch((error) => {
-        console.error('❌ خطأ غير متوقع في startServer:', error);
-        console.error('Message:', error.message);
-        if (error.stack) {
-            console.error('Stack:', error.stack.substring(0, 300));
+    try {
+        startServer().then(() => {
+            console.log('✅ startServer() اكتمل بنجاح');
+        }).catch((error) => {
+            console.error('❌ خطأ غير متوقع في startServer:', error);
+            console.error('Message:', error.message);
+            if (error.stack) {
+                console.error('Stack:', error.stack.substring(0, 300));
+            }
+            if (config.nodeEnv === 'development') {
+                console.log('🔄 محاولة تشغيل الخادم بدون قاعدة بيانات...');
+                try {
+                    app.listen(config.port, '0.0.0.0', () => {
+                        console.log(`\n✅ الخادم يعمل على المنفذ ${config.port} (بدون قاعدة بيانات)`);
+                        console.log(`🌐 الصفحة الرئيسية: http://localhost:${config.port}\n`);
+                    });
+                } catch (listenError) {
+                    console.error('❌ فشل في تشغيل الخادم:', listenError.message);
+                    if (listenError.stack) {
+                        console.error('Stack:', listenError.stack.substring(0, 300));
+                    }
+                }
+            } else {
+                process.exit(1);
+            }
+        });
+    } catch (syncError) {
+        console.error('❌ خطأ متزامن في استدعاء startServer:', syncError.message);
+        if (syncError.stack) {
+            console.error('Stack:', syncError.stack.substring(0, 300));
         }
-        // في بيئة التطوير، حاول تشغيل الخادم بدون قاعدة بيانات
         if (config.nodeEnv === 'development') {
             console.log('🔄 محاولة تشغيل الخادم بدون قاعدة بيانات...');
-            try {
-                app.listen(config.port, '0.0.0.0', () => {
-                    console.log(`\n✅ الخادم يعمل على المنفذ ${config.port} (بدون قاعدة بيانات)`);
-                    console.log(`🌐 الصفحة الرئيسية: http://localhost:${config.port}\n`);
-                });
-            } catch (listenError) {
-                console.error('❌ فشل في تشغيل الخادم:', listenError.message);
-                if (listenError.stack) {
-                    console.error('Stack:', listenError.stack.substring(0, 300));
-                }
-            }
-        } else {
-            process.exit(1);
+            app.listen(config.port, '0.0.0.0', () => {
+                console.log(`\n✅ الخادم يعمل على المنفذ ${config.port} (بدون قاعدة بيانات)`);
+                console.log(`🌐 الصفحة الرئيسية: http://localhost:${config.port}\n`);
+            });
         }
+    }
+}
+
+const useCluster = config.clusterWorkers > 0 && process.env.VERCEL !== '1';
+
+if (useCluster && cluster.isPrimary) {
+    const n = Math.min(config.clusterWorkers, os.cpus().length);
+    console.log(`🔀 Cluster: ${n} عملية عاملة (CLUSTER_WORKERS=${config.clusterWorkers})`);
+    logger.info('Cluster primary starting workers', { workers: n, requested: config.clusterWorkers });
+    for (let i = 0; i < n; i += 1) {
+        cluster.fork();
+    }
+    cluster.on('exit', (worker, code, signal) => {
+        console.warn(`⚠️ Worker ${worker.process.pid} توقف (${code ?? signal}). إعادة التشغيل...`);
+        logger.warn('Cluster worker exited', { pid: worker.process.pid, code, signal });
+        cluster.fork();
     });
-} catch (syncError) {
-    console.error('❌ خطأ متزامن في استدعاء startServer:', syncError.message);
-    if (syncError.stack) {
-        console.error('Stack:', syncError.stack.substring(0, 300));
-    }
-    // في التطوير، حاول تشغيل الخادم
-    if (config.nodeEnv === 'development') {
-        console.log('🔄 محاولة تشغيل الخادم بدون قاعدة بيانات...');
-        app.listen(config.port, '0.0.0.0', () => {
-            console.log(`\n✅ الخادم يعمل على المنفذ ${config.port} (بدون قاعدة بيانات)`);
-            console.log(`🌐 الصفحة الرئيسية: http://localhost:${config.port}\n`);
-        });
-    }
+} else {
+    launchServerProcess();
 }
 
 // Graceful shutdown

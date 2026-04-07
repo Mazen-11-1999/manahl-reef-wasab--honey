@@ -14,5 +14,15 @@
     "server.js": {
       "maxDuration": 60
     }
+  },
+  "env": {
+    "NODE_ENV": "production",
+    "MONGODB_URI": "mongodb+srv://manahlbadr_user:Mb%40drHoney2026!@manahlbadr-cluster.wlghvcc.mongodb.net/manahl-badr?retryWrites=true&w=majority&appName=manahlbadr-cluster",
+    "JWT_SECRET": "9a8f7e6d5c4b3a2f1e8d7c6b5a4f3e2d9c8b7a6f5e4d3c2b1a9f8e7d6c5b4a3f2e1d9c8b7a6f5e4d3c2b1a9f8e7d6c5b4a3f2e1d9c8b7a6",
+    "JWT_REFRESH_SECRET": "c8b7a6f5e4d3c2b1a9f8e7d6c5b4a3f2e1d9c8b7a6f5e4d3c2b1a9f8e7d6c5b4a3f2e1d9c8b7a6f5e4d3c2b1a9f8e7d6c5b4a3f2e1d9c8b7a6",
+    "FRONTEND_URL": "https://manahl-badr.vercel.app",
+    "CLOUD_STORAGE_ENABLED": "true",
+    "DISABLE_CACHE": "false",
+    "FORCE_REBUILD": "false"
   }
 }

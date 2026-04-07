@@ -6,6 +6,7 @@
 const path = require('path');
 const fs = require('fs');
 const Story = require('../models/Story');
+const { removeStoryMediaFiles } = require('../utils/storyMediaCleanup');
 const Customer = require('../models/Customer');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -161,11 +162,14 @@ exports.updateStory = catchAsync(async (req, res, next) => {
  * حذف حالة/إعلان (للمشرف)
  */
 exports.deleteStory = catchAsync(async (req, res, next) => {
-    const story = await Story.findByIdAndDelete(req.params.id);
+    const story = await Story.findById(req.params.id);
 
     if (!story) {
         return next(new AppError('الحالة/الإعلان غير موجود', 404));
     }
+
+    await removeStoryMediaFiles(story);
+    await Story.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
         success: true,
