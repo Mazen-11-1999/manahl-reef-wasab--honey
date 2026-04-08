@@ -2448,12 +2448,12 @@
     <script src="../js/admin-dashboard-integration.js"></script>
 
     <script>
-        // إن لم يكن هناك توكن إداري، إعادة التوجيه لصفحة الدخول
+        // جلسة المشرف فقط (لا يكفي توكن العميل — كان يسمح بتحميل اللوحة ثم 401 على الـ API)
         (function () {
-            const token = typeof getAuthToken === 'function' ? getAuthToken() : (localStorage.getItem('authToken') || localStorage.getItem('adminToken'));
-            if (!token && !window.location.pathname.includes('login')) {
+            if ((window.location.pathname || '').includes('login')) return;
+            const adminOk = localStorage.getItem('isAdmin') === 'true' && localStorage.getItem('adminToken');
+            if (!adminOk) {
                 window.location.replace('login.html');
-                return;
             }
         })();
 

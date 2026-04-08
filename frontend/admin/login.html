@@ -341,10 +341,13 @@
             function hideMsg() { loginMsg.className = 'msg'; }
 
             function setToken(token) {
-                localStorage.setItem('adminToken', token);
-                localStorage.setItem('isAdmin', 'true');
-                if (typeof setAuthToken === 'function') setAuthToken(token);
-                else localStorage.setItem('authToken', token);
+                if (window.API && typeof window.API.setAuthToken === 'function') {
+                    window.API.setAuthToken(token, { asAdmin: true });
+                } else {
+                    localStorage.setItem('adminToken', token);
+                    localStorage.setItem('isAdmin', 'true');
+                    localStorage.setItem('authToken', token);
+                }
             }
             function goToDashboard() {
                 window.location.href = 'dashboard.html';
@@ -436,10 +439,10 @@
                 btnFingerprint.disabled = false;
             });
 
-            // إن كان لديه token صالح يوجّه للوحة التحكم
+            // إن كان لديه جلسة مشرف صالحة يوجّه للوحة التحكم
             (function checkExistingAuth() {
-                const token = typeof getAuthToken === 'function' ? getAuthToken() : (localStorage.getItem('authToken') || localStorage.getItem('adminToken'));
-                if (!token) return;
+                const token = (window.API && window.API.getAuthToken) ? window.API.getAuthToken() : (localStorage.getItem('adminToken') || localStorage.getItem('authToken'));
+                if (!token || localStorage.getItem('isAdmin') !== 'true') return;
                 fetch(API_BASE + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
                     .then(function (r) { return r.json(); })
                     .then(function (data) {

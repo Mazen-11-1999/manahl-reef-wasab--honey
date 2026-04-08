@@ -14,28 +14,50 @@ if (window.API && window.API_BASE_URL) {
         
         const API_BASE_URL = window.location.origin;
 
+/** مسارات لوحة التحكم — يجب استخدام adminToken وليس توكن العميل */
+function isAdminArea() {
+    try {
+        const p = window.location.pathname || '';
+        return p.includes('/admin/') || /\/admin\//.test(p) || p.endsWith('/admin');
+    } catch (e) {
+        return false;
+    }
+}
+
 // Token management — يُخزَّن التوكن فقط، ولا يُخزَّن أبداً كلمة المرور (لأمان أدوات المطور والمتصفح)
-let authToken = localStorage.getItem('authToken') || localStorage.getItem('adminToken');
+// لا تخلط: توكن العميل (authToken) وتوكن المشرف (adminToken) — كان setAuthToken يكتب على الاثنين فيفسد الدخول للإدارة
+let authToken = localStorage.getItem('authToken') || null;
 
 /**
- * تعيين Token
+ * تعيين Token (عادة جلسة العميل). للمشرف استخدم { asAdmin: true } من صفحة الدخول الإدارية.
  */
-function setAuthToken(token) {
-    authToken = token;
+function setAuthToken(token, opts) {
+    const asAdmin = opts && opts.asAdmin === true;
+    authToken = token || null;
     if (token) {
         localStorage.setItem('authToken', token);
-        localStorage.setItem('adminToken', token);
+        if (asAdmin) {
+            localStorage.setItem('adminToken', token);
+            localStorage.setItem('isAdmin', 'true');
+        }
     } else {
         localStorage.removeItem('authToken');
         localStorage.removeItem('adminToken');
+        localStorage.removeItem('isAdmin');
         localStorage.removeItem('customerDisplayName');
     }
 }
 
 /**
- * الحصول على Token
+ * الحصول على Token المناسب للصفحة الحالية (مشرف في /admin/، عميل في المتجر)
  */
 function getAuthToken() {
+    try {
+        if (isAdminArea() && localStorage.getItem('isAdmin') === 'true') {
+            const at = localStorage.getItem('adminToken');
+            if (at) return at;
+        }
+    } catch (e) { /* ignore */ }
     return authToken || localStorage.getItem('authToken') || localStorage.getItem('adminToken');
 }
 
