@@ -394,6 +394,26 @@ exports.getOrderByOrderId = catchAsync(async (req, res, next) => {
 // حد أقصى للطلبات في استجابة واحدة (لتحمل الأحمال الكبيرة دون استعلامات ثقيلة)
 const MAX_ORDERS_LIMIT = 1000;
 
+/**
+ * يتوافق مع orderValidator.getOrders: created-desc، -createdAt، createdAt، total-desc، إلخ
+ */
+function parseOrdersSort(sort) {
+    if (!sort) return { createdAt: -1 };
+    const s = String(sort).trim();
+    const legacy = {
+        'created-desc': { createdAt: -1 },
+        'created-asc': { createdAt: 1 },
+        'total-desc': { total: -1 },
+        'total-asc': { total: 1 }
+    };
+    if (legacy[s]) return legacy[s];
+    if (s === '-createdAt') return { createdAt: -1 };
+    if (s === 'createdAt' || s === '+createdAt') return { createdAt: 1 };
+    if (s === '-total') return { total: -1 };
+    if (s === 'total' || s === '+total') return { total: 1 };
+    return { createdAt: -1 };
+}
+
 exports.getOrders = catchAsync(async (req, res, next) => {
     const { status, customerPhone, startDate, endDate, page = 1, limit = 20, sort } = req.query;
 
@@ -407,11 +427,7 @@ exports.getOrders = catchAsync(async (req, res, next) => {
         if (endDate) query.createdAt.$lte = new Date(endDate);
     }
 
-    let sortOption = { createdAt: -1 };
-    if (sort) {
-        const [field, order] = sort.split('-');
-        sortOption = { [field]: order === 'asc' ? 1 : -1 };
-    }
+    const sortOption = parseOrdersSort(sort);
 
     const limitNum = Math.min(parseInt(limit, 10) || 20, MAX_ORDERS_LIMIT);
     const pageNum = Math.max(1, parseInt(page, 10) || 1);

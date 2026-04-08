@@ -5,6 +5,22 @@
 
 const { body, param, query } = require('express-validator');
 
+/** يجب أن تطابق models/Order.js — status */
+const ORDER_STATUSES = [
+    'pending', 'processing', 'paid', 'ready_to_ship', 'shipped', 'delivered', 'completed', 'cancelled'
+];
+
+const LEGACY_SORT = ['created-desc', 'created-asc', 'total-desc', 'total-asc'];
+
+function isValidSort(value) {
+    const v = String(value ?? '').trim();
+    if (!v) return true;
+    if (LEGACY_SORT.includes(v)) return true;
+    if (v === '-createdAt' || v === 'createdAt' || v === '+createdAt') return true;
+    if (v === '-total' || v === 'total' || v === '+total') return true;
+    return false;
+}
+
 /**
  * Validation rules لإنشاء طلب جديد
  */
@@ -140,7 +156,7 @@ exports.getOrders = [
     query('status')
         .optional()
         .trim()
-        .isIn(['pending', 'processing', 'shipped', 'delivered', 'cancelled'])
+        .isIn(ORDER_STATUSES)
         .withMessage('حالة الطلب غير صحيحة'),
     
     query('customerId')
@@ -170,8 +186,10 @@ exports.getOrders = [
     
     query('sort')
         .optional()
-        .isIn(['created-desc', 'created-asc', 'total-desc', 'total-asc'])
-        .withMessage('نوع الترتيب غير صحيح')
+        .custom((value) => {
+            if (isValidSort(value)) return true;
+            throw new Error('نوع الترتيب غير صحيح');
+        })
 ];
 
 /**
