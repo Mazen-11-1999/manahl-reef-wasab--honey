@@ -3,8 +3,11 @@
  * يعمل حتى بدون إنترنت
  */
 
-const CACHE_NAME = 'manahl-badr-v1';
+const CACHE_NAME = 'manahl-badr-v2';
 const NOTIFICATION_CACHE = 'notifications-v1';
+
+// صفحات موجودة فعلياً — addAll يفشل بالكامل إذا فشل أي طلب واحد
+const PRECACHE_URLS = ['/', '/index.html', '/manifest.json'];
 
 // تثبيت Service Worker
 self.addEventListener('install', (event) => {
@@ -12,11 +15,13 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log('[Service Worker] Caching app shell');
-            return cache.addAll([
-                '/',
-                '/index.html',
-                '/pages/notifications.html'
-            ]);
+            return Promise.all(
+                PRECACHE_URLS.map((url) =>
+                    cache.add(url).catch((err) => {
+                        console.warn('[Service Worker] Precache skipped:', url, err && err.message);
+                    })
+                )
+            );
         })
     );
     self.skipWaiting();

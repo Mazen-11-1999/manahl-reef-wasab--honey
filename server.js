@@ -148,6 +148,16 @@ app.use(
 app.use(express.static(path.join(__dirname, 'frontend'))); // Serve static files from frontend directory
 // Removed dangerous express.static('.') that exposed all project files
 
+// manifest.json موجود في public/ — بدون هذا المسار كان الطلب يصل إلى app.all('*') فيُرجع index.html فيُفسَّر كـ JSON خطأ
+app.get('/manifest.json', (req, res) => {
+    const manifestPath = path.join(__dirname, 'public', 'manifest.json');
+    if (!fs.existsSync(manifestPath)) {
+        return res.status(404).type('application/json').json({ success: false, message: 'Manifest not found' });
+    }
+    res.type('application/manifest+json');
+    res.sendFile(manifestPath);
+});
+
 // ============================================
 // ROUTES
 // ============================================
