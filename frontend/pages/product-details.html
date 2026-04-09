@@ -1745,7 +1745,7 @@
                 }
             } catch (error) {
                 console.error('Error submitting order:', error);
-                showNotification('حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى', 'error');
+                showNotification((error && error.message) ? error.message : 'حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى', 'error');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>✅</span><span>إرسال الطلب</span>';
             }

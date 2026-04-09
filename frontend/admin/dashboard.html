@@ -2968,7 +2968,7 @@
         function updateLiveData() {
             setInterval(() => {
                 if (typeof loadDashboardData === 'function') {
-                    loadDashboardData();
+                    loadDashboardData({ silent: true });
                 } else if (window.API && window.API.stats && window.API.stats.getStats) {
                     window.API.stats.getStats().then(stats => {
                         const monthlySalesEl = document.getElementById('monthlySales');

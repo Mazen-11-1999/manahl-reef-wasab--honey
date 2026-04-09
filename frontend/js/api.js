@@ -88,16 +88,36 @@ async function apiRequest(endpoint, options = {}) {
     };
 
     const doRequest = async () => {
-        const response = await fetch(url, finalOptions);
-        const data = await response.json();
+        let response;
+        try {
+            response = await fetch(url, finalOptions);
+        } catch (e) {
+            throw new Error('تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.');
+        }
+        const text = (await response.text()).trim();
+        let data = {};
+        if (text) {
+            try {
+                data = JSON.parse(text);
+            } catch (parseErr) {
+                if (!response.ok) {
+                    if ([502, 503, 504].includes(response.status)) {
+                        throw new Error('الخدمة غير متاحة مؤقتاً. يرجى المحاولة بعد قليل.');
+                    }
+                    throw new Error(`تعذر معالجة رد الخادم (${response.status}). حاول مرة أخرى.`);
+                }
+                throw new Error('استجابة غير متوقعة من الخادم.');
+            }
+        }
         if (!response.ok) {
+            const msg = data && data.message ? String(data.message) : '';
             if (response.status === 429) {
-                throw new Error(data.message || 'الطلبات كثيرة حالياً. يرجى المحاولة بعد دقيقة.');
+                throw new Error(msg || 'الطلبات كثيرة حالياً. يرجى المحاولة بعد دقيقة.');
             }
-            if (response.status === 503) {
-                throw new Error(data.message || 'الخدمة مؤقتاً غير متاحة. يرجى المحاولة لاحقاً.');
+            if (response.status === 503 || response.status === 502 || response.status === 504) {
+                throw new Error(msg || 'الخدمة مؤقتاً غير متاحة. يرجى المحاولة لاحقاً.');
             }
-            throw new Error(data.message || 'حدث خطأ في الطلب');
+            throw new Error(msg || 'حدث خطأ في الطلب');
         }
         return data;
     };
@@ -105,10 +125,11 @@ async function apiRequest(endpoint, options = {}) {
     try {
         return await doRequest();
     } catch (error) {
-        // إعادة محاولة مرة واحدة عند 429 أو انقطاع (مناسب للإطلاق مع عدد كبير من المستخدمين)
         const isRetryable = error.message && (
             error.message.includes('كثيرة') ||
             error.message.includes('غير متاحة') ||
+            error.message.includes('تعذر الاتصال') ||
+            error.message.includes('غير متاحة مؤقتاً') ||
             (error.name === 'TypeError' && (error.message.includes('fetch') || error.message.includes('network')))
         );
         if (isRetryable) {

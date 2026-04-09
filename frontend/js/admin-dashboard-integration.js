@@ -4,32 +4,28 @@
  */
 
 // تحميل البيانات من الـ API
-async function loadDashboardData() {
+// silent: true عند التحديث التلقائي (كل 30ث) — بدون إشعارات مزعجة أو console.error مكرر
+async function loadDashboardData(opts) {
+    const silent = !!(opts && opts.silent);
     try {
-        // تحميل الإحصائيات
-        await loadStats();
-        
-        // تحميل الطلبات
-        await loadOrders();
-        
-        // تحميل المنتجات
-        await loadProducts();
-        
-        // تحميل المسابقات
-        await loadContests();
-        
-        // تحميل العملاء
-        await loadCustomers();
-        
-        showNotification('تم تحميل البيانات بنجاح! ✅', 'success');
+        await loadStats(silent);
+        await loadOrders(silent);
+        await loadProducts(silent);
+        await loadContests(silent);
+        await loadCustomers(silent);
+        if (!silent) {
+            showNotification('تم تحميل البيانات بنجاح! ✅', 'success');
+        }
     } catch (error) {
-        console.error('Error loading dashboard data:', error);
-        showNotification('حدث خطأ في تحميل البيانات', 'error');
+        if (!silent) {
+            console.error('Error loading dashboard data:', error);
+            showNotification('حدث خطأ في تحميل البيانات', 'error');
+        }
     }
 }
 
 // تحميل الإحصائيات
-async function loadStats() {
+async function loadStats(silent) {
     try {
         // محاولة استخدام API.stats.getStats() إذا كان متوفراً
         let stats = {};
@@ -67,7 +63,9 @@ async function loadStats() {
                 shippingOrdersEl.textContent = shippingOrders;
             }
         } catch (e) {
-            console.error('Error loading shipping orders:', e);
+            if (!silent) {
+                console.warn('النظرة العامة: تعذر جلب الطلبات لحساب عدد الشحنات:', (e && e.message) || e);
+            }
         }
         
         // حساب إجمالي العملاء من الطلبات
@@ -87,7 +85,9 @@ async function loadStats() {
                 totalCustomersEl.textContent = uniqueCustomers.size;
             }
         } catch (e) {
-            console.error('Error loading customers:', e);
+            if (!silent) {
+                console.warn('النظرة العامة: تعذر جلب الطلبات لحساب عدد العملاء (ليس تبويب العملاء):', (e && e.message) || e);
+            }
         }
         
         // حساب معدل النمو (مبسط - يمكن تحسينه لاحقاً)
@@ -118,12 +118,14 @@ async function loadStats() {
             }
         }
     } catch (error) {
-        console.error('Error loading stats:', error);
+        if (!silent) {
+            console.error('Error loading stats:', error);
+        }
     }
 }
 
 // تحميل الطلبات
-async function loadOrders() {
+async function loadOrders(silent) {
     try {
         const response = await API.orders.getAll({ limit: 10, sort: '-createdAt' });
         const orders = response.data || response;
@@ -202,12 +204,14 @@ async function loadOrders() {
             }
         }
     } catch (error) {
-        console.error('Error loading orders:', error);
+        if (!silent) {
+            console.error('Error loading orders:', error);
+        }
     }
 }
 
 // تحميل المنتجات
-async function loadProducts() {
+async function loadProducts(silent) {
     try {
         const response = await API.products.getAll({ limit: 10 });
         const products = response.data || response;
@@ -234,12 +238,14 @@ async function loadProducts() {
             }).join('');
         }
     } catch (error) {
-        console.error('Error loading products:', error);
+        if (!silent) {
+            console.error('Error loading products:', error);
+        }
     }
 }
 
 // تحميل المسابقات
-async function loadContests() {
+async function loadContests(silent) {
     try {
         const contests = await API.contests.getAll();
         const activeContests = Array.isArray(contests) ? contests.filter(c => c.status === 'active') : [];
@@ -272,12 +278,14 @@ async function loadContests() {
             }
         }
     } catch (error) {
-        console.error('Error loading contests:', error);
+        if (!silent) {
+            console.error('Error loading contests:', error);
+        }
     }
 }
 
 // تحميل العملاء (بيانات حقيقية من API + إحصائيات الشارات)
-async function loadCustomers() {
+async function loadCustomers(silent) {
     const customersTableBody = document.getElementById('customersTableBody');
     const totalEl = document.getElementById('totalCustomersStat');
     const vipEl = document.getElementById('vipCustomersStat');
@@ -321,13 +329,15 @@ async function loadCustomers() {
             return '<tr><td class="customer-name">' + (name || '—') + '</td><td>' + (c.phone || '—') + '</td><td class="customer-orders">' + orderCount + ' طلب</td><td>' + badgeHtml + '</td></tr>';
         }).join('');
     } catch (error) {
-        console.error('Error loading customers:', error);
-        if (customersTableBody) {
-            customersTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--danger);">فشل تحميل العملاء. <a href="customers-badges.html" style="color:var(--gold-primary);">افتح صفحة العملاء والشارات</a></td></tr>';
+        if (!silent) {
+            console.error('Error loading customers:', error);
+            if (customersTableBody) {
+                customersTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--danger);">فشل تحميل العملاء. <a href="customers-badges.html" style="color:var(--gold-primary);">افتح صفحة العملاء والشارات</a></td></tr>';
+            }
+            if (totalEl) totalEl.textContent = '—';
+            if (vipEl) vipEl.textContent = '—';
+            if (premiumEl) premiumEl.textContent = '—';
         }
-        if (totalEl) totalEl.textContent = '—';
-        if (vipEl) vipEl.textContent = '—';
-        if (premiumEl) premiumEl.textContent = '—';
     }
 }
 
@@ -403,25 +413,5 @@ function manageContest(contestId) {
     window.open(`admin-contest-control.html?contestId=${contestId}`, '_blank');
 }
 
-// تحديث البيانات تلقائياً (فترة معقولة لتقليل الطلبات وتجنب 429)
-function startAutoRefresh() {
-    setInterval(() => {
-        loadDashboardData();
-    }, 60000); // كل 60 ثانية
-}
-
-// تهيئة عند تحميل الصفحة
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof API !== 'undefined') {
-            loadDashboardData();
-            startAutoRefresh();
-        }
-    });
-} else {
-    if (typeof API !== 'undefined') {
-        loadDashboardData();
-        startAutoRefresh();
-    }
-}
+// التحميل الأولي والتحديث الدوري يُداران من dashboard.html (updateLiveData) لتفادي استدعاء مزدوج وإشعارات متكررة
 
