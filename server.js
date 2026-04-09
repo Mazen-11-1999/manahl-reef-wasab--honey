@@ -68,9 +68,18 @@ app.use(security.mongoSanitize);
 app.use(security.xssClean);
 app.use(security.sanitizeResponse);
 
-// Compression (معطّل عند COMPRESSION_ENABLED=false)
+// Compression (معطّل عند COMPRESSION_ENABLED=false) — COMPRESSION_LEVEL / COMPRESSION_THRESHOLD من env
 if (config.compressionEnabled) {
-    app.use(compression());
+    app.use(
+        compression({
+            level: config.compressionLevel,
+            threshold: config.compressionThreshold,
+            filter: (req, res) => {
+                if (req.headers['x-no-compression']) return false;
+                return compression.filter(req, res);
+            }
+        })
+    );
 }
 
 // Body parser

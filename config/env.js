@@ -5,6 +5,24 @@
 
 require('dotenv').config();
 
+const nodeEnvForLimits = process.env.NODE_ENV || 'development';
+
+/**
+ * حد الطلبات العامة لـ /api/* — قيماً منخفضة جداً (مثل 100/15د) تُسبب 429 لمتصفحي المتجر والإدارة.
+ */
+function computeRateLimitMax() {
+    const raw = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10);
+    let max = Number.isFinite(raw) && raw > 0 ? raw : 1000;
+    const floor = nodeEnvForLimits === 'production' ? 500 : 250;
+    if (max < floor) {
+        console.warn(
+            `⚠️ RATE_LIMIT_MAX_REQUESTS=${max} ضيّق جداً لمستخدمي المتجر؛ يُضبط على ${floor} (غيّر المتغير لو احتجت قيماً أعلى)`
+        );
+        max = floor;
+    }
+    return max;
+}
+
 const requiredEnvVars = [
     'MONGODB_URI',
     'JWT_SECRET',
@@ -40,6 +58,10 @@ const config = {
 
     /** ضغط الاستجابات (gzip) — المعطّل بـ COMPRESSION_ENABLED=false */
     compressionEnabled: process.env.COMPRESSION_ENABLED !== 'false',
+    /** مستوى ضغط zlib 1–9 (افتراضي 6). أعلى = حجم أصغر وأبطأ CPU */
+    compressionLevel: Math.min(9, Math.max(1, parseInt(process.env.COMPRESSION_LEVEL, 10) || 6)),
+    /** الحد الأدنى لحجم الاستجابة لضغطها (بايت). الافتراضي 1024 */
+    compressionThreshold: Math.max(0, parseInt(process.env.COMPRESSION_THRESHOLD, 10) || 1024),
 
     /** رؤوس Helmet — المعطّل بـ HELMET_ENABLED=false */
     helmetEnabled: process.env.HELMET_ENABLED !== 'false',
@@ -81,10 +103,10 @@ const config = {
     // Security
     bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS) || 12,
     rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-    rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000,
+    rateLimitMaxRequests: computeRateLimitMax(),
 
     // File Upload
-    maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024, // 5MB
+    maxFileSize: parseInt(process.env.MAX_FILE_SIZE || process.env.UPLOAD_MAX_SIZE, 10) || 5 * 1024 * 1024,
     uploadPath: process.env.UPLOAD_PATH || 'uploads',
 
     // Email (Optional)
@@ -106,6 +128,11 @@ const config = {
     redisHost: process.env.REDIS_HOST || 'localhost',
     redisPort: parseInt(process.env.REDIS_PORT) || 6379,
     redisPassword: process.env.REDIS_PASSWORD,
+    /** مهلة اتصال Redis (ms) — فشل سريع ثم الانتقال لذاكرة مؤقتة محلية */
+    redisConnectTimeoutMs: Math.min(30000, Math.max(500, parseInt(process.env.REDIS_CONNECT_TIMEOUT_MS, 10) || 2500)),
+    /** إعادة اتصال (0 = تعطيل؛ مناسب إن لم يكن Redis يعمل دائماً مثل Vercel بدون Redis) */
+    redisReconnectRetries: Math.max(0, parseInt(process.env.REDIS_RECONNECT_RETRIES, 10) || 0),
+    redisRetryDelayMs: Math.max(10, parseInt(process.env.REDIS_RETRY_DELAY_ON_FAILURE, 10) || 50),
 
     // VAPID Keys for Push Notifications (مجاني تماماً - يتم توليده تلقائياً)
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY,

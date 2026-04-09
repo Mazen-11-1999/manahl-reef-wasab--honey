@@ -24,13 +24,22 @@ const initRedis = async () => {
     try {
         if (config.redisHost && config.redisPort) {
             const redis = require('redis');
+            const connectTimeout = config.redisConnectTimeoutMs || 2500;
+            const maxRetries = typeof config.redisReconnectRetries === 'number' ? config.redisReconnectRetries : 0;
+            const retryDelay = config.redisRetryDelayMs || 50;
+            const socketOpts = {
+                host: config.redisHost,
+                port: config.redisPort,
+                connectTimeout,
+                reconnectStrategy: maxRetries > 0
+                    ? (retries) => {
+                        if (retries > maxRetries) return false;
+                        return Math.min(retryDelay * retries, 3000);
+                    }
+                    : false
+            };
             const client = redis.createClient({
-                socket: {
-                    host: config.redisHost,
-                    port: config.redisPort,
-                    connectTimeout: 2000, // 2 ثانية فقط
-                    reconnectStrategy: false // لا تحاول إعادة الاتصال تلقائياً
-                },
+                socket: socketOpts,
                 password: config.redisPassword || undefined
             });
 
@@ -62,8 +71,8 @@ const initRedis = async () => {
             try {
                 await Promise.race([
                     client.connect(),
-                    new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Redis connection timeout')), 2000)
+                    new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('Redis connection timeout')), connectTimeout + 500)
                     )
                 ]);
                 
