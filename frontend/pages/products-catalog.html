@@ -6,18 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جميع المنتجات | مناحل ريف وصاب</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Cairo:wght@400;600;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&family=Cairo:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
+        /* متوافقة مع هوية الرئيسية index.html */
         :root {
-            --bg-primary: #120a00;
-            --bg-card: #1d1102;
-            --bg-accent: #2a1804;
-            --gold: #d4af37;
-            --gold-light: #f3cf7a;
-            --text: #e0c097;
-            --text-muted: #9a8b7a;
-            --border: rgba(212, 175, 55, 0.25);
+            --royal-gold: #f4c025;
+            --cream-gold: #fff4d1;
+            --dark-brown: #221e10;
+            --velvet-brown: #1a1608;
+            --deep-brown: #2d2612;
+            --dark-gold: #b8860b;
+            --gold: var(--royal-gold);
+            --text-color: var(--cream-gold);
+            --text-muted: #9d8b6f;
+            --border-gold: rgba(244, 192, 37, 0.2);
         }
 
         * {
@@ -26,22 +30,72 @@
             padding: 0;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
-            font-family: 'Tajawal', 'Cairo', sans-serif;
-            background: linear-gradient(145deg, var(--bg-primary), #1a0f00);
-            color: var(--text);
+            margin: 0;
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            color: var(--text-color);
             min-height: 100vh;
+            min-height: -webkit-fill-available;
             padding-bottom: 96px;
+            background: linear-gradient(135deg,
+                    #1a0f00 0%,
+                    #2d1e0a 20%,
+                    #3c2810 40%,
+                    #553a16 60%,
+                    #6b471a 80%,
+                    #8b5a1e 100%);
+            background-size: 400% 400%;
+            animation: honey-gradient-flow 25s ease infinite;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes honey-gradient-flow {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                repeating-linear-gradient(60deg,
+                    transparent,
+                    transparent 80px,
+                    rgba(244, 192, 37, 0.06) 80px,
+                    rgba(244, 192, 37, 0.06) 81px),
+                repeating-linear-gradient(-60deg,
+                    transparent,
+                    transparent 80px,
+                    rgba(244, 192, 37, 0.04) 80px,
+                    rgba(244, 192, 37, 0.04) 81px);
+            pointer-events: none;
+            z-index: 0;
         }
 
         header {
             position: sticky;
             top: 0;
             z-index: 50;
-            background: linear-gradient(145deg, var(--bg-accent), var(--bg-card));
-            border-bottom: 2px solid var(--gold);
-            padding: 14px 18px;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+            background: linear-gradient(145deg, var(--deep-brown), var(--velvet-brown));
+            border-bottom: 2px solid var(--royal-gold);
+            padding: 16px 20px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
         }
 
         .header-inner {
@@ -50,131 +104,261 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 14px;
+            position: relative;
+        }
+
+        .header-inner::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            bottom: -10px;
+            width: 48px;
+            height: 3px;
+            background: var(--royal-gold);
+            border-radius: 3px;
+            opacity: 0.9;
         }
 
         h1 {
-            font-size: 1.15rem;
-            color: var(--gold);
+            font-size: 1.28rem;
+            font-family: 'Amiri', 'Cairo', serif;
+            color: var(--royal-gold);
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            text-shadow: 0 0 18px rgba(244, 192, 37, 0.35);
+        }
+
+        h1 i {
+            opacity: 0.95;
         }
 
         .back-btn {
             flex-shrink: 0;
             text-decoration: none;
-            color: var(--gold);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
+            color: var(--dark-brown);
+            background: linear-gradient(45deg, var(--royal-gold), #ffd666);
+            padding: 10px 20px;
             border-radius: 999px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: background 0.2s, color 0.2s;
+            font-weight: 700;
+            font-size: 0.88rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 14px rgba(244, 192, 37, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .back-btn:hover {
-            background: var(--gold);
-            color: var(--bg-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(244, 192, 37, 0.45);
         }
 
         .sub {
+            position: relative;
+            z-index: 1;
             max-width: 1100px;
             margin: 0 auto;
-            padding: 10px 18px 0;
-            font-size: 0.9rem;
+            padding: 14px 20px 0;
+            font-size: 0.92rem;
             color: var(--text-muted);
         }
 
         .wrap {
+            position: relative;
+            z-index: 1;
             max-width: 1100px;
             margin: 0 auto;
-            padding: 20px 18px 40px;
+            padding: 22px 20px 48px;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 22px;
         }
 
         .card {
-            background: linear-gradient(145deg, var(--bg-card), var(--bg-accent));
-            border: 1px solid var(--border);
-            border-radius: 18px;
+            position: relative;
+            background: linear-gradient(135deg, var(--deep-brown), var(--velvet-brown));
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
             overflow: hidden;
             text-decoration: none;
             color: inherit;
             display: block;
-            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+            animation: cardFadeIn 0.55s ease backwards;
+        }
+
+        .grid .card:nth-child(1) {
+            animation-delay: 0.02s;
+        }
+
+        .grid .card:nth-child(2) {
+            animation-delay: 0.05s;
+        }
+
+        .grid .card:nth-child(3) {
+            animation-delay: 0.08s;
+        }
+
+        .grid .card:nth-child(4) {
+            animation-delay: 0.11s;
+        }
+
+        .grid .card:nth-child(n+5) {
+            animation-delay: 0.14s;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            border-color: var(--gold);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(212, 175, 55, 0.15);
+            transform: translateY(-8px);
+            border-color: rgba(244, 192, 37, 0.55);
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.45),
+                0 0 24px rgba(244, 192, 37, 0.15);
+        }
+
+        .card-visual {
+            position: relative;
+            height: 180px;
+            background: linear-gradient(135deg, #111, #1a1510);
         }
 
         .card-img {
             width: 100%;
-            height: 170px;
+            height: 100%;
             object-fit: cover;
-            background: #111;
             display: block;
         }
 
+        .card-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            opacity: 0.85;
+        }
+
+        .badge-vip {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            color: var(--dark-brown);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+            z-index: 3;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .sale-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: auto;
+            background: linear-gradient(45deg, #ff6b6b, #ff5252);
+            color: white;
+            padding: 5px 11px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 3;
+            font-family: 'Cairo', sans-serif;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
         .card-body {
-            padding: 14px 16px 16px;
+            padding: 16px 18px 20px;
+            position: relative;
+            z-index: 2;
         }
 
         .card h2 {
-            font-size: 1.05rem;
-            color: var(--gold-light);
-            margin-bottom: 8px;
-            line-height: 1.35;
+            font-size: 1.12rem;
+            color: #fff;
+            margin-bottom: 12px;
+            line-height: 1.4;
             font-weight: 700;
+            font-family: 'Cairo', sans-serif;
+            min-height: 2.8em;
         }
 
-        .badge {
-            display: inline-block;
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 8px;
-            background: rgba(212, 175, 55, 0.2);
+        .price-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-gold);
+        }
+
+        .price-tag {
             color: var(--gold);
-            margin-bottom: 6px;
-        }
-
-        .price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--gold-light);
+            font-weight: bold;
+            font-size: 1.25rem;
+            font-family: 'Cairo', sans-serif;
         }
 
         .old-price {
-            font-size: 0.85rem;
             text-decoration: line-through;
-            color: var(--text-muted);
-            margin-right: 8px;
+            font-size: 0.9rem;
+            color: #a09888;
+        }
+
+        .discount-pill {
+            background: linear-gradient(45deg, #ff6b6b, #ff5252);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: bold;
         }
 
         .state {
             text-align: center;
-            padding: 48px 20px;
+            padding: 56px 20px;
             color: var(--text-muted);
         }
 
         .state i {
-            font-size: 2.5rem;
-            color: var(--gold);
-            opacity: 0.5;
-            margin-bottom: 12px;
+            font-size: 2.8rem;
+            color: var(--royal-gold);
+            opacity: 0.45;
+            margin-bottom: 14px;
             display: block;
         }
 
         .err {
-            color: #ff8a8a;
+            color: #ff9b9b;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.05rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -247,22 +431,29 @@
                     const name = p.name || 'منتج';
                     const price = p.price != null ? p.price : '';
                     const old = p.oldPrice;
-                    const feat = p.featured ? '<span class="badge">الأكثر طلباً</span>' : '';
-                    const sale = p.onSale ? '<span class="badge">خصم خاص</span>' : '';
-                    const imgHtml = img
+                    let discountHtml = '';
+                    if (old && Number(old) > Number(price)) {
+                        const pct = Math.round(((Number(old) - Number(price)) / Number(old)) * 100);
+                        discountHtml = '<span class="discount-pill">-' + pct + '%</span>';
+                    }
+                    const feat = p.featured ? '<span class="badge-vip">الأكثر طلباً</span>' : '';
+                    const sale = p.onSale ? '<span class="sale-badge">خصم خاص</span>' : '';
+                    const visualInner = img
                         ? '<img class="card-img" src="' + esc(img) + '" alt="' + esc(name) + '" loading="lazy" onerror="this.style.display=\'none\'">'
-                        : '<div class="card-img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">🍯</div>';
+                        : '<div class="card-placeholder">🍯</div>';
                     const oldHtml = old && Number(old) > Number(price)
                         ? '<span class="old-price">' + esc(old) + ' ر.س</span>'
                         : '';
                     return (
                         '<a class="card" href="product-details.html?productId=' + esc(id) + '">' +
-                        imgHtml +
+                        '<div class="card-visual">' + sale + feat + visualInner + '</div>' +
                         '<div class="card-body">' +
-                        feat + sale +
                         '<h2>' + esc(name) + '</h2>' +
-                        '<div><span class="price">' + esc(price) + ' ر.س</span>' + oldHtml + '</div>' +
-                        '</div></a>'
+                        '<div class="price-row">' +
+                        discountHtml +
+                        '<span class="price-tag">' + esc(price) + ' ر.س</span>' +
+                        oldHtml +
+                        '</div></div></a>'
                     );
                 }).join('');
             } catch (e) {
