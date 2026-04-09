@@ -2540,8 +2540,8 @@
         <span class="view-all">عرض الكل</span>
     </div>
 
-    <div class="product-slider fade-in">
-        <!-- ط§ظ„ظ…ظ†طھط¬ط§طھ ط³ظٹطھظ… ط¥ط¶ط§ظپطھظ‡ط§ ط¯ظٹظ†ط§ظ…ظٹظƒظٹط§ظ‹ -->
+    <div class="product-slider fade-in" id="homeProductSlider">
+        <!-- تُملأ من loadDynamicProducts() — أحدث المنتجات المنشورة من لوحة التحكم -->
     </div>
 
     <!-- ظ‚ط³ظ… ظ‡ظ„ طھط¹ظ„ظ…طں -->
@@ -3126,8 +3126,8 @@
         // دالة لتحميل المنتجات المضافة من لوحة التحكم (ديناميكي)
         async function loadDynamicProducts() {
             try {
-                // محاولة تحميل المنتجات من الـ API
-                const response = await fetch('/api/products?featured=true&limit=8');
+                // أحدث المنتجات النشطة (ليست مسودة) — بلا شرط مميز؛ الترتيب الافتراضي في الـ API: الأحدث أولاً
+                const response = await fetch('/api/products?limit=8');
                 const data = await response.json();
 
                 let products = [];
@@ -3143,7 +3143,7 @@
                 // لا نعرض منتجات افتراضية - فقط المنتجات من قاعدة البيانات
                 // إذا لم توجد منتجات، نعرض رسالة للمستخدم
                 if (products.length === 0) {
-                    const slider = document.querySelector('.product-slider');
+                    const slider = document.getElementById('homeProductSlider');
                     if (slider) {
                         slider.innerHTML = `
                             <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
@@ -3156,13 +3156,11 @@
                     return;
                 }
 
-                const slider = document.querySelector('.product-slider');
+                const slider = document.getElementById('homeProductSlider');
                 if (!slider) return;
 
-                // ظ…ط³ط­ ط§ظ„ظ…ظ†طھط¬ط§طھ ط§ظ„ظ‚ط¯ظٹظ…ط© (ط§ط®طھظٹط§ط±ظٹ - ظٹظ…ظƒظ† ط§ظ„ط§ط­طھظپط§ط¸ ط¨ظ‡ط§)
-                // slider.innerHTML = '';
+                slider.innerHTML = '';
 
-                // ط¥ط¶ط§ظپط© ط§ظ„ظ…ظ†طھط¬ط§طھ ط§ظ„ط¬ط¯ظٹط¯ط©
                 products.forEach(product => {
                     const productImage = product.image || product.imageUrl || '';
                     const hasImage = productImage && productImage.trim().length > 0;
@@ -3213,7 +3211,7 @@
             } catch (error) {
                 console.error('Error loading products:', error);
                 // في حالة الخطأ، نعرض رسالة للمستخدم
-                const slider = document.querySelector('.product-slider');
+                const slider = document.getElementById('homeProductSlider');
                 if (slider) {
                     slider.innerHTML = `
                         <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
@@ -3604,10 +3602,7 @@
             </div>
         </div>
 
-        <!-- المنتجات سيتم تحميلها ديناميكياً من قاعدة البيانات -->
-        <div class="product-slider" id="productSlider">
-            <!-- سيتم ملؤها تلقائياً من loadDynamicProducts() -->
-        </div>
+        <!-- المنتجات تُعرض في #homeProductSlider تحت «أحدث المنتجات» أعلاه -->
     </div>
 </body>
 
