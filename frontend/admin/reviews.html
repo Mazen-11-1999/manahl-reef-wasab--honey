@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تقييمات العملاء | مناحل ريف وصاب</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="../assets/css/admin-responsive.css">
     <style>
         :root {
@@ -54,14 +56,51 @@
         .header-content {
             max-width: 800px;
             margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .reviews-back {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(212, 175, 55, 0.12);
+            border: 1px solid var(--border-gold);
+            color: var(--gold-primary);
+            text-decoration: none;
+            font-size: 1.15rem;
+            transition: background 0.25s, color 0.25s, transform 0.2s;
+        }
+
+        .reviews-back:hover {
+            background: var(--gold-primary);
+            color: var(--bg-primary);
+            transform: scale(1.05);
+        }
+
+        .reviews-back-spacer {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            pointer-events: none;
+            visibility: hidden;
         }
 
         .header-title {
+            flex: 1;
+            text-align: center;
             color: var(--gold-primary);
             font-size: 1.5rem;
             font-weight: bold;
             text-shadow: 0 0 10px var(--shadow-gold);
-            margin-bottom: 10px;
+            margin: 0;
         }
 
         .container {
@@ -489,7 +528,11 @@
 
     <header>
         <div class="header-content">
+            <a href="dashboard.html" class="reviews-back" title="العودة للوحة التحكم" aria-label="العودة للوحة التحكم">
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </a>
             <h1 class="header-title">⭐ تقييمات العملاء</h1>
+            <span class="reviews-back-spacer" aria-hidden="true"></span>
         </div>
     </header>
 
@@ -582,8 +625,6 @@
 
     </div>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
