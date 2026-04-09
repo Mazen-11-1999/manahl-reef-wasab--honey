@@ -1159,8 +1159,8 @@
                                         ميزة المنتج</label>
                                     <select id="productBadge"
                                         style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-gold); border-radius: 8px; color: var(--text-primary);">
-                                        <option value="">بدون ميزة</option>
-                                        <option value="featured">الأكثر طلباً</option>
+                                        <option value="featured" selected>الأكثر طلباً — يظهر في شريط الرئيسية</option>
+                                        <option value="">بدون — يظهر في المتجر دون شريط المميز</option>
                                         <option value="new">جديد</option>
                                         <option value="vip">VIP</option>
                                     </select>
@@ -1174,6 +1174,10 @@
                                 </div>
                             </div>
 
+                            <p style="margin: 0 0 12px 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                                <strong>نشر المنتج الآن</strong> يحفظ في قاعدة البيانات ويظهر في متجرك للزبائن؛ شريط الرئيسية يعرض
+                                المنتجات المميزة فقط (الخيار أعلاه).
+                            </p>
                             <button type="submit" class="btn-gold"
                                 style="width: 100%; padding: 15px; background: linear-gradient(45deg, var(--gold-primary), var(--gold-light)); color: var(--bg-primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: all 0.3s;">
                                 ✨ نشر المنتج الآن
@@ -2075,6 +2079,11 @@
                                                 <option value="true">نشط (سيظهر في الصفحة الرئيسية)</option>
                                                 <option value="false">غير نشط</option>
                                             </select>
+                                            <small
+                                                style="display:block;margin-top:6px;color:var(--text-muted);font-size:0.8rem;line-height:1.4;">
+                                                زر «نشر في الصفحة الرئيسية» يحفظ كمنشور للزبائن دائماً. «حفظ كمسودة» يخفيها
+                                                حتى تفعّلها من القائمة.
+                                            </small>
                                         </div>
                                     </div>
 
@@ -3033,9 +3042,10 @@
             formData.append('sku', document.getElementById('productSKU').value || '');
 
             const badge = document.getElementById('productBadge').value;
-            if (badge) {
-                formData.append('featured', badge === 'featured');
-            }
+            const featured = badge === 'featured' || badge === 'new' || badge === 'vip';
+            formData.append('featured', featured ? 'true' : 'false');
+            formData.append('isActive', 'true');
+            formData.append('status', 'active');
 
             const imageFile = document.getElementById('productImageInput').files[0];
             if (imageFile) {
@@ -3375,7 +3385,6 @@
 
             const text = document.getElementById('didYouKnowText').value.trim();
             const category = document.getElementById('didYouKnowCategory').value;
-            const active = document.getElementById('didYouKnowActive').value === 'true';
             const source = document.getElementById('didYouKnowSource')?.value.trim() || '';
 
             if (!text) {
@@ -3396,7 +3405,7 @@
                     body: JSON.stringify({
                         text: text,
                         category: category,
-                        active: active,
+                        active: true,
                         source: source
                     })
                 });
