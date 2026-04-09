@@ -9,8 +9,17 @@ const config = require('./env');
 
 const isVercel = process.env.VERCEL === '1';
 
+const parsedPoolMax = parseInt(process.env.MONGODB_MAX_POOL_SIZE, 10);
+const parsedPoolMin = parseInt(process.env.MONGODB_MIN_POOL_SIZE, 10);
+const defaultPoolMax = isVercel ? 10 : 50;
+const defaultPoolMin = isVercel ? 0 : 5;
+let maxPoolSize = Number.isFinite(parsedPoolMax) ? Math.min(200, Math.max(5, parsedPoolMax)) : defaultPoolMax;
+let minPoolSize = Number.isFinite(parsedPoolMin) ? Math.max(0, parsedPoolMin) : defaultPoolMin;
+if (minPoolSize > maxPoolSize) minPoolSize = Math.min(maxPoolSize, defaultPoolMin);
+
 const baseConnectionOptions = {
-    maxPoolSize: isVercel ? 5 : 20,
+    maxPoolSize,
+    minPoolSize,
     socketTimeoutMS: 45000,
     family: 4,
     bufferCommands: false,
@@ -18,8 +27,8 @@ const baseConnectionOptions = {
     w: 'majority',
     readPreference: 'primary',
     heartbeatFrequencyMS: 10000,
-    maxIdleTimeMS: isVercel ? 60000 : 30000,
-    waitQueueTimeoutMS: 10000,
+    maxIdleTimeMS: isVercel ? 60000 : 45000,
+    waitQueueTimeoutMS: Math.min(30000, Math.max(5000, parseInt(process.env.MONGODB_WAIT_QUEUE_MS, 10) || 15000)),
     retryReads: true
 };
 
@@ -83,6 +92,7 @@ async function connectOnceInternal() {
     }
 
     console.log('✅ اتصال MongoDB ناجح');
+    console.log(`📦 MongoDB pool: min=${minPoolSize} max=${maxPoolSize} (عدّل MONGODB_MAX_POOL_SIZE على VPS إن لزم)`);
 
     if (config.nodeEnv !== 'test') {
         setTimeout(async () => {

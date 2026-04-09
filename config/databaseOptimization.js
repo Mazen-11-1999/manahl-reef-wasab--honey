@@ -210,20 +210,10 @@ const getSalesAggregation = (startDate, endDate, groupBy = 'day') => {
 };
 
 /**
- * Connection Pool Optimization
+ * دمج إضافي مع خيارات الاتصال — فارغ عمداً حتى لا يطغى على config/database.js
+ * (كان يحدّ maxPoolSize=10 و serverSelectionTimeoutMS=5000 فيطغى على إعدادات الإنتاج والأحمال العالية)
  */
-const optimizeConnection = () => {
-    const options = {
-        maxPoolSize: 10, // الحفاظ على ما يصل إلى 10 اتصالات
-        minPoolSize: 2, // الحفاظ على ما لا يقل عن 2 اتصالات
-        maxIdleTimeMS: 30000, // إغلاق الاتصالات الخاملة بعد 30 ثانية
-        serverSelectionTimeoutMS: 5000,
-        socketTimeoutMS: 45000,
-        family: 4
-    };
-
-    return options;
-};
+const optimizeConnection = () => ({});
 
 module.exports = {
     createIndexes,
