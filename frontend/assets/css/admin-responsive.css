@@ -90,7 +90,9 @@ svg {
 
 .tabs-container {
     max-width: 100%;
-    overflow-x: hidden;
+    min-width: 0;
+    /* السماح بعرض الجدول بالتمرير الداخلي دون قصّ العمود الأيسر في RTL */
+    overflow-x: visible;
 }
 
 @media (max-width: 900px) {
