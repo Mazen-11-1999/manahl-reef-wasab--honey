@@ -2531,6 +2531,7 @@
                 window.location.href = 'login.html';
             }
         }
+        window.logout = logout;
 
         // دوال النسخ الاحتياطي والاسترجاع
         async function loadBackupStats() {
@@ -2733,6 +2734,8 @@
 
             showNotification(`تم التبديل إلى ${getTabName(tabId)}`);
         }
+        /** onclick في HTML يستدعي دوالاً على window — ربط صريح يمنع ReferenceError */
+        window.switchTab = switchTab;
 
         // تحميل المسابقات في تبويب Dashboard
         async function loadDashboardContests() {
