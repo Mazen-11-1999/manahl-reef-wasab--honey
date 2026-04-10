@@ -82,12 +82,23 @@ const config = {
     // WebAuthn
     rpID: process.env.RP_ID || 'localhost',
 
-    // Database
+    /**
+     * قاعدة البيانات — ضع MONGODB_URI في .env أو في Vercel فقط.
+     * لا تُضمَّن عناوين Atlas أو كلمات مرور داخل هذا الملف (يُرفع إلى Git).
+     */
     mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/manahl-badr',
 
-    // Google OAuth (تسجيل دخول العملاء — اختياري)
+    /**
+     * Google OAuth — GOOGLE_CLIENT_ID و GOOGLE_CLIENT_SECRET من Google Cloud فقط عبر env (وليس هنا).
+     */
     googleClientId: process.env.GOOGLE_CLIENT_ID || '',
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+
+    /**
+     * رفع الملفات للسحابة (مهم على Vercel). في .env: CLOUD_STORAGE_ENABLED=true
+     * مع CLOUD_STORAGE_PROVIDER ومتغيرات المزود (مثل CLOUDINARY_* أو AWS_*).
+     */
+    cloudStorageEnabled: process.env.CLOUD_STORAGE_ENABLED === 'true',
 
     // JWT
     jwtSecret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production',

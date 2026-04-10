@@ -8,7 +8,7 @@ const logger = require('../utils/logger');
 
 // إعدادات التخزين السحابي
 const cloudStorageConfig = {
-    enabled: process.env.CLOUD_STORAGE_ENABLED === 'true',
+    enabled: config.cloudStorageEnabled === true,
     provider: process.env.CLOUD_STORAGE_PROVIDER || 'aws-s3', // aws-s3, google-cloud, cloudinary
     
     // AWS S3 Configuration
