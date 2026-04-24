@@ -1111,8 +1111,8 @@
                 </div>
 
                 <div class="price-section">
-                    <div class="price-current" id="priceCurrent">— ر.س</div>
-                    <div class="price-old" id="priceOld" style="display: none;">— ر.س</div>
+                    <div class="price-current" id="priceCurrent">— ر.ي</div>
+                    <div class="price-old" id="priceOld" style="display: none;">— ر.ي</div>
                     <div class="discount-percentage" id="discountPercentage" style="display: none;">—</div>
                 </div>
 
@@ -1184,7 +1184,7 @@
                             <span class="btn-icon">💰</span>
                             <div class="btn-content">
                                 <div class="btn-title">ادفع النصف الآن</div>
-                                <div class="btn-price" id="halfPaymentPrice">-- ر.س</div>
+                                <div class="btn-price" id="halfPaymentPrice">-- ر.ي</div>
                             </div>
                         </button>
 
@@ -1192,7 +1192,7 @@
                             <span class="btn-icon">💳</span>
                             <div class="btn-content">
                                 <div class="btn-title">ادفع الكامل</div>
-                                <div class="btn-price" id="fullPaymentPrice">-- ر.س</div>
+                                <div class="btn-price" id="fullPaymentPrice">-- ر.ي</div>
                             </div>
                         </button>
 
@@ -1281,7 +1281,10 @@
 
                 <div class="form-group">
                     <label>رقم الهاتف *</label>
-                    <input type="tel" name="customerPhone" required placeholder="05xxxxxxxx" pattern="[0-9]{10}">
+                    <input type="tel" name="customerPhone" required placeholder="7XXXXXXXX (يمني) أو مع المفتاح"
+                        pattern="[0-9]{8,14}" minlength="8" maxlength="14" title="أرقام فقط: يمني 7… أو 966…/967…">
+                    <small style="display:block; margin-top:4px; opacity:0.85; font-size:0.8rem;">يمني: 7XXXXXXXX.
+                        السعودية: 05XXXXXXXX. أدخل الأرقام بلا فراغات.</small>
                 </div>
 
                 <div class="form-group">
@@ -1357,7 +1360,7 @@
                     </div>
                     <div class="summary-item">
                         <span>المجموع:</span>
-                        <span id="summaryTotal">-- ر.س</span>
+                        <span id="summaryTotal">-- ر.ي</span>
                     </div>
                     <div class="summary-item highlight">
                         <span>طريقة الدفع:</span>
@@ -1375,12 +1378,18 @@
 
     <!-- API Integration -->
     <script src="../js/api.js"></script>
+    <script src="../js/store-currency.js"></script>
+    <script src="../js/site-public-helpers.js"></script>
 
     <script>
         // متغيرات عامة — لا صور وهمية، فقط ما يأتي من لوحة التحكم
         let currentProduct = null;
         let productImages = [];
         let images = [];
+
+        function productCurrency() {
+            return typeof window.currencySymbol === 'function' ? window.currencySymbol() : 'ر.ي';
+        }
 
         function changeImage(index) {
             if (!images.length || !images[index]) return;
@@ -1649,7 +1658,7 @@
             // تحديث الملخص
             document.getElementById('summaryProductName').textContent = currentProduct.name;
             document.getElementById('summaryQuantity').textContent = quantity;
-            document.getElementById('summaryTotal').textContent = `${total} ر.س`;
+            document.getElementById('summaryTotal').textContent = `${total} ${productCurrency()}`;
 
             // تحديث طريقة الدفع
             let paymentText = '';
@@ -1657,15 +1666,15 @@
             switch (paymentMethod) {
                 case 'half':
                     paymentText = 'دفع النصف الآن';
-                    paymentAmount = `(${halfPayment} ر.س الآن + ${total - halfPayment} ر.س عند الاستلام)`;
+                    paymentAmount = `(${halfPayment} ${productCurrency()} الآن + ${total - halfPayment} ${productCurrency()} عند الاستلام)`;
                     break;
                 case 'full':
                     paymentText = 'دفع كامل';
-                    paymentAmount = `(${total} ر.س)`;
+                    paymentAmount = `(${total} ${productCurrency()})`;
                     break;
                 case 'delivery':
                     paymentText = 'الدفع عند الاستلام';
-                    paymentAmount = `(${total} ر.س)`;
+                    paymentAmount = `(${total} ${productCurrency()})`;
                     break;
             }
             document.getElementById('summaryPayment').textContent = paymentText + ' ' + paymentAmount;
@@ -1712,6 +1721,7 @@
                     quantity: parseInt(formData.get('quantity'))
                 }],
                 total: parseFloat(formData.get('total')),
+                currency: (typeof window.getStoreCurrencyCode === 'function' ? window.getStoreCurrencyCode() : 'YER'),
                 paymentMethod: formData.get('paymentMethod'),
                 shipping: 0,
                 shippingAgreed: isSanaa,
@@ -1727,10 +1737,12 @@
                 const response = await API.orders.create(orderData);
 
                 if (response.success) {
-                    // إرسال إشعار واتساب
+                    if (typeof window.ensurePublicSiteSettings === 'function') {
+                        await window.ensurePublicSiteSettings();
+                    }
                     sendWhatsAppNotification(response.order || orderData);
 
-                    showNotification('تم إرسال الطلب بنجاح! سنتواصل معك قريباً', 'success');
+                    showNotification('تم استلام طلبك. سنتواصل معك في أقرب وقت.', 'success');
 
                     // إغلاق Modal بعد 2 ثانية
                     setTimeout(() => {
@@ -1745,7 +1757,7 @@
                 }
             } catch (error) {
                 console.error('Error submitting order:', error);
-                showNotification((error && error.message) ? error.message : 'حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى', 'error');
+                showNotification((error && error.message) ? error.message : 'تعذّر إرسال الطلب. جرّب مرة أخرى.', 'error');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>✅</span><span>إرسال الطلب</span>';
             }
@@ -1756,18 +1768,19 @@
             const customer = order.customer || {};
             const items = order.items || [];
             const productNames = items.map(item => item.name).join('، ');
+            const wcur = typeof window.currencySymbol === 'function' ? window.currencySymbol(order.currency) : 'ر.ي';
 
             let paymentText = '';
             switch (order.paymentMethod) {
                 case 'half':
                     const halfAmount = Math.ceil(order.total / 2);
-                    paymentText = `دفع النصفي (${halfAmount} ر.س الآن + ${order.total - halfAmount} ر.س عند الاستلام)`;
+                    paymentText = `دفع نصف المبلغ (${halfAmount} ${wcur} الآن + ${order.total - halfAmount} ${wcur} عند الاستلام)`;
                     break;
                 case 'full':
-                    paymentText = `دفع كامل (${order.total} ر.س)`;
+                    paymentText = `دفع كامل (${order.total} ${wcur})`;
                     break;
                 case 'delivery':
-                    paymentText = `الدفع عند الاستلام (${order.total} ر.س)`;
+                    paymentText = `الدفع عند الاستلام (${order.total} ${wcur})`;
                     break;
             }
 
@@ -1778,7 +1791,8 @@
                 locationLink = `\n📍 الموقع على الخريطة:\nhttps://www.google.com/maps?q=${latitude},${longitude}`;
             }
 
-            const message = `🍯 طلب جديد من مناحل ريف وصاب
+            const storeLabel = typeof window.getStoreDisplayName === 'function' ? window.getStoreDisplayName() : 'مناحل ريف وصاب';
+            const message = `🍯 طلب جديد من ${storeLabel}
 
 👤 العميل: ${customer.name}
 📞 الهاتف: ${customer.phone}
@@ -1787,13 +1801,12 @@
 🏠 العنوان: ${customer.address}${locationLink}
 📦 المنتج: ${productNames}
 💰 طريقة الدفع: ${paymentText}
-📊 المجموع: ${order.total} ر.س
+📊 المجموع: ${order.total} ${wcur}
 ${customer.notes ? `📝 الملاحظات: ${customer.notes}` : ''}
 
 📞 للتواصل: ${customer.phone}`;
 
-            // رقم واتساب - اليمن (967 + 773298831)
-            const phoneNumber = '967773298831';
+            const phoneNumber = typeof window.getWhatsAppLinkDigits === 'function' ? window.getWhatsAppLinkDigits() : '967773298831';
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 
@@ -1812,8 +1825,8 @@ ${customer.notes ? `📝 الملاحظات: ${customer.notes}` : ''}
             const halfPriceEl = document.getElementById('halfPaymentPrice');
             const fullPriceEl = document.getElementById('fullPaymentPrice');
 
-            if (halfPriceEl) halfPriceEl.textContent = `${halfPayment} ر.س`;
-            if (fullPriceEl) fullPriceEl.textContent = `${total} ر.س`;
+            if (halfPriceEl) halfPriceEl.textContent = `${halfPayment} ${productCurrency()}`;
+            if (fullPriceEl) fullPriceEl.textContent = `${total} ${productCurrency()}`;
         }
 
         // متغيرات الموقع
@@ -1867,12 +1880,12 @@ ${customer.notes ? `📝 الملاحظات: ${customer.notes}` : ''}
                         // الحصول على العنوان من الإحداثيات (Reverse Geocoding)
                         const address = await reverseGeocode(lat, lng);
                         setSelectedLocation(address, lat, lng);
-                        showNotification('تم تحديد موقعك بنجاح!', 'success');
+                        showNotification('تم حفظ موقعك.', 'success');
                     } catch (error) {
                         // إذا فشل الحصول على العنوان، استخدم الإحداثيات
                         const address = `الموقع: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                         setSelectedLocation(address, lat, lng);
-                        showNotification('تم تحديد موقعك! يرجى إضافة تفاصيل العنوان', 'info');
+                        showNotification('أكمِل العنوان في الحقول أعلاه.', 'info');
                     }
 
                     closeLocationModal();
@@ -1881,7 +1894,7 @@ ${customer.notes ? `📝 الملاحظات: ${customer.notes}` : ''}
                     console.error('Error getting location:', error);
                     let errorMsg = 'فشل تحديد الموقع';
                     if (error.code === 1) {
-                        errorMsg = 'تم رفض طلب تحديد الموقع. يرجى السماح بالوصول للموقع';
+                        errorMsg = 'تفعيل الموقع من إعدادات المتصفح للسماح بتحديد الموقع';
                     } else if (error.code === 2) {
                         errorMsg = 'لا يمكن تحديد الموقع. تحقق من اتصال الإنترنت';
                     } else if (error.code === 3) {
@@ -2059,6 +2072,7 @@ ${customer.notes ? `📝 الملاحظات: ${customer.notes}` : ''}
         // تحميل منتجات فئة محددة
         async function loadCategoryProducts(categorySlug) {
             try {
+                if (typeof window.ensureStoreCurrency === 'function') await window.ensureStoreCurrency();
                 showNotification('جاري تحميل المنتجات...', 'info');
                 const data = await API.products.getAll({ category: categorySlug, limit: 50 });
                 const products = data.data || data.products || [];
@@ -2086,6 +2100,7 @@ ${customer.notes ? `📝 الملاحظات: ${customer.notes}` : ''}
         // تحميل بيانات المنتج من API
         async function loadProductData(productId) {
             try {
+                if (typeof window.ensureStoreCurrency === 'function') await window.ensureStoreCurrency();
                 showNotification('جاري تحميل بيانات المنتج...', 'info');
 
                 // استخدام API الحقيقي
@@ -2132,19 +2147,20 @@ ${customer.notes ? `📝 الملاحظات: ${customer.notes}` : ''}
             const discountPercentage = document.querySelector('.discount-percentage');
             const saleBadge = document.querySelector('.sale-badge');
 
+            const pcur = typeof window.currencySymbol === 'function' ? window.currencySymbol() : 'ر.ي';
             if (priceCurrent) {
-                priceCurrent.textContent = `${product.price || 0} ر.س`;
+                priceCurrent.textContent = `${product.price || 0} ${pcur}`;
             }
 
             if (product.oldPrice && product.oldPrice > product.price) {
                 if (priceOld) {
-                    priceOld.textContent = `${product.oldPrice} ر.س`;
+                    priceOld.textContent = `${product.oldPrice} ${pcur}`;
                     priceOld.style.display = 'block';
                 }
 
                 const discount = Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100);
                 if (discountPercentage) {
-                    discountPercentage.textContent = `وفر ${product.oldPrice - product.price} ر.س`;
+                    discountPercentage.textContent = `وفر ${product.oldPrice - product.price} ${pcur}`;
                     discountPercentage.style.display = 'block';
                 }
                 if (saleBadge) {
@@ -2314,7 +2330,7 @@ ${customer.notes ? `📝 الملاحظات: ${customer.notes}` : ''}
                         ${isEmoji ? image : ''}
                     </div>
                     <div class="related-name">${product.name || 'منتج'}</div>
-                    <div class="related-price">${product.price || 0} ر.س</div>
+                    <div class="related-price">${product.price || 0} ${typeof window.currencySymbol === 'function' ? window.currencySymbol() : 'ر.ي'}</div>
                 `;
 
                 relatedGrid.appendChild(card);

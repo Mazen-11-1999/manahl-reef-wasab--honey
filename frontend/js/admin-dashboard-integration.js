@@ -3,11 +3,28 @@
  * ربط لوحة الإدارة بالـ Backend API
  */
 
+function orderCurrencySymbol(c) {
+    const u = (c == null || c === '') ? 'YER' : String(c).toUpperCase();
+    if (u === 'SAR') return 'ر.س';
+    if (u === 'USD') return 'US$';
+    return 'ر.ي';
+}
+
+function storeDefaultPriceSymbol() {
+    if (typeof window.currencySymbol === 'function') {
+        return window.currencySymbol();
+    }
+    return 'ر.ي';
+}
+
 // تحميل البيانات من الـ API
 // silent: true عند التحديث التلقائي (كل 30ث) — بدون إشعارات مزعجة أو console.error مكرر
 async function loadDashboardData(opts) {
     const silent = !!(opts && opts.silent);
     try {
+        if (typeof window.ensureStoreCurrency === 'function') {
+            try { await window.ensureStoreCurrency(); } catch (e) { /* ignore */ }
+        }
         await loadStats(silent);
         await loadOrders(silent);
         await loadProducts(silent);
@@ -90,13 +107,6 @@ async function loadStats(silent) {
             }
         }
         
-        // حساب معدل النمو (مبسط - يمكن تحسينه لاحقاً)
-        const growthRateEl = document.getElementById('growthRate');
-        if (growthRateEl && stats.monthlyRevenue) {
-            // حساب بسيط - يمكن تحسينه لاحقاً
-            growthRateEl.textContent = '+٢٣٪'; // مؤقت
-        }
-        
         // تحديث الأرباح (إذا كانت متوفرة)
         if (stats.profits) {
             const dailyProfitEl = document.getElementById('dailyProfit');
@@ -143,7 +153,7 @@ async function loadOrders(silent) {
                 const remainingAmount = order.payment?.remainingAmount || grandTotal;
                 const paymentMethod = getPaymentMethodText(order.paymentMethod);
                 const paymentStatus = getPaymentStatusBadge(order.payment?.paymentStatus || 'pending');
-                const currSym = (order.currency === 'SAR') ? 'ر.س' : 'ر.ي';
+                const currSym = orderCurrencySymbol(order.currency);
                 
                 return `
                     <tr>
@@ -180,7 +190,7 @@ async function loadOrders(silent) {
                     const remainingAmount = order.payment?.remainingAmount || grandTotal;
                     const paymentMethod = getPaymentMethodText(order.paymentMethod);
                     const paymentStatus = getPaymentStatusBadge(order.payment?.paymentStatus || 'pending');
-                    const currSym = (order.currency === 'SAR') ? 'ر.س' : 'ر.ي';
+                    const currSym = orderCurrencySymbol(order.currency);
                     
                     return `
                         <tr>
@@ -227,7 +237,7 @@ async function loadProducts(silent) {
                 return `
                     <tr>
                         <td class="product-name">${product.name}</td>
-                        <td class="product-price">${formatNumber(product.price)} ر.س</td>
+                        <td class="product-price">${formatNumber(product.price)} ${storeDefaultPriceSymbol()}</td>
                         <td>${stockBadge}</td>
                         <td>
                             <button onclick="editProduct('${product._id}')" style="background: var(--gold-primary); color: var(--bg-primary); border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-left: 5px;">تعديل</button>

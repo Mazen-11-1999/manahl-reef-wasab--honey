@@ -448,6 +448,7 @@
                     <select class="form-select" id="currency" required onchange="updateSummary()">
                         <option value="YER">ريال يمني (ر.ي)</option>
                         <option value="SAR">ريال سعودي (ر.س)</option>
+                        <option value="USD">دولار أمريكي (US$)</option>
                     </select>
                 </div>
 
@@ -508,6 +509,7 @@
 
     <!-- API Script -->
     <script src="../js/api.js"></script>
+    <script src="../js/store-currency.js"></script>
 
     <script>
         let selectedProducts = [];
@@ -643,7 +645,9 @@
         // الحصول على رمز العملة
         function getCurrencySymbol() {
             const currency = document.getElementById('currency').value;
-            return currency === 'SAR' ? 'ر.س' : 'ر.ي';
+            if (currency === 'SAR') return 'ر.س';
+            if (currency === 'USD') return 'US$';
+            return 'ر.ي';
         }
 
         // تحديث الملخص
@@ -773,6 +777,17 @@
                     setTimeout(resolve, 2000);
                 });
             }
+
+            try {
+                if (window.API && window.API.siteSettings && window.API.siteSettings.get) {
+                    const r = await window.API.siteSettings.get();
+                    if (r && r.settings && r.settings.defaultCurrency) {
+                        const sel = document.getElementById('currency');
+                        const dc = r.settings.defaultCurrency;
+                        if (sel && ['YER', 'SAR', 'USD'].includes(dc)) sel.value = dc;
+                    }
+                }
+            } catch (e) { /* optional */ }
 
             await loadProducts();
             renderProductsList();

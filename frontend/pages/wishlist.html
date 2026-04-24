@@ -471,6 +471,7 @@
     </main>
 
     <script src="../js/api.js"></script>
+    <script src="../js/store-currency.js"></script>
     <script>
         // Global variables
         let wishlist = [];
@@ -489,6 +490,7 @@
             showLoading(true);
             
             try {
+                if (typeof window.ensureStoreCurrency === 'function') await window.ensureStoreCurrency();
                 const response = await window.API.customers.getWishlist();
                 
                 if (response.success && response.wishlist) {
@@ -521,7 +523,9 @@
             emptyState.style.display = 'none';
             container.style.display = 'grid';
             
-            container.innerHTML = wishlist.map(item => `
+            container.innerHTML = wishlist.map(item => {
+                const c = typeof window.currencySymbol === 'function' ? window.currencySymbol() : 'ر.ي';
+                return `
                 <div class="wishlist-item fade-in" data-id="${item.product._id}">
                     <img src="${item.product.image || '../assets/images/default-product.jpg'}" 
                          alt="${item.product.name}" 
@@ -533,10 +537,10 @@
                         
                         <div class="product-price">
                             ${item.product.oldPrice ? 
-                                `<span class="old-price">${item.product.oldPrice} ريال</span>` : 
+                                `<span class="old-price">${item.product.oldPrice} ${c}</span>` : 
                                 ''
                             }
-                            <span class="current-price">${item.product.price} ريال</span>
+                            <span class="current-price">${item.product.price} ${c}</span>
                         </div>
                         
                         <div class="product-actions">
@@ -550,7 +554,8 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         // Add to cart

@@ -107,7 +107,7 @@ const OrderSchema = new mongoose.Schema({
     },
     currency: {
         type: String,
-        enum: ['YER', 'SAR'],
+        enum: ['YER', 'SAR', 'USD'],
         default: 'YER'
     },
     paymentMethod: {

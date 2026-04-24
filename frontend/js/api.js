@@ -102,7 +102,7 @@ async function apiRequest(endpoint, options = {}) {
             } catch (parseErr) {
                 if (!response.ok) {
                     if ([502, 503, 504].includes(response.status)) {
-                        throw new Error('الخدمة غير متاحة مؤقتاً. يرجى المحاولة بعد قليل.');
+                        throw new Error('الخدمة غير متاحة مؤقتاً. جرّب بعد لحظات.');
                     }
                     throw new Error(`تعذر معالجة رد الخادم (${response.status}). حاول مرة أخرى.`);
                 }
@@ -112,10 +112,10 @@ async function apiRequest(endpoint, options = {}) {
         if (!response.ok) {
             const msg = data && data.message ? String(data.message) : '';
             if (response.status === 429) {
-                throw new Error(msg || 'الطلبات كثيرة حالياً. يرجى المحاولة بعد دقيقة.');
+                throw new Error(msg || 'طلبات كثيرة. انتظر دقيقة ثم أعد المحاولة.');
             }
             if (response.status === 503 || response.status === 502 || response.status === 504) {
-                throw new Error(msg || 'الخدمة مؤقتاً غير متاحة. يرجى المحاولة لاحقاً.');
+                throw new Error(msg || 'الخدمة غير متاحة مؤقتاً. جرّب لاحقاً.');
             }
             throw new Error(msg || 'حدث خطأ في الطلب');
         }
@@ -129,7 +129,7 @@ async function apiRequest(endpoint, options = {}) {
             error.message.includes('كثيرة') ||
             error.message.includes('غير متاحة') ||
             error.message.includes('تعذر الاتصال') ||
-            error.message.includes('غير متاحة مؤقتاً') ||
+            error.message.includes('مؤقتاً') ||
             (error.name === 'TypeError' && (error.message.includes('fetch') || error.message.includes('network')))
         );
         if (isRetryable) {

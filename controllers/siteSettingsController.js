@@ -32,12 +32,15 @@ exports.getPublic = catchAsync(async (req, res, next) => {
         return res.status(200).json({
             success: true,
             settings: {
+                storeName: 'مناحل ريف وصاب',
                 siteName: 'مناحل ريف وصاب',
                 description: 'أجود أنواع العسل الطبيعي من اليمن',
                 contactEmail: 'info@reef-wasab.com',
                 phone: '+967 777 123 456',
+                whatsappPhone: '+967773298831',
                 address: 'صنعاء، اليمن',
                 logo: '/assets/manahel.jpg',
+                defaultCurrency: 'YER',
                 socialMedia: {
                     facebook: 'https://facebook.com/reef-wasab',
                     twitter: 'https://twitter.com/reef-wasab',
@@ -68,7 +71,10 @@ exports.getPublic = catchAsync(async (req, res, next) => {
             allowOrders: settings.allowOrders,
             allowReviews: settings.allowReviews,
             storyGallery: (settings.storyGallery && Array.isArray(settings.storyGallery)) ? settings.storyGallery : [],
-            paymentMethods: (settings.paymentMethods && Array.isArray(settings.paymentMethods)) ? settings.paymentMethods : []
+            paymentMethods: (settings.paymentMethods && Array.isArray(settings.paymentMethods)) ? settings.paymentMethods : [],
+            defaultCurrency: settings.defaultCurrency && ['YER', 'SAR', 'USD'].includes(settings.defaultCurrency)
+                ? settings.defaultCurrency
+                : 'YER'
         }
     });
 });
@@ -100,6 +106,12 @@ exports.update = catchAsync(async (req, res, next) => {
             url: (item && item.url) ? String(item.url).trim() : '',
             caption: (item && item.caption) ? String(item.caption).trim() : ''
         }));
+    }
+    if (req.body.defaultCurrency !== undefined) {
+        const dc = String(req.body.defaultCurrency).trim().toUpperCase();
+        if (['YER', 'SAR', 'USD'].includes(dc)) {
+            settings.defaultCurrency = dc;
+        }
     }
     if (req.body.paymentMethods !== undefined && Array.isArray(req.body.paymentMethods)) {
         settings.paymentMethods = req.body.paymentMethods.map(item => ({
@@ -173,7 +185,8 @@ const DEFAULT_SETTINGS = {
     showPrices: true,
     allowOrders: true,
     allowReviews: true,
-    emailNotifications: false
+    emailNotifications: false,
+    defaultCurrency: 'YER'
 };
 
 /**

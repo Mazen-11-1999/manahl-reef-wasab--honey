@@ -21,19 +21,55 @@
     <!-- PWA Tile Image -->
     <meta name="msapplication-TileImage" content="/assets/icons/icon-144x144.png">
 
-    <!-- Service Worker -->
+    <!-- Service Worker + إشعار تحديث (PWA) -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('✅ Service Worker registered:', registration);
+        (function () {
+            if (!('serviceWorker' in navigator)) return;
+            var swPendingReload = false;
+            function showSwUpdateBar(reg) {
+                if (document.getElementById('sw-update-bar')) return;
+                var bar = document.createElement('div');
+                bar.id = 'sw-update-bar';
+                bar.setAttribute('dir', 'rtl');
+                bar.setAttribute('role', 'status');
+                bar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:99999;padding:12px 16px;background:#1a0f00;border-top:1px solid #d4af37;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.4);font-family:Tajawal,Cairo,sans-serif;';
+                bar.innerHTML = '<span style="color:#e0c097;font-size:0.95rem">يتوفر تحديث للموقع. اضغط «تحديث الآن» لاستخدام أحدث نسخة.</span><button type="button" id="sw-update-btn" style="background:#d4af37;color:#120a00;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer">تحديث الآن</button>';
+                (document.body || document.documentElement).appendChild(bar);
+                document.getElementById('sw-update-btn').onclick = function () {
+                    if (reg && reg.waiting) {
+                        swPendingReload = true;
+                        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    } else {
+                        bar.remove();
+                    }
+                };
+            }
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
+                    .then(function (reg) {
+                        reg.addEventListener('updatefound', function () {
+                            var w = reg.installing;
+                            if (!w) return;
+                            w.addEventListener('statechange', function () {
+                                if (w.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showSwUpdateBar(reg);
+                                }
+                            });
+                        });
+                        if (reg.waiting && navigator.serviceWorker.controller) {
+                            showSwUpdateBar(reg);
+                        }
+                        setInterval(function () { reg.update(); }, 60 * 60 * 1000);
                     })
-                    .catch((error) => {
-                        console.error('❌ Service Worker registration failed:', error);
-                    });
+                    .catch(function (e) { console.error('Service Worker register failed', e); });
             });
-        }
+            navigator.serviceWorker.addEventListener('controllerchange', function () {
+                if (swPendingReload) {
+                    swPendingReload = false;
+                    window.location.reload();
+                }
+            });
+        })();
     </script>
 
     <!-- Font Awesome CDN -->
@@ -2431,21 +2467,21 @@
                 <i class="fas fa-times"></i>
             </button>
             <div class="welcome-icon">🍯</div>
-            <h2 class="welcome-title" id="welcomeTitle">مرحباً بك في مناحل ريف وصاب</h2>
+            <h2 class="welcome-title" id="welcomeTitle">مناحل ريف وصاب</h2>
             <div class="welcome-line"></div>
             <p class="welcome-text welcome-intro">
-                سعداء بانضمامك إلى عالمنا،<br>
-                حيث نقرّب إليك عسل وصاب كما هو، في تجربة هادئة، واضحة، ومريحة.
+                نبيع عسل وصاب أصيلاً. <strong>عملة عرض الأسعار</strong> تُضبط من «الإعدادات» في لوحة التحكم (يمني،
+                سعودي، أو دولار).
             </p>
-            <p class="welcome-sub">✨ معنا ستجد:</p>
+            <p class="welcome-sub">نوفّر لك:</p>
             <ul class="feature-list welcome-features">
-                <li><span>•</span> منتجات مختارة بعناية</li>
-                <li><span>•</span> مسابقات وعروض متجددة</li>
-                <li><span>•</span> متابعة واهتمام في كل خطوة</li>
+                <li><span>•</span> منتجات مختارة</li>
+                <li><span>•</span> عروض ومسابقات</li>
+                <li><span>•</span> دعم عند الطلب</li>
             </ul>
-            <p class="welcome-quote">رحلتك تبدأ من هنا،<br>وأنت دائماً موضع ترحيب.</p>
+            <p class="welcome-quote">شكراً لثقتك بنا.</p>
             <button class="welcome-btn" id="welcomeBtn">
-                <i class="fas fa-sparkles"></i> تشرفنا بزيارتك
+                متابعة التصفح
             </button>
         </div>
     </div>
@@ -2651,6 +2687,7 @@
 
     <!-- API Integration -->
     <script src="js/api.js"></script>
+    <script src="js/store-currency.js"></script>
 
     <!-- JavaScript للموقع -->
     <script>
@@ -2711,8 +2748,8 @@
                 if (!modal) return;
                 if (titleEl) {
                     getWelcomeDisplayName().then(function (displayName) {
-                        if (displayName) titleEl.textContent = 'مرحباً بك يا ' + displayName;
-                        else titleEl.textContent = 'مرحباً بك في مناحل ريف وصاب';
+                        if (displayName) titleEl.textContent = 'أهلاً ' + displayName;
+                        else titleEl.textContent = 'مناحل ريف وصاب';
                     });
                 }
                 modal.style.display = 'flex';
@@ -2747,9 +2784,6 @@
                 });
             }
 
-            // تحميل إعدادات الموقع (الشعار واسم المتجر) من API ثم fallback على loadLogo
-            loadSiteSettings();
-
             const logoImg = document.getElementById('logo-img');
             if (logoImg) {
                 logoImg.addEventListener('error', function () {
@@ -2764,23 +2798,24 @@
                 console.warn('⚠️ يجب تشغيل السيرفر باستخدام: npm start أو node server.js');
                 console.warn('⚠️ ثم افتح: http://localhost:3000');
 
+                loadSiteSettings();
                 // تحميل البيانات الافتراضية فقط
                 loadDidYouKnow(); // سيعرض البيانات الافتراضية
                 loadPharmacyInfo(); // تحميل معلومات الصيدلية
                 createHoneyDrips();
             } else {
-                // السيرفر يعمل - تحميل البيانات من API
-                loadDidYouKnow();
-                loadPharmacyInfo(); // تحميل معلومات الصيدلية
-                loadDynamicProducts();
-                loadCategoriesForHomepage();
-                createHoneyDrips();
-
-                // تحديث المعلومات كل دقيقة (للحصول على معلومات جديدة من API)
-                setInterval(() => {
+                (async function () {
+                    await loadSiteSettings();
                     loadDidYouKnow();
                     loadPharmacyInfo();
-                }, 60000);
+                    await loadDynamicProducts();
+                    loadCategoriesForHomepage();
+                    createHoneyDrips();
+                    setInterval(() => {
+                        loadDidYouKnow();
+                        loadPharmacyInfo();
+                    }, 60000);
+                })();
             }
 
             // إظهار زر إضافة معلومة للمالك فقط
@@ -2807,6 +2842,14 @@
 
                 const s = res.settings;
                 const base = window.API_BASE_URL || window.location.origin || '';
+
+                if (typeof window.setStoreDefaultCurrency === 'function') {
+                    window.setStoreDefaultCurrency(s.defaultCurrency);
+                } else {
+                    var dc0 = s.defaultCurrency && ['YER', 'SAR', 'USD'].indexOf(s.defaultCurrency) >= 0 ? s.defaultCurrency : 'YER';
+                    window.__storeDefaultCurrency = dc0;
+                    try { localStorage.setItem('storeDefaultCurrency', dc0); } catch (e) { }
+                }
 
                 const logoImg = document.getElementById('logo-img');
                 if (logoImg && s.logoUrl) {
@@ -3168,6 +3211,7 @@
                     const badge = product.featured ? "الأكثر طلباً" : (product.badge || null);
                     const oldPrice = product.oldPrice || null;
                     const onSale = product.onSale || false;
+                    const cur = typeof window.currencySymbol === 'function' ? window.currencySymbol() : 'ر.ي';
 
                     let discountPercent = '';
                     if (oldPrice && product.price) {
@@ -3186,8 +3230,8 @@
                                 <h3>${product.name}</h3>
                                 <div class="price-container">
                                     ${discountPercent}
-                                    <span class="price-tag">${product.price} ر.س</span>
-                                    ${oldPrice ? `<span class="old-price">${oldPrice} ر.س</span>` : ''}
+                                    <span class="price-tag">${product.price} ${cur}</span>
+                                    ${oldPrice ? `<span class="old-price">${oldPrice} ${cur}</span>` : ''}
                                 </div>
                                 <button class="btn-add" data-product-id="${product._id || ''}">إضافة للسلة</button>
                             </div>
@@ -3217,8 +3261,8 @@
                     slider.innerHTML = `
                         <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
                             <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
-                            <h3 style="color: var(--gold-primary); margin-bottom: 10px;">حدث خطأ في تحميل المنتجات</h3>
-                            <p style="color: var(--text-secondary);">يرجى المحاولة مرة أخرى لاحقاً</p>
+                            <h3 style="color: var(--gold-primary); margin-bottom: 10px;">تعذّر تحميل المنتجات</h3>
+                            <p style="color: var(--text-secondary);">تحقق من الاتصال ثم حدّث الصفحة.</p>
                         </div>
                     `;
                 }
@@ -3352,7 +3396,7 @@
                     container.innerHTML = `
                         <div class="stories-empty">
                             <i class="fas fa-exclamation-triangle"></i>
-                            <p>حدث خطأ في تحميل الحالات</p>
+                            <p>تعذّر تحميل الحالات</p>
                         </div>
                     `;
                 }

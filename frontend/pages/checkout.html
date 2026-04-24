@@ -694,7 +694,9 @@
 
             <div class="form-group">
                 <label class="form-label"><i class="fas fa-phone"></i> رقم الهاتف *</label>
-                <input type="tel" class="form-input" id="customerPhone" placeholder="+967 XXX XXX XXX" required>
+                <input type="tel" class="form-input" id="customerPhone" placeholder="+967 7XX XXX XXX" required>
+                <small style="display:block; margin-top:6px; opacity:0.88; font-size:0.85rem;">يمني: +967. السعودية:
+                    9665… / الإمارات: 971… (أرقام بلا فراغات)</small>
             </div>
 
             <div class="form-group">
@@ -945,6 +947,7 @@
 
     <!-- API Integration -->
     <script src="../js/api.js"></script>
+    <script src="../js/site-public-helpers.js"></script>
     <script src="../js/payment-methods-display.js"></script>
 
     <script>
@@ -1499,12 +1502,17 @@
                     // حفظ الطلب في LocalStorage كنسخة احتياطية
                     saveOrder();
 
+                    if (typeof window.ensurePublicSiteSettings === 'function') {
+                        await window.ensurePublicSiteSettings();
+                    }
+
                     // إنشاء رسالة واتساب
                     const whatsappMessage = createWhatsappMessage();
 
                     // فتح واتساب بعد فترة قصيرة
                     setTimeout(() => {
-                        const whatsappUrl = `https://wa.me/967773298831?text=${encodeURIComponent(whatsappMessage)}`;
+                        const wa = typeof window.getWhatsAppLinkDigits === 'function' ? window.getWhatsAppLinkDigits() : '967773298831';
+                        const whatsappUrl = `https://wa.me/${wa}?text=${encodeURIComponent(whatsappMessage)}`;
                         window.open(whatsappUrl, '_blank');
 
                         button.innerHTML = '<span class="success-check">✓</span> تم إرسال الطلب';
@@ -1535,7 +1543,7 @@
         function createWhatsappMessage() {
             const paymentMethods = {
                 'full': '💰 دفع كامل (تحويل رقمي/كريمي)',
-                'half': '💳 دفع نصفي (عربون والباقي عند الاستلام)',
+                'half': '💳 دفع نصف المبلغ (عربون والباقي عند الاستلام)',
                 'delivery': '📍 دفع عند الاستلام'
             };
 
@@ -1545,7 +1553,8 @@
                 : `${currentOrder.product?.name || 'منتج'} (${currentOrder.product?.quantity || 1})`;
 
             const sym = getCurrencySymbol();
-            let message = `🍯 *طلب جديد من مناحل ريف وصاب*\n\n`;
+            const storeN = (typeof window.getStoreDisplayName === 'function' ? window.getStoreDisplayName() : 'مناحل ريف وصاب');
+            let message = `🍯 *طلب جديد من ${storeN}*\n\n`;
             message += `📋 *رقم الطلب:* ${currentOrder.orderId || 'قيد المعالجة'}\n\n`;
             message += `🛍️ *المنتجات:*\n${itemsText}\n\n`;
             message += `💰 *إجمالي المنتجات:* ${(currentOrder.subtotal || currentOrder.product?.price || 0).toLocaleString()} ${sym}\n`;

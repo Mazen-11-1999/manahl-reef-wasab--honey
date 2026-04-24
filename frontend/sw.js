@@ -1,54 +1,58 @@
 /**
- * Service Worker for Push Notifications
- * يعمل حتى بدون إنترنت
+ * Service Worker — PWA + إشعارات
+ * - يُرفَع رقم SW_VERSION عند كل نشر مهم (يفرّغ الكاشات القديمة).
+ * - عند الاتصال: الشبكة أولاً لـ HTML/JS/CSS/الخطوط (التحديثات تظهر فوراً).
+ * - عند الانقطاع: تُستخدم النسخة المخبّأة.
+ * - تفعيل الـ worker الجديد اختياري من الواجهة (زر تحديث).
  */
-
-const CACHE_NAME = 'manahl-badr-v2';
+const SW_VERSION = '3';
+const CACHE_NAME = 'manahl-badr-shell-v' + SW_VERSION;
+const RUNTIME_CACHE = 'manahl-badr-runtime-v' + SW_VERSION;
 const NOTIFICATION_CACHE = 'notifications-v1';
 
-// صفحات موجودة فعلياً — addAll يفشل بالكامل إذا فشل أي طلب واحد
-const PRECACHE_URLS = ['/', '/index.html', '/manifest.json'];
+const PRECACHE_URLS = ['/', '/index.html', '/manifest.json', '/offline.html'];
 
-// تثبيت Service Worker
+// تثبيت: تخزين مسبق للقشرة + بدون تفعيل فوري عند وجود نسخة أقدم (ليعمل زر "تحديث")
 self.addEventListener('install', (event) => {
-    console.log('[Service Worker] Installing...');
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('[Service Worker] Caching app shell');
             return Promise.all(
                 PRECACHE_URLS.map((url) =>
                     cache.add(url).catch((err) => {
-                        console.warn('[Service Worker] Precache skipped:', url, err && err.message);
+                        console.warn('[Service Worker] Precache skip:', url, err && err.message);
                     })
                 )
             );
         })
     );
-    self.skipWaiting();
 });
 
-// تفعيل Service Worker
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
+// تفعيل: حذف كاشات قديمة (أي manahl-badr- غير الحالية) والإشعارات تُبقى عدا الجلسة
 self.addEventListener('activate', (event) => {
-    console.log('[Service Worker] Activating...');
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME && cacheName !== NOTIFICATION_CACHE) {
-                        console.log('[Service Worker] Removing old cache:', cacheName);
+                    if (cacheName === NOTIFICATION_CACHE) return Promise.resolve();
+                    if (cacheName === CACHE_NAME || cacheName === RUNTIME_CACHE) return Promise.resolve();
+                    if (cacheName.indexOf('manahl-badr') === 0) {
                         return caches.delete(cacheName);
                     }
+                    return Promise.resolve();
                 })
             );
-        })
+        }).then(() => self.clients.claim())
     );
-    return self.clients.claim();
 });
 
-// استقبال Push Notifications
+// ——— إشعارات (كما في النسخة السابقة) ———
 self.addEventListener('push', (event) => {
-    console.log('[Service Worker] Push notification received');
-
     let notificationData = {
         title: 'مناحل ريف وصاب',
         body: 'لديك إشعار جديد',
@@ -58,8 +62,6 @@ self.addEventListener('push', (event) => {
         requireInteraction: false,
         data: {}
     };
-
-    // إذا كانت البيانات موجودة في الحدث
     if (event.data) {
         try {
             const data = event.data.json();
@@ -77,8 +79,6 @@ self.addEventListener('push', (event) => {
             notificationData.body = event.data.text();
         }
     }
-
-    // حفظ الإشعار في IndexedDB للعمل بدون إنترنت
     event.waitUntil(
         saveNotificationToCache(notificationData).then(() => {
             return self.registration.showNotification(notificationData.title, {
@@ -96,28 +96,18 @@ self.addEventListener('push', (event) => {
     );
 });
 
-// النقر على الإشعار
 self.addEventListener('notificationclick', (event) => {
-    console.log('[Service Worker] Notification clicked');
-
     event.notification.close();
-
     const notificationData = event.notification.data;
     const urlToOpen = notificationData.url || '/pages/notifications.html';
-
     event.waitUntil(
-        clients.matchAll({
-            type: 'window',
-            includeUncontrolled: true
-        }).then((clientList) => {
-            // إذا كان التطبيق مفتوحاً، انتقل إلى الصفحة
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
             for (let i = 0; i < clientList.length; i++) {
                 const client = clientList[i];
                 if (client.url === urlToOpen && 'focus' in client) {
                     return client.focus();
                 }
             }
-            // إذا لم يكن مفتوحاً، افتح نافذة جديدة
             if (clients.openWindow) {
                 return clients.openWindow(urlToOpen);
             }
@@ -125,39 +115,29 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
-// معالجة الإجراءات (Actions) في الإشعار
-self.addEventListener('notificationclose', (event) => {
-    console.log('[Service Worker] Notification closed');
-});
+self.addEventListener('notificationclose', () => {});
 
-// حفظ الإشعار في IndexedDB
 async function saveNotificationToCache(notificationData) {
     try {
         const db = await openNotificationDB();
         const transaction = db.transaction(['notifications'], 'readwrite');
         const store = transaction.objectStore('notifications');
-
         await store.add({
             ...notificationData,
             id: Date.now(),
             timestamp: Date.now(),
             read: false
         });
-
-        console.log('[Service Worker] Notification saved to cache');
     } catch (error) {
         console.error('[Service Worker] Error saving notification:', error);
     }
 }
 
-// فتح IndexedDB
 function openNotificationDB() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open('NotificationsDB', 1);
-
         request.onerror = () => reject(request.error);
         request.onsuccess = () => resolve(request.result);
-
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains('notifications')) {
@@ -169,26 +149,6 @@ function openNotificationDB() {
     });
 }
 
-// معالجة الطلبات (للعمل بدون إنترنت)
-self.addEventListener('fetch', (event) => {
-    // فقط للصفحات المهمة
-    if (event.request.url.includes('/api/notifications')) {
-        event.respondWith(
-            fetch(event.request).catch(() => {
-                // إذا فشل الاتصال، استخدم البيانات المحفوظة
-                return caches.match(event.request).then((response) => {
-                    if (response) {
-                        return response;
-                    }
-                    // إرجاع إشعارات محفوظة من IndexedDB
-                    return getCachedNotifications();
-                });
-            })
-        );
-    }
-});
-
-// الحصول على الإشعارات المحفوظة
 async function getCachedNotifications() {
     try {
         const db = await openNotificationDB();
@@ -196,43 +156,103 @@ async function getCachedNotifications() {
         const store = transaction.objectStore('notifications');
         const index = store.index('timestamp');
         const request = index.getAll();
-
         return new Promise((resolve) => {
             request.onsuccess = () => {
-                const notifications = request.result.reverse(); // الأحدث أولاً
+                const notifications = request.result.reverse();
                 resolve(new Response(JSON.stringify({
                     success: true,
                     notifications: notifications
-                }), {
-                    headers: { 'Content-Type': 'application/json' }
-                }));
+                }), { headers: { 'Content-Type': 'application/json' } }));
             };
             request.onerror = () => {
-                resolve(new Response(JSON.stringify({
-                    success: true,
-                    notifications: []
-                }), {
+                resolve(new Response(JSON.stringify({ success: true, notifications: [] }), {
                     headers: { 'Content-Type': 'application/json' }
                 }));
             };
         });
     } catch (error) {
-        console.error('[Service Worker] Error getting cached notifications:', error);
-        return new Response(JSON.stringify({
-            success: true,
-            notifications: []
-        }), {
+        return new Response(JSON.stringify({ success: true, notifications: [] }), {
             headers: { 'Content-Type': 'application/json' }
         });
     }
 }
 
+// ——— جلب: الشبكة أولاً ———
+function sameOriginRequest(url) {
+    try {
+        return url.origin === new URL(self.registration.scope).origin;
+    } catch (e) {
+        return false;
+    }
+}
 
+function shouldHandleNetworkFirst(request) {
+    if (request.method !== 'GET') return false;
+    const u = new URL(request.url);
+    if (!sameOriginRequest(u)) return false;
+    if (u.pathname === '/sw.js') {
+        return false;
+    }
+    if (u.pathname.startsWith('/api/') && u.pathname.indexOf('/api/notifications') === -1) {
+        return false;
+    }
+    const mode = request.mode;
+    const dest = request.destination;
+    if (mode === 'navigate') return true;
+    if (dest === 'document' || dest === 'empty' && request.headers.get('accept') && request.headers.get('accept').indexOf('text/html') >= 0) {
+        return true;
+    }
+    if (['style', 'script', 'font', 'manifest'].indexOf(dest) >= 0) return true;
+    if (u.pathname.endsWith('.js') || u.pathname.endsWith('.css') || u.pathname.endsWith('.html')) {
+        return true;
+    }
+    if (u.pathname.startsWith('/assets/') || u.pathname === '/manifest.json') {
+        return true;
+    }
+    return false;
+}
 
+async function networkFirst(request) {
+    const cache = await caches.open(RUNTIME_CACHE);
+    try {
+        const response = await fetch(request);
+        if (response && response.status === 200) {
+            try {
+                await cache.put(request, response.clone());
+            } catch (e) { /* ignore */ }
+        }
+        return response;
+    } catch (e) {
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        if (request.mode === 'navigate' || request.destination === 'document') {
+            const off = await caches.match('/offline.html');
+            if (off) return off;
+        }
+        throw e;
+    }
+}
 
+self.addEventListener('fetch', (event) => {
+    const request = event.request;
+    if (!request.url.startsWith('http')) {
+        return;
+    }
 
+    if (request.url.includes('/api/notifications')) {
+        event.respondWith(
+            fetch(request).catch(() => {
+                return caches.match(request).then((response) => {
+                    if (response) return response;
+                    return getCachedNotifications();
+                });
+            })
+        );
+        return;
+    }
 
-
-
-
-
+    if (shouldHandleNetworkFirst(request)) {
+        event.respondWith(networkFirst(request));
+    }
+});
+ 

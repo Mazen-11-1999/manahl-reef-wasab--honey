@@ -679,8 +679,10 @@
         }
 
         function getCurrencySymbol(order) {
-            const currency = order?.currency || 'YER';
-            return currency === 'SAR' ? 'ر.س' : 'ر.ي';
+            const currency = (order && order.currency) || 'YER';
+            if (currency === 'SAR') return 'ر.س';
+            if (currency === 'USD') return 'US$';
+            return 'ر.ي';
         }
 
         function getPaymentMethodText(method) {

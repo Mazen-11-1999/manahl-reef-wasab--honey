@@ -425,6 +425,7 @@
 
     <!-- API Integration -->
     <script src="../js/api.js"></script>
+    <script src="../js/site-public-helpers.js"></script>
 
     <script>
         let allOrders = [];
@@ -432,6 +433,10 @@
         // تحميل جميع الطلبات
         async function loadOrders() {
             try {
+                if (typeof window.ensurePublicSiteSettings === 'function') {
+                    await window.ensurePublicSiteSettings();
+                }
+
                 const ordersList = document.getElementById('ordersList');
                 const emptyState = document.getElementById('emptyState');
                 
@@ -570,7 +575,7 @@
                         </div>
                     ` : ''}
 
-                    <a href="https://wa.me/967773298831?text=استفسار عن طلبي رقم ${order.orderId || order._id}" 
+                    <a href="https://wa.me/${(typeof window.getWhatsAppLinkDigits === 'function' ? window.getWhatsAppLinkDigits() : '967773298831')}?text=${encodeURIComponent('استفسار عن طلبي رقم ' + (order.orderId || order._id))}" 
                        class="whatsapp-button" style="margin-top: 15px; text-align: center;">
                         <span>💬</span>
                         <span>استفسار عن الطلب</span>
@@ -583,7 +588,7 @@
         function getPaymentMethodText(method) {
             const methods = {
                 full: 'دفع كامل',
-                half: 'دفع نصفي',
+                half: 'دفع نصف المبلغ',
                 delivery: 'دفع عند الاستلام',
                 cash: 'نقدي',
                 bank_transfer: 'تحويل بنكي',

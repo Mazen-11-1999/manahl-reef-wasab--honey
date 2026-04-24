@@ -24,6 +24,12 @@ const SiteSettingsSchema = new mongoose.Schema({
     allowOrders: { type: Boolean, default: true },
     allowReviews: { type: Boolean, default: true },
     emailNotifications: { type: Boolean, default: false },
+    /** عملة عرض الأسعار الافتراضية للمتجر (تُضبط من لوحة التحكم) */
+    defaultCurrency: {
+        type: String,
+        enum: ['YER', 'SAR', 'USD'],
+        default: 'YER'
+    },
     /** معرض صور صفحة قصتنا (6 صور كحد أقصى) */
     storyGallery: [{
         url: { type: String, trim: true, default: '' },

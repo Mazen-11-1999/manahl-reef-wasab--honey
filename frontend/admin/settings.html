@@ -573,6 +573,7 @@
     </script>
     <!-- API Integration -->
     <script src="../js/api.js"></script>
+    <script src="../js/store-currency.js"></script>
 
     <header>
         <div class="header-content">
@@ -642,6 +643,17 @@
                     <textarea class="form-input" id="storeDescription" rows="3"
                         placeholder="وصف موجز لمنتجاتك وخدماتك...">أجود أنواع العسل اليمني الأصيل من جبال وصاب الشاهقة</textarea>
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label">عملة عرض الأسعار في المتجر</label>
+                    <select class="form-input" id="defaultCurrency" style="max-width: 100%;">
+                        <option value="YER">ريال يمني (ر.ي)</option>
+                        <option value="SAR">ريال سعودي (ر.س)</option>
+                        <option value="USD">دولار أمريكي (US$)</option>
+                    </select>
+                    <small style="display:block; margin-top:6px; opacity:0.85; font-size:0.82rem;">يُستخدَم لعرض
+                        المنتجات وإنشاء طلبات العملاء. يمكن اختيار عملة أخرى عند إنشاء طلب يدوي من لوحة التحكم.</small>
+                </div>
             </div>
 
             <!-- روابط التواصل الاجتماعي -->
@@ -679,7 +691,7 @@
                     <div class="social-input-group">
                         <div class="social-icon">📱</div>
                         <input type="text" class="form-input social-input" id="whatsapp"
-                            placeholder="https://wa.me/966xxxxxxxx">
+                            placeholder="https://wa.me/9677xxxxxxxx (يمني)">
                     </div>
                 </div>
             </div>
@@ -693,12 +705,14 @@
 
                 <div class="form-group">
                     <label class="form-label">رقم الهاتف الرئيسي</label>
-                    <input type="tel" class="form-input" id="phone" placeholder="+966 5x xxx xxxx">
+                    <input type="tel" class="form-input" id="phone" placeholder="+967 7XX XXX XXX">
+                    <small style="display:block; margin-top:6px; opacity:0.85; font-size:0.82rem;">اليمن: +967
+                        (7XXXXXXXX). السعودية والخليج: +966 / +971… حسب الدولة.</small>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">رقم WhatsApp</label>
-                    <input type="tel" class="form-input" id="whatsappPhone" placeholder="+966 5x xxx xxxx">
+                    <input type="tel" class="form-input" id="whatsappPhone" placeholder="+967 7XX XXX XXX">
                 </div>
 
                 <div class="form-group">
@@ -721,8 +735,8 @@
 
                 <div id="fingerprintSection">
                     <p style="color: var(--text-muted); margin-bottom: 15px; line-height: 1.7;">
-                        سجّل بصمة أو أكثر بعد تسجيل الدخول بكلمة المرور أولاً. الدخول لاحقاً يكون بالبصمة <strong>أو</strong>
-                        بكلمة المرور — الاثنان يعملان معاً كخيارين وليس أحدهما بديلاً للآخر.
+                        بعد تسجيل الدخول بكلمة المرور، سجّل بصمة من هنا. التالي: الدخول من صفحة الدخول بالبصمة أو بكلمة
+                        المرور — كما تفضّل.
                     </p>
 
                     <!-- قائمة البصمات المسجلة -->
@@ -763,12 +777,9 @@
                 </div>
                 <p class="security-hint"
                     style="margin-top: 14px; font-size: 0.88rem; line-height: 1.75; color: rgba(255,244,209,0.82); border-top: 1px solid var(--gold-15); padding-top: 14px;">
-                    <strong>كلمة المرور والبصمة:</strong> تسجيل البصمة <em>لا يحذف</em> كلمة المرور ولا يستبدلها في
-                    قاعدة البيانات — التقنية (WebAuthn) تعطيك طريقة دخول إضافية آمنة. يمكنك دائماً الدخول بـ<strong>كلمة
-                        المرور</strong> من صفحة الدخول؛ وإذا تعذّر المستشعر أو المتصفح، استخدم كلمة المرور فقط.
-                    لتغيير كلمة المرور: املأ الحقول أعلاه ثم اضغط <strong>حفظ كافة التغييرات</strong> في الأسفل.
-                    إن نسيت كلمة المرور وكان لحساب المشرف <strong>بريد إلكتروني حقيقي</strong> مسجّل لدينا، يمكن استخدام
-                    استعادة كلمة المرور من صفحة الدخول (رابط في أسفل صفحة دخول الإدارة).
+                    <strong>كلمة المرور والبصمة:</strong> البصمة دخول إضافي ولا تلغي كلمة المرور. إن تعذّر المستشعر،
+                    استخدم كلمة المرور. لتغييرها: املأ الحقول أعلاه ثم <strong>حفظ كافة التغييرات</strong>. نسيتها؟
+                    من رابط الاستعادة في صفحة دخول الإدارة إن كان بريدك أو هاتفك مسجّلًا.
                 </p>
             </div>
 
@@ -914,6 +925,12 @@
             var addrEl = document.getElementById('address');
             if (addrEl) addrEl.value = data.address || 'صنعاء - اليمن';
 
+            var curEl = document.getElementById('defaultCurrency');
+            if (curEl) {
+                var dc = (data.defaultCurrency && ['YER', 'SAR', 'USD'].indexOf(data.defaultCurrency) >= 0) ? data.defaultCurrency : 'YER';
+                curEl.value = dc;
+            }
+
             document.getElementById('maintenanceMode').classList.toggle('active', data.maintenanceMode || false);
             document.getElementById('showPrices').classList.toggle('active', data.showPrices !== false);
             document.getElementById('allowOrders').classList.toggle('active', data.allowOrders !== false);
@@ -973,6 +990,7 @@
             const settings = {
                 storeName: document.getElementById('storeName').value,
                 storeNameEn: document.getElementById('storeNameEn').value,
+                defaultCurrency: (document.getElementById('defaultCurrency') || {}).value || 'YER',
                 description: (document.getElementById('storeDescription') || {}).value || '',
                 address: (document.getElementById('address') || {}).value || '',
                 phone: document.getElementById('phone').value,
@@ -1040,6 +1058,9 @@
             try {
                 await window.API.siteSettings.update(settings);
                 try { localStorage.setItem('storeSettings', JSON.stringify(settings)); } catch (e) {}
+                if (typeof window.setStoreDefaultCurrency === 'function' && settings.defaultCurrency) {
+                    window.setStoreDefaultCurrency(settings.defaultCurrency);
+                }
                 updateStoreStatus(settings.maintenanceMode);
 
                 var bannerText = (document.getElementById('bannerText').value || '').trim() || ' ';

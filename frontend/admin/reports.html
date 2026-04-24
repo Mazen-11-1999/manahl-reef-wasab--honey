@@ -617,28 +617,14 @@
 
         <div class="chart-container slide-in">
             <h3 class="chart-title">📊 منحنى المبيعات الأسبوعي</h3>
-            <div class="chart-wrapper">
-                <div class="chart-bar" style="height: 40%;" onclick="showDayDetails('السبت', '٢,٣٠٠ ر.س')">
-                    <div class="chart-value">٢,٣٠٠</div>
-                </div>
-                <div class="chart-bar" style="height: 65%;" onclick="showDayDetails('الأحد', '٣,٧٥٠ ر.س')">
-                    <div class="chart-value">٣,٧٥٠</div>
-                </div>
-                <div class="chart-bar" style="height: 50%;" onclick="showDayDetails('الاثنين', '٢,٨٥٠ ر.س')">
-                    <div class="chart-value">٢,٨٥٠</div>
-                </div>
-                <div class="chart-bar highest" style="height: 90%;" onclick="showDayDetails('الثلاثاء', '٥,٢٠٠ ر.س')">
-                    <div class="chart-value">٥,٢٠٠</div>
-                </div>
-                <div class="chart-bar" style="height: 75%;" onclick="showDayDetails('الأربعاء', '٤,٣٥٠ ر.س')">
-                    <div class="chart-value">٤,٣٥٠</div>
-                </div>
-                <div class="chart-bar" style="height: 60%;" onclick="showDayDetails('الخميس', '٣,٤٠٠ ر.س')">
-                    <div class="chart-value">٣,٤٠٠</div>
-                </div>
-                <div class="chart-bar" style="height: 45%;" onclick="showDayDetails('الجمعة', '٢,٦٠٠ ر.س')">
-                    <div class="chart-value">٢,٦٠٠</div>
-                </div>
+            <div class="chart-wrapper" id="reportsWeekChartWrapper">
+                <div class="chart-bar" style="height: 5%;"><div class="chart-value">0</div></div>
+                <div class="chart-bar" style="height: 5%;"><div class="chart-value">0</div></div>
+                <div class="chart-bar" style="height: 5%;"><div class="chart-value">0</div></div>
+                <div class="chart-bar" style="height: 5%;"><div class="chart-value">0</div></div>
+                <div class="chart-bar" style="height: 5%;"><div class="chart-value">0</div></div>
+                <div class="chart-bar" style="height: 5%;"><div class="chart-value">0</div></div>
+                <div class="chart-bar" style="height: 5%;"><div class="chart-value">0</div></div>
             </div>
             <div class="chart-labels">
                 <span>سبت</span>
@@ -661,54 +647,12 @@
                             <th>المنتج</th>
                             <th>عدد المبيعات</th>
                             <th>الإيرادات</th>
-                            <th>نسبة النمو</th>
+                            <th>نمو (غير محسوب لكل منتج)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>
-                                <div class="rank">١</div>
-                            </td>
-                            <td class="product-name">عسل سدر ملكي</td>
-                            <td class="sales-count">٨٥ قطعة</td>
-                            <td class="revenue">٢١,٢٥٠ ر.س</td>
-                            <td><span class="stat-change positive">↑ ١٥٪</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="rank">٢</div>
-                            </td>
-                            <td class="product-name">عسل سمرة وصابي</td>
-                            <td class="sales-count">٤٢ قطعة</td>
-                            <td class="revenue">٧,٥٦٠ ر.س</td>
-                            <td><span class="stat-change positive">↑ ٨٪</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="rank">٣</div>
-                            </td>
-                            <td class="product-name">خلطة المناعة</td>
-                            <td class="sales-count">٢٩ قطعة</td>
-                            <td class="revenue">٣,٤٨٠ ر.س</td>
-                            <td><span class="stat-change negative">↓ ٣٪</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="rank">٤</div>
-                            </td>
-                            <td class="product-name">عسل المراعي</td>
-                            <td class="sales-count">١٨ قطعة</td>
-                            <td class="revenue">٢,١٦٠ ر.س</td>
-                            <td><span class="stat-change positive">↑ ٥٪</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="rank">٥</div>
-                            </td>
-                            <td class="product-name">غذاء الملكات</td>
-                            <td class="sales-count">١٥ قطعة</td>
-                            <td class="revenue">١,٨٠٠ ر.س</td>
-                            <td><span class="stat-change positive">↑ ١٢٪</span></td>
+                            <td colspan="5" style="text-align:center; padding: 24px; color: var(--text-primary);">جاري تحميل بيانات المنتجات من الطلبات…</td>
                         </tr>
                     </tbody>
                 </table>
@@ -997,7 +941,7 @@
                         <td class="product-name">${entry[0]}</td>
                         <td class="sales-count">${entry[1].count} قطعة</td>
                         <td class="revenue">${entry[1].revenue.toLocaleString('ar-SA')} ر.س</td>
-                        <td><span class="stat-change positive">-</span></td>
+                        <td style="color:#888">—</td>
                     </tr>
                 `).join('');
             } else if (tbody) {
@@ -1007,7 +951,8 @@
 
         // تحديث المنحنى البياني
         function updateChart(orders) {
-            const bars = document.querySelectorAll('.chart-bar');
+            const wrap = document.getElementById('reportsWeekChartWrapper');
+            const bars = wrap ? wrap.querySelectorAll('.chart-bar') : document.querySelectorAll('.chart-bar');
             const days = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
             const now = new Date();
             const dailyTotals = new Array(7).fill(0);
@@ -1016,7 +961,7 @@
                 const d = new Date(order.createdAt);
                 const daysAgo = Math.floor((now - d) / (24 * 60 * 60 * 1000));
                 if (daysAgo >= 0 && daysAgo < 7) {
-                    dailyTotals[6 - daysAgo] += order.totalAmount || order.total || 0;
+                    dailyTotals[6 - daysAgo] += (order.totalAmount || order.total || 0) + (order.shipping || 0);
                 }
             });
 

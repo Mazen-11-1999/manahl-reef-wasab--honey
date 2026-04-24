@@ -923,48 +923,6 @@
 
             <!-- التبويب 1: النظرة العامة -->
             <div id="overview" class="tab-content active">
-                <details class="owner-guide-panel"
-                    style="margin-bottom: 24px; padding: 16px 20px; background: rgba(212, 175, 55, 0.08); border: 1px solid var(--border-gold, rgba(212, 175, 55, 0.35)); border-radius: 12px; text-align: right;">
-                    <summary
-                        style="cursor: pointer; font-weight: 700; color: var(--gold-primary); list-style: none; display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-map-signs"></i>
-                        دليل المالك السريع — أين تجد كل شيء؟ (جوال أو كمبيوتر)
-                    </summary>
-                    <div
-                        style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(212, 175, 55, 0.2); color: var(--text-secondary); font-size: 0.92rem; line-height: 1.75;">
-                        <p style="margin: 0 0 10px 0;"><strong>1) الدخول:</strong> من أي مكان افتح المتصفح →
-                            <code style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">/admin/login.html</code>
-                            ثم تبقى في لوحة التحكم.</p>
-                        <p style="margin: 0 0 10px 0;"><strong>2) منتجات + صور المنتج:</strong> من الأعلى اختر تبويب
-                            <strong>المنتجات</strong> أو الرابط <code
-                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">products.html</code>
-                            و<code
-                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">categories.html</code>
-                            للفئات. يمكنك لاحقاً رفع الصور من نفس الأماكن.</p>
-                        <p style="margin: 0 0 10px 0;"><strong>3) حالات وإعلانات (تظهر في الرئيسية):</strong> زر
-                            <strong>الحالات والإعلانات</strong> أدناه أو الصفحة
-                            <code
-                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">stories-management.html</code>
-                            — تدعم صوراً وفيديو حسب الصفحة.</p>
-                        <p style="margin: 0 0 10px 0;"><strong>4) معرض «قصتنا» (6 صور):</strong>
-                            <code
-                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">story-gallery.html</code>
-                        </p>
-                        <p style="margin: 0 0 10px 0;"><strong>5) صيدلة طبيعية / هل تعلم / الشريط العلوي:</strong> من
-                            شريط التبويبات: <strong>الصيدلية الطبيعية</strong>، <strong>هل تعلم</strong>، <strong>الشريط
-                                العلوي</strong>.</p>
-                        <p style="margin: 0 0 10px 0;"><strong>6) النسخ الاحتياطي:</strong> تبويب <strong>نسخ
-                                احتياطي</strong> — على <strong>Vercel</strong> اعتمد نسخ <strong>MongoDB Atlas</strong>
-                            من لوحة Atlas؛ نسخ الملفات عبر السيرفر يناسب VPS بقرص دائم.</p>
-                        <p style="margin: 0;"><strong>7) صور وفيديو لا تُضاع على Vercel:</strong> في إعدادات Vercel فعّل
-                            <strong>التخزين السحابي</strong> (مثل Cloudinary):
-                            <code
-                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">CLOUD_STORAGE_ENABLED=true</code>
-                            + <code
-                                style="background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px;">CLOUD_STORAGE_PROVIDER=cloudinary</code>
-                            ومفاتيح Cloudinary.</p>
-                    </div>
-                </details>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <span class="stat-icon"><i class="fas fa-dollar-sign"></i></span>
@@ -1298,91 +1256,6 @@
                 </div>
             </div>
 
-            <!-- التبويب 6: الإعدادات (للمشرفين فقط) -->
-            <div id="settings" class="tab-content">
-                <div class="actions-grid">
-                    <a href="javascript:void(0)" class="action-btn" onclick="backupData()">
-                        <span class="action-icon">💾</span>
-                        <div class="action-title">نسخ احتياطي</div>
-                        <div class="action-desc">نسخ بيانات النظام</div>
-                    </a>
-                    <a href="javascript:void(0)" class="action-btn" onclick="clearCache()">
-                        <span class="action-icon">🗑️</span>
-                        <div class="action-title">مسح التخزين المؤقت</div>
-                        <div class="action-desc">تحسين أداء النظام</div>
-                    </a>
-                    <a href="javascript:void(0)" class="action-btn" onclick="exportData()">
-                        <span class="action-icon">📊</span>
-                        <div class="action-title">تصدير البيانات</div>
-                        <div class="action-desc">تصدير التقارير</div>
-                    </a>
-                    <a href="javascript:void(0)" class="action-btn" onclick="systemStatus()">
-                        <span class="action-icon">⚙️</span>
-                        <div class="action-title">حالة النظام</div>
-                        <div class="action-desc">فحص صحة النظام</div>
-                    </a>
-                </div>
-
-                <div class="chart-container">
-                    <h3 class="chart-title">
-                        <i class="fas fa-server"></i>
-                        حالة النظام
-                    </h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <span class="stat-icon">🟢</span>
-                            <p class="stat-label">حالة الخادم</p>
-                            <h2 class="stat-value">متصل</h2>
-                            <small class="stat-unit">يعمل بشكل طبيعي</small>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">💾</span>
-                            <p class="stat-label">قاعدة البيانات</p>
-                            <h2 class="stat-value">نشطة</h2>
-                            <small class="stat-unit">MongoDB متصلة</small>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">📡</span>
-                            <p class="stat-label">الـ API</p>
-                            <h2 class="stat-value">يعمل</h2>
-                            <small class="stat-unit">جميع الـ endpoints تعمل</small>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">🔒</span>
-                            <p class="stat-label">الأمان</p>
-                            <h2 class="stat-value">محمي</h2>
-                            <small class="stat-unit">جميع الإجراءات الأمنية مفعلة</small>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <h3 class="chart-title">
-                        <i class="fas fa-chart-line"></i>
-                        أداء النظام
-                    </h3>
-                    <div class="chart-wrapper">
-                        <div class="chart-bar" style="height: 80%">
-                            <span class="chart-value">95%</span>
-                        </div>
-                        <div class="chart-bar" style="height: 70%">
-                            <span class="chart-value">87%</span>
-                        </div>
-                        <div class="chart-bar" style="height: 90%">
-                            <span class="chart-value">92%</span>
-                        </div>
-                        <div class="chart-bar highest" style="height: 95%">
-                            <span class="chart-value">98%</span>
-                        </div>
-                    </div>
-                    <div class="chart-labels">
-                        <span>الاستجابة</span>
-                        <span>المعالجة</span>
-                        <span>التخزين</span>
-                        <span>التوفر</span>
-                    </div>
-                </div>
-            </div>
             <div id="customers" class="tab-content">
                 <div class="actions-grid">
                     <a href="customers-badges.html" class="action-btn">
@@ -1587,60 +1460,41 @@
                 </div>
             </div>
 
-            <!-- التبويب 6: التقارير والإحصائيات -->
+            <!-- التبويب 6: التقارير والإحصائيات (أرقام من طلباتك الفعلية) -->
             <div id="reports" class="tab-content">
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0 0 16px; text-align: center;">
+                    الأرقام أدناه مأخوذة من <strong>الطلبات</strong> في التطبيق. للتقارير المفصّلة استخدم الروابط في الأسفل.
+                </p>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <span class="stat-icon">💰</span>
-                        <p class="stat-label">إجمالي الأرباح</p>
-                        <h2 class="stat-value">٢,٥٠٠,٠٠٠</h2>
-                        <small class="stat-unit">ريال يمني</small>
+                        <p class="stat-label">مبيعات الشهر</p>
+                        <h2 class="stat-value" id="reportsTabMonthly">0</h2>
+                        <small class="stat-unit">ريال يمني (إجمالي + شحن حسب البيانات)</small>
                     </div>
                     <div class="stat-card">
                         <span class="stat-icon">📈</span>
                         <p class="stat-label">نمو المبيعات</p>
-                        <h2 class="stat-value">+٢٣٪</h2>
-                        <small class="stat-unit">مقارنة بالشهر الماضي</small>
+                        <h2 class="stat-value" id="reportsTabGrowth">0%</h2>
+                        <small class="stat-unit">مقارنة بالشهر السابق (حسب تاريخ الطلبات)</small>
                     </div>
                     <div class="stat-card">
                         <span class="stat-icon">⭐</span>
                         <p class="stat-label">متوسط التقييم</p>
-                        <h2 class="stat-value">٤.٨</h2>
-                        <small class="stat-unit">من ٥ نجوم</small>
+                        <h2 class="stat-value" id="reportsTabRating">—</h2>
+                        <small class="stat-unit" id="reportsTabRatingHint">يُحسب من صفحة المراجعات عند توفر بيانات</small>
                     </div>
                     <div class="stat-card">
                         <span class="stat-icon">🔄</span>
-                        <p class="stat-label">معدل العودة</p>
-                        <h2 class="stat-value">٨٩٪</h2>
-                        <small class="stat-unit">عملاء متكررين</small>
+                        <p class="stat-label">عملاء بأكثر من طلب</p>
+                        <h2 class="stat-value" id="reportsTabRepeat">0%</h2>
+                        <small class="stat-unit">نسبة من لديهم هاتف مسجّل ووضعوا أكثر من طلب</small>
                     </div>
                 </div>
 
                 <div class="chart-container">
-                    <h3 class="chart-title">📊 منحنى المبيعات الأسبوعي</h3>
-                    <div class="chart-wrapper">
-                        <div class="chart-bar" style="height: 40%;" onclick="showDayDetails('السبت', '٢,٣٠٠ ر.س')">
-                            <div class="chart-value">٢,٣٠٠</div>
-                        </div>
-                        <div class="chart-bar" style="height: 65%;" onclick="showDayDetails('الأحد', '٣,٧٥٠ ر.س')">
-                            <div class="chart-value">٣,٧٥٠</div>
-                        </div>
-                        <div class="chart-bar" style="height: 50%;" onclick="showDayDetails('الاثنين', '٢,٨٥٠ ر.س')">
-                            <div class="chart-value">٢,٨٥٠</div>
-                        </div>
-                        <div class="chart-bar highest" style="height: 90%;"
-                            onclick="showDayDetails('الثلاثاء', '٥,٢٠٠ ر.س')">
-                            <div class="chart-value">٥,٢٠٠</div>
-                        </div>
-                        <div class="chart-bar" style="height: 75%;" onclick="showDayDetails('الأربعاء', '٤,٣٥٠ ر.س')">
-                            <div class="chart-value">٤,٣٥٠</div>
-                        </div>
-                        <div class="chart-bar" style="height: 60%;" onclick="showDayDetails('الخميس', '٣,٤٠٠ ر.س')">
-                            <div class="chart-value">٣,٤٠٠</div>
-                        </div>
-                        <div class="chart-bar" style="height: 45%;" onclick="showDayDetails('الجمعة', '٢,٦٠٠ ر.س')">
-                            <div class="chart-value">٢,٦٠٠</div>
-                        </div>
+                    <h3 class="chart-title">📊 مبيعات آخر 7 أيام</h3>
+                    <div class="chart-wrapper" id="dashboardReportsWeekChart">
                     </div>
                     <div class="chart-labels">
                         <span>سبت</span>
@@ -1712,44 +1566,12 @@
                     </a>
                 </div>
 
-                <div class="profits-section">
-                    <h3 style="color: var(--gold-primary); margin-bottom: 20px; text-align: center;">
-                        🔧 إعدادات النظام السريعة
-                    </h3>
-                    <div class="admin-grid-split">
-                        <div>
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(212, 175, 55, 0.1); border-radius: 10px; margin-bottom: 10px;">
-                                <span style="color: var(--text-white);">النسخ الاحتياطي التلقائي</span>
-                                <div
-                                    style="width: 50px; height: 25px; background: var(--gold-primary); border-radius: 25px; cursor: pointer;">
-                                </div>
-                            </div>
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(212, 175, 55, 0.1); border-radius: 10px; margin-bottom: 10px;">
-                                <span style="color: var(--text-white);">إشعارات الطلبات</span>
-                                <div
-                                    style="width: 50px; height: 25px; background: var(--gold-primary); border-radius: 25px; cursor: pointer;">
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(212, 175, 55, 0.1); border-radius: 10px; margin-bottom: 10px;">
-                                <span style="color: var(--text-white);">تحديثات تلقائية</span>
-                                <div
-                                    style="width: 50px; height: 25px; background: var(--success); border-radius: 25px; cursor: pointer;">
-                                </div>
-                            </div>
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(212, 175, 55, 0.1); border-radius: 10px; margin-bottom: 10px;">
-                                <span style="color: var(--text-white);">وضع الصيانة</span>
-                                <div
-                                    style="width: 50px; height: 25px; background: #444; border-radius: 25px; cursor: pointer;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div style="max-width: 1000px; margin: 24px auto 0; padding: 0 12px 24px;">
+                    <h3 style="color: var(--gold-primary); margin-bottom: 12px; text-align: center; font-size: 1rem;">
+                        الإعدادات الكاملة (نفس صفحة الإعدادات)</h3>
+                    <iframe src="settings.html"
+                        style="width: 100%; height: calc(100vh - 280px); min-height: 520px; border: 1px solid var(--border-gold); border-radius: 15px; background: var(--bg-card);"
+                        title="الإعدادات العامة"></iframe>
                 </div>
             </div>
 
@@ -1991,11 +1813,9 @@
                     <div class="profit-summary" style="margin-top: 25px;">
                         <h3 class="table-title" style="margin-bottom: 15px;"><i class="fas fa-fingerprint"></i> تسجيل
                             البصمة للدخول السريع</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 15px;">بعد تسجيل البصمة يمكنك الدخول من
-                            صفحة المالك بزر "تسجيل الدخول بالبصمة" دون إدخال كلمة المرور.</p>
-                        <p style="color: var(--gold-primary); font-size: 0.9rem; margin-bottom: 15px;"><i
-                                class="fas fa-lock"></i> فقط البصمة التي تُسجّل من هنا (بعد الدخول بكلمة المرور) تسمح
-                            بالدخول — لا يقبل النظام غيرها.</p>
+                        <p style="color: var(--text-secondary); margin-bottom: 15px;">سجّل البصمة هنا (بعد الدخول
+                            بكلمة المرور)، ثم استخدم «تسجيل الدخول بالبصمة» في صفحة الدخول. يُقبل فقط ما سجّلته من
+                            هنا.</p>
                         <button type="button" class="action-button confirm-button" onclick="registerFingerprint()"
                             id="btnRegisterFingerprint"><i class="fas fa-fingerprint"></i> تسجيل البصمة الآن</button>
                         <div id="fingerprintCredentialsList" style="margin-top: 15px;"></div>
@@ -2035,11 +1855,6 @@
                             <span class="stat-icon"><i class="fas fa-edit"></i></span>
                             <p class="stat-label">مسودات</p>
                             <h2 class="stat-value" id="draftInfo">0</h2>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon"><i class="fas fa-eye"></i></span>
-                            <p class="stat-label">مشاهدات اليوم</p>
-                            <h2 class="stat-value" id="viewsCount">0</h2>
                         </div>
                     </div>
 
@@ -2188,8 +2003,8 @@
                             <h3 class="table-title"><i class="fas fa-barcode"></i> إعدادات الشريط العلوي</h3>
                         </div>
                         <div class="table-content" style="padding: 25px;">
-                            <p style="color: var(--text-muted); margin-bottom: 20px;">يظهر الشريط أعلى الصفحة الرئيسية
-                                وصفحات المتجر. يمكنك تغيير النص وتفعيله أو إيقافه من هنا.</p>
+                            <p style="color: var(--text-muted); margin-bottom: 20px;">الشريط أعلى الموقع — عدّل النص
+                                وفعّله أو عطّله من هنا.</p>
                             <form id="siteBannerForm" onsubmit="saveSiteBanner(event)">
                                 <div style="margin-bottom: 20px;">
                                     <label
@@ -2327,7 +2142,7 @@
                                             <label class="form-label">وقت الإرسال</label>
                                             <select class="form-input" id="sendTime">
                                                 <option value="now">فوراً</option>
-                                                <option value="scheduled">جدولة لاحقاً</option>
+                                                <option value="scheduled">إرسال مجدول</option>
                                             </select>
                                         </div>
                                         <div>
@@ -2443,15 +2258,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- التبويب: الإعدادات العامة -->
-            <div id="settings" class="tab-content">
-                <div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
-                    <iframe src="settings.html"
-                        style="width: 100%; height: calc(100vh - 220px); min-height: 600px; border: 1px solid var(--border-gold); border-radius: 15px; background: var(--bg-card);"
-                        title="الإعدادات العامة"></iframe>
-                </div>
-            </div>
         </div>
 
     </div>
@@ -2461,6 +2267,7 @@
 
     <!-- API Integration -->
     <script src="../js/api.js"></script>
+    <script src="../js/store-currency.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@13.2.2/dist/bundle.umd.min.js"></script>
     <script src="../js/admin-dashboard-integration.js"></script>
 
@@ -2664,7 +2471,7 @@
                 });
                 const completeData = await completeRes.json();
                 if (completeData.success) {
-                    showNotification('تم تسجيل البصمة بنجاح. يمكنك الدخول بها من صفحة المالك.', 'success');
+                    showNotification('تم تسجيل البصمة بنجاح.', 'success');
                     loadFingerprintCredentials();
                 } else {
                     showNotification(completeData.message || 'فشل تسجيل البصمة', 'error');
@@ -2746,10 +2553,12 @@
                 loadFingerprintCredentials();
             }
 
+            if (tabId === 'reports' && typeof loadDashboardStats === 'function') {
+                loadDashboardStats();
+            }
+
             // حفظ التبويب النشط في LocalStorage
             localStorage.setItem('activeTab', tabId);
-
-            showNotification(`تم التبديل إلى ${getTabName(tabId)}`);
         }
         /** onclick في HTML يستدعي دوالاً على window — ربط صريح يمنع ReferenceError */
         window.switchTab = switchTab;
@@ -3241,6 +3050,66 @@
             return new Intl.NumberFormat('ar-SA').format(num);
         }
 
+        function computeRepeatCustomerShare(orders) {
+            const counts = {};
+            (orders || []).forEach(o => {
+                const p = (o.customer && o.customer.phone) || o.customerPhone;
+                if (p) counts[p] = (counts[p] || 0) + 1;
+            });
+            const keys = Object.keys(counts);
+            if (keys.length === 0) return '0';
+            const multi = keys.filter(k => counts[k] > 1).length;
+            return ((multi / keys.length) * 100).toFixed(0);
+        }
+
+        function renderDashboardReportsWeekChart(orders) {
+            const wrap = document.getElementById('dashboardReportsWeekChart');
+            if (!wrap) return;
+            const days = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+            const now = new Date();
+            const dailyTotals = new Array(7).fill(0);
+            (orders || []).forEach(order => {
+                const d = new Date(order.createdAt);
+                const daysAgo = Math.floor((now - d) / (24 * 60 * 60 * 1000));
+                if (daysAgo >= 0 && daysAgo < 7) {
+                    dailyTotals[6 - daysAgo] += (order.total || 0) + (order.shipping || 0);
+                }
+            });
+            const maxVal = Math.max.apply(null, dailyTotals.concat([1]));
+            if (wrap.children.length === 0) {
+                for (let i = 0; i < 7; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.height = '5%';
+                    const val = document.createElement('div');
+                    val.className = 'chart-value';
+                    bar.appendChild(val);
+                    wrap.appendChild(bar);
+                }
+            }
+            const bars = wrap.querySelectorAll('.chart-bar');
+            bars.forEach((bar, i) => {
+                if (i >= 7) return;
+                const v = dailyTotals[i];
+                const pct = Math.max(5, (v / maxVal) * 100);
+                bar.style.height = pct + '%';
+                bar.className = 'chart-bar' + (v === maxVal && maxVal > 0 && v > 0 ? ' highest' : '');
+                const valueEl = bar.querySelector('.chart-value');
+                if (valueEl) valueEl.textContent = v > 0 ? formatNumber(Math.round(v)) : '0';
+                bar.onclick = function () { showDayDetails(days[i], (v > 0 ? formatNumber(Math.round(v)) : '0') + ' ر.س'); };
+            });
+        }
+
+        function updateDashboardReportsTab(orders, monthlySales, growthRate, lastMonthSales) {
+            const m = document.getElementById('reportsTabMonthly');
+            const g = document.getElementById('reportsTabGrowth');
+            const r = document.getElementById('reportsTabRepeat');
+            if (m) m.textContent = formatNumber(monthlySales || 0);
+            if (g) g.textContent = (lastMonthSales > 0) ? `${growthRate}%` : '—';
+            if (r) r.textContent = computeRepeatCustomerShare(orders) + '%';
+            renderDashboardReportsWeekChart(orders);
+        }
+
         // ===== تحميل الإحصائيات الحقيقية =====
         async function loadDashboardStats() {
             try {
@@ -3292,6 +3161,7 @@
 
                 // تحميل الأرباح
                 await loadProfitStats(orders);
+                updateDashboardReportsTab(orders, monthlySales, growthRate, lastMonthSales);
 
             } catch (error) {
                 console.error('Error loading dashboard stats:', error);
@@ -3300,6 +3170,7 @@
                 document.getElementById('shippingOrders').textContent = '0';
                 document.getElementById('totalCustomers').textContent = '0';
                 document.getElementById('growthRate').textContent = '0%';
+                updateDashboardReportsTab([], 0, 0, 0);
             }
         }
 
@@ -3706,12 +3577,10 @@
             const totalEl = document.getElementById('totalInfo');
             const publishedEl = document.getElementById('publishedInfo');
             const draftEl = document.getElementById('draftInfo');
-            const viewsEl = document.getElementById('viewsCount');
 
             if (totalEl) totalEl.textContent = total;
             if (publishedEl) publishedEl.textContent = published;
             if (draftEl) draftEl.textContent = drafts;
-            if (viewsEl) viewsEl.textContent = '0'; // يمكن إضافة نظام المشاهدات لاحقاً
         }
 
         // ===== حماية لوحة التحكم - فقط المالك =====
@@ -3720,25 +3589,11 @@
             const isAdmin = localStorage.getItem('isAdmin');
 
             if (!adminToken || isAdmin !== 'true') {
-                // لا يوجد token - إعادة توجيه لتسجيل الدخول
                 alert('يجب تسجيل الدخول أولاً');
                 window.location.href = 'login.html';
                 return false;
             }
-
-            // التحقق من صحة Token (اختياري - يمكن إضافة تحقق من الـ API)
-            try {
-                // يمكن إضافة تحقق من الـ API هنا إذا لزم الأمر
-                // حالياً نكتفي بالتحقق من وجود Token
-                return true;
-            } catch (error) {
-                console.error('Error checking admin access:', error);
-                alert('حدث خطأ في التحقق من الصلاحيات. يرجى تسجيل الدخول مرة أخرى.');
-                localStorage.removeItem('adminToken');
-                localStorage.removeItem('isAdmin');
-                window.location.href = 'login.html';
-                return false;
-            }
+            return true;
         }
 
         // ===== تهيئة الصفحة =====
@@ -3784,7 +3639,7 @@
                 });
             });
 
-            showNotification('مرحباً بك في لوحة الإدارة الشاملة! 🎉');
+            showNotification('أهلاً — لوحة إدارة مناحل ريف وصاب');
         });
 
         // معالجة تغيير حجم النافذة
@@ -4079,28 +3934,28 @@
         // ========== دوال الإشعارات ==========
         const notificationTemplates = {
             promo: {
-                title: 'عرض الجمعة الذهبية 🍯',
-                message: 'خصم ٢٠٪ على جميع منتجات العسل الطبيعي! العرض ساري حتى نهاية الأسبوع. استخدم كود: GOLD20'
+                title: 'عرض أسبوعي',
+                message: 'خصم على منتجات مختارة حتى نهاية الأسبوع. رمز الخصم: GOLD20'
             },
             new: {
-                title: 'منتج جديد 🆕',
-                message: 'نقدم لكم عسل السدر الملكي من جبال وصاب! منتج فريد بنكهة استثنائية وجودة فائقة'
+                title: 'إضافة جديدة',
+                message: 'أضفنا دفعة عسل سدر من وصاب. الكمية محدودة — راجع المنتج في المتجر.'
             },
             sale: {
-                title: 'تخفيضات هائلة 🔥',
-                message: 'خصومات تصل إلى ٥٠٪ على المنتجات المحددة! فرصة ذهبية للحصول على أفضل أنواع العسل'
+                title: 'تنزيلات',
+                message: 'تخفيضات على أصناف محدّدة. يشمل المذكور في قسم «العروض» فقط.'
             },
             event: {
-                title: 'حدث خاص 🎉',
-                message: 'نحتفل معكم بعيد الفطر المبارك! خصومات خاصة على جميع المنتجات لمدة ٣ أيام فقط'
+                title: 'مناسبة',
+                message: 'تهانينا — راجع تفاصيل العرض في الصفحة الرئيسية وتاريخ انتهائه.'
             },
             reminder: {
-                title: 'تذكير ⏰',
-                message: 'لا تنسَ أن طلبك على وشك الانتهاء! قم بتجديد طلبك الآن للاستمتاع بمنتجاتنا الطبيعية'
+                title: 'تذكير',
+                message: 'لديك طلب قيد المتابعة. راجع «طلباتي» لأحدث الحالة.'
             },
             welcome: {
-                title: 'أهلاً بك 👋',
-                message: 'مرحباً بك في عائلة مناحل ريف وصاب! استمتع بخصم ١٠٪ على أول طلب لك'
+                title: 'تنبيه ترحيبي',
+                message: 'شكراً لاشتراكك. يمكنك إضافة تفاصيل أول طلب لك لاحقاً من المتجر.'
             }
         };
 

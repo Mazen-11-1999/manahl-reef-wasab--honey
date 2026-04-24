@@ -819,6 +819,7 @@
 
     <!-- API Integration -->
     <script src="../js/api.js"></script>
+    <script src="../js/store-currency.js"></script>
 
     <script>
         // تحميل المنتجات من قاعدة البيانات
@@ -861,7 +862,7 @@
         });
 
         function handleImageUpload(file) {
-            selectedImageFile = file; // حفظ الملف للرفع لاحقاً
+            selectedImageFile = file; // للرفع عند حفظ المنتج
             const reader = new FileReader();
             reader.onload = (e) => {
                 imagePreview.src = e.target.result;
@@ -945,6 +946,7 @@
         // تحميل المنتجات من API
         async function loadProductsFromAPI() {
             try {
+                if (typeof window.ensureStoreCurrency === 'function') await window.ensureStoreCurrency();
                 const response = await window.API.products.getAll();
                 products = response.data || response.products || (Array.isArray(response) ? response : []);
                 updateProductsList();
@@ -1008,6 +1010,7 @@
                 const productPrice = product.price || product.newPrice;
                 const productOldPrice = product.oldPrice || product.comparePrice;
                 const productStock = product.stock || product.quantity || 0;
+                const cur = typeof window.currencySymbol === 'function' ? window.currencySymbol() : 'ر.ي';
                 
                 return `
                 <div class="product-card">
@@ -1019,8 +1022,8 @@
                         <div class="product-name">${product.name}</div>
                         <div class="product-category">${getCategoryName(product.category)}</div>
                         <div class="product-price">
-                            <span class="price-current">${productPrice} ريال</span>
-                            ${productOldPrice ? `<span class="price-old">${productOldPrice} ريال</span>` : ''}
+                            <span class="price-current">${productPrice} ${cur}</span>
+                            ${productOldPrice ? `<span class="price-old">${productOldPrice} ${cur}</span>` : ''}
                         </div>
                         <div class="product-stock">
                             <span>المخزون:</span>

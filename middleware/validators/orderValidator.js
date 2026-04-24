@@ -103,7 +103,7 @@ exports.createOrder = [
 
     body('currency')
         .optional()
-        .isIn(['YER', 'SAR'])
+        .isIn(['YER', 'SAR', 'USD'])
         .withMessage('العملة غير صالحة')
 ];
 
