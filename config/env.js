@@ -145,10 +145,10 @@ const config = {
     redisReconnectRetries: Math.max(0, parseInt(process.env.REDIS_RECONNECT_RETRIES, 10) || 0),
     redisRetryDelayMs: Math.max(10, parseInt(process.env.REDIS_RETRY_DELAY_ON_FAILURE, 10) || 50),
 
-    // VAPID Keys for Push Notifications (مجاني تماماً - يتم توليده تلقائياً)
+    // VAPID Keys for Push Notifications — يُفضّل mailto: البريد في VAPID_EMAIL على Vercel (Web Push)
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY,
     vapidPrivateKey: process.env.VAPID_PRIVATE_KEY,
-    vapidEmail: process.env.VAPID_EMAIL || 'admin@manahlbadr.com'
+    vapidEmail: process.env.VAPID_EMAIL || process.env.ADMIN_EMAIL || 'reefwosaab@gmail.com'
 };
 
 // تحذيرات التطوير

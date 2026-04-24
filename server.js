@@ -167,6 +167,16 @@ app.get('/manifest.json', (req, res) => {
     res.sendFile(manifestPath);
 });
 
+// offline.html موجود في public/ ليستخدمه Service Worker عند انقطاع الإنترنت
+app.get('/offline.html', (req, res) => {
+    const offlinePath = path.join(__dirname, 'public', 'offline.html');
+    if (!fs.existsSync(offlinePath)) {
+        return res.status(404).send('Offline page not found');
+    }
+    res.type('text/html; charset=utf-8');
+    res.sendFile(offlinePath);
+});
+
 // ============================================
 // ROUTES
 // ============================================
