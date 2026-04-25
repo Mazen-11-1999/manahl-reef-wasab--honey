@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مناحل ريف وصاب - الفخامة </title>
+    <title>مناحل ريف وصاب - الفخامة</title>
     <meta name="description" content="مناحل ريف وصاب — عسل منتقى بعناية مع وصف واضح وخدمة موثوقة من الطلب حتى التسليم.">
     <link rel="canonical" href="https://manahl-reef-wasab-honey.vercel.app/">
 
@@ -92,7 +92,6 @@
 
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <!-- Enhanced Arabic Fonts -->
@@ -3521,31 +3520,27 @@
             if (btn) btn.setAttribute('aria-expanded', 'false');
         });
 
-        // ط¯ط§ظ„ط© ظ„ظ„طھظ†ظ‚ظ„ ط¨ظٹظ† ط§ظ„طµظپط­ط§طھ
+        // تنقل بسيط بين الصفحات
         function navigateTo(path) {
             try {
-                // ط§ظ„طھط£ظƒط¯ ظ…ظ† ط£ظ† ط§ظ„ظ…ط³ط§ط± طµط­ظٹط­
                 if (!path) {
-                    console.error('ظ…ط³ط§ط± ط§ظ„طھظ†ظ‚ظ„ ط؛ظٹط± ظ…ط­ط¯ط¯');
+                    console.error('navigateTo: path missing');
                     return;
                 }
 
-                // ط¥ط¶ط§ظپط© طھط£ط«ظٹط± ط§ظ†طھظ‚ط§ظ„ظٹ
                 document.body.style.transition = 'opacity 0.3s ease';
                 document.body.style.opacity = '0.8';
 
-                // ط§ظ„ط§ظ†طھظ‚ط§ظ„ ط¥ظ„ظ‰ ط§ظ„طµظپط­ط©
                 setTimeout(() => {
                     window.location.href = path;
                 }, 100);
             } catch (error) {
-                console.error('ط®ط·ط£ ظپظٹ ط§ظ„طھظ†ظ‚ظ„:', error);
-                // ظ…ط­ط§ظˆظ„ط© ط§ظ„طھظ†ظ‚ظ„ ظ…ط¨ط§ط´ط±ط© ظپظٹ ط­ط§ظ„ط© ط§ظ„ط®ط·ط£
+                console.error('navigateTo error:', error);
                 window.location.href = path;
             }
         }
 
-        // طھط­ط¯ظٹط« ط§ظ„طھط¨ظˆظٹط¨ ط§ظ„ظ†ط´ط· ط¨ظ†ط§ط،ظ‹ ط¹ظ„ظ‰ ط§ظ„طµظپط­ط© ط§ظ„ط­ط§ظ„ظٹط©
+        // تمييز تبويب التنقل حسب المسار الحالي
         function updateActiveNavItem() {
             const currentPath = window.location.pathname;
             const navItems = document.querySelectorAll('.nav-item[data-nav]');
@@ -3554,7 +3549,6 @@
                 const target = item.getAttribute('data-nav');
                 item.classList.remove('active');
 
-                // طھط­ط¯ظٹط¯ ط§ظ„طھط¨ظˆظٹط¨ ط§ظ„ظ†ط´ط·
                 if (currentPath.endsWith(target) ||
                     (target === 'index.html' && (currentPath.endsWith('/') || currentPath.endsWith('/index.html')))) {
                     item.classList.add('active');
@@ -3562,7 +3556,7 @@
             });
         }
 
-        // طھط­ظ…ظٹظ„ ط§ظ„ظپط§ط¦ط²ظٹظ† ظˆط¹ط±ط¶ظ‡ظ…
+        // عرض آخر فائز من المسابقة
         async function loadWinners() {
             try {
                 if (!window.API || !window.API.contests) {
@@ -3579,34 +3573,40 @@
                         winnersSection.style.display = 'block';
                         winnersContainer.innerHTML = '';
 
-                        // ط¹ط±ط¶ ط¢ط®ط± ظپط§ط¦ط²
                         const latestWinner = response.winners[0];
+                        const esc = (s) => String(s == null ? '' : s)
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;')
+                            .replace(/"/g, '&quot;');
+                        const contestName = (latestWinner.contestName != null) ? String(latestWinner.contestName) : '';
+                        const defaultMsg = 'تهانينا الحارة! لقد فزت في مسابقة «' + esc(contestName) + '» ونتمنى لك دوام التوفيق والنجاح.';
+                        const messageText = (latestWinner.announcementMessage && String(latestWinner.announcementMessage).trim())
+                            ? esc(latestWinner.announcementMessage)
+                            : defaultMsg;
 
                         const winnerHTML = `
                             <div class="winner-card">
-                                <div class="winner-celebration">ًںژ‰</div>
-                                <div class="winner-crown">ًں‘‘</div>
-                                <div class="winner-title">ظ…ط¨ط±ظˆظƒ ط§ظ„ظپظˆط²!</div>
-                                <div class="winner-name">${latestWinner.name}</div>
-                                <div class="winner-message">
-                                    ${latestWinner.announcementMessage ||
-                            `طھظ‡ط§ظ†ظٹظ†ط§ ط§ظ„ط­ط§ط±ط©! ظ„ظ‚ط¯ ظپط²طھ ظپظٹ ظ…ط³ط§ط¨ظ‚ط© "${latestWinner.contestName}" ظˆظ†طھظ…ظ†ظ‰ ظ„ظƒ ط¯ظˆط§ظ… ط§ظ„طھظˆظپظٹظ‚ ظˆط§ظ„ظ†ط¬ط§ط­.`}
-                                </div>
+                                <div class="winner-celebration" aria-hidden="true">🎉</div>
+                                <div class="winner-crown" aria-hidden="true">👑</div>
+                                <div class="winner-title">مبروك الفوز!</div>
+                                <div class="winner-name">${esc(latestWinner.name)}</div>
+                                <div class="winner-message">${messageText}</div>
                                 ${latestWinner.prizeDetails ? `
                                     <div class="winner-prize">
-                                        ${latestWinner.prizeDetails.image ?
-                                    `<img src="${latestWinner.prizeDetails.image}" alt="ط§ظ„ط¬ط§ط¦ط²ط©" class="winner-prize-image">` : ''}
-                                        <div class="winner-prize-name">${latestWinner.prizeDetails.name || latestWinner.prize}</div>
-                                        ${latestWinner.prizeDetails.description ?
-                                    `<div class="winner-prize-description">${latestWinner.prizeDetails.description}</div>` : ''}
-                                        ${latestWinner.prizeDetails.value ?
-                                    `<div class="winner-prize-description" style="color: var(--gold); font-weight: bold;">ظ‚ظٹظ…ط© ط§ظ„ط¬ط§ط¦ط²ط©: ${latestWinner.prizeDetails.value}</div>` : ''}
+                                        ${latestWinner.prizeDetails.image
+                                    ? `<img src="${esc(latestWinner.prizeDetails.image)}" alt="الجائزة" class="winner-prize-image">` : ''}
+                                        <div class="winner-prize-name">${esc(latestWinner.prizeDetails.name || latestWinner.prize || '')}</div>
+                                        ${latestWinner.prizeDetails.description
+                                    ? `<div class="winner-prize-description">${esc(latestWinner.prizeDetails.description)}</div>` : ''}
+                                        ${latestWinner.prizeDetails.value
+                                    ? `<div class="winner-prize-description" style="color: var(--gold); font-weight: bold;">قيمة الجائزة: ${esc(latestWinner.prizeDetails.value)}</div>` : ''}
                                     </div>
-                                ` : latestWinner.prize ? `
+                                ` : (latestWinner.prize ? `
                                     <div class="winner-prize">
-                                        <div class="winner-prize-name">${latestWinner.prize}</div>
+                                        <div class="winner-prize-name">${esc(latestWinner.prize)}</div>
                                     </div>
-                                ` : ''}
+                                ` : '')}
                             </div>
                         `;
 
